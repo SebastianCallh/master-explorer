@@ -1,0 +1,3 @@
+#!/bin/bash
+./script/build-client
+firefox /home/seba/Documents/code/haskell/reflex-project-skeleton/dist-ghcjs/build/x86_64-linux/ghcjs-0.2.1/client-0.1.0.0/c/client/build/client/client.jsexe/index.html

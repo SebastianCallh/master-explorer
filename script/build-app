@@ -1,0 +1,2 @@
+#!/bin/bash
+nix-build -o client-result -A ghcjs.client
