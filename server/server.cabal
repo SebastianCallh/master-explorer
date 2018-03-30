@@ -1,0 +1,64 @@
+name:                server
+version:             0.1.0.0
+-- synopsis:            
+-- description:         
+license:             BSD3
+license-file:        LICENSE
+author:              Sebastian Callh
+maintainer:          sebastian.callh@gmail.com
+-- copyright:           
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.10
+
+executable server
+  main-is:             Main.hs
+  hs-source-dirs:      app
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , server
+                     , wai
+                     , wai-cors
+                     , wai-extra
+                     , wai-logger
+                     , warp
+  default-language:    Haskell2010
+  
+library
+  hs-source-dirs:      src
+  ghc-options:         -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
+  default-extensions:  RecordWildCards
+                     , OverloadedStrings
+  build-depends:       base >=4.9 && <4.11
+                     , common
+                     , aeson
+                     , async
+                     , bytestring
+                     , containers
+                     , deepseq
+                     , either
+                     , esqueleto
+                     , http-types
+                     , monad-logger
+                     , mtl
+                     , persistent
+                     , persistent-postgresql
+                     , persistent-template
+                     , profunctors
+                     , safe
+                     , servant 
+                     , servant-server
+                     , text
+                     , time
+                     , transformers
+                     , wai
+                     , wai-cors
+                     , wai-extra
+                     , wai-logger
+                     , warp
+  hs-source-dirs:      src
+  exposed-modules:     MasterExplorer.Server.App
+                     , MasterExplorer.Server.Config
+                     , MasterExplorer.Server.Db
+                     , MasterExplorer.Server.Db.Models
+  default-language:    Haskell2010
