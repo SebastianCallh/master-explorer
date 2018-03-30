@@ -1,123 +1,29 @@
-Multi-package Reflex example
----
+# Master Explorer
+Master explorer is a web application for intelligently planning studies at Linköping university. It achieves this by offering a visualization of the availible courses, course blocks, displaying overlapping corses, calculating selected amount of credits and similair helpful things. 
 
-This repo is an example of combining `cabal.project`, Nix,
-`reflex-platform`, and `jsaddle` to drastically improve the
-developer experience.
+## Functional requirement
+- The user shall be able to select courses 
+- The user shall be able to deselect courses
+- The user shall be able to see in which blocks selected courses are
+- The user shall be able to see the number of credits on selected courses
+- The user shall be able to see requiremnets for completing a course, such as lab, written exam och home exam
 
-Either clone this repo with `--recurse-submodules`, or run `git
-submodule update --init --recursive` in this directory after cloning
-to make sure `reflex-platform` is checked out.
+## Technical Details
+The application is build in `Haskell`. A big benefit of using the same language across the entire project is  that there is no need to manually marshall data. It can be serialized under the hood by well tested frameworks. `Haskell`s fantastic type system also gives very strong compile-time guarantees that the application won't blow up in production, across both server and client. 
 
-First, run `./reflex-platform/try-reflex` at least once. We won't use
-it at all in this project, but it does some extra work to setup your
-system requirements automatically, namely installing Nix and
-configuring the Reflex binary cache.
+Since `Haskell` is a bit of an oddball when it comes to language choices I have tried to provide links to the `Hackage` page of all relevant packages used (`Hackage` is the central package archive for the `Haskell` community). Should documentation be lacking there are typically links to projects `GitHub` pages where it is usually more fleshed out. 
 
-Once Nix is installed, everything else is mostly handled for you. To
-build the project's backend and `jsaddle-webkit2gtk` frontend app, use
-the `./cabal` script:
+### Server
+The server code sits on top of the web server [`Warp`](https://hackage.haskell.org/package/warp) which is wrapped by [`WAI`](https://hackage.haskell.org/package/wai). On top of this sits the actuall application which uses the API framework [`Servant`](https://hackage.haskell.org/package/servant) to specify RESTful endpoints to the server. The server uses a `PostgreSQL` instance for storage which is wrapped by [`Persistent`](https://hackage.haskell.org/package/persistent) that also handles database migrations. Queries to the database is written in the DSL [`Esqueleto`](https://hackage.haskell.org/package/esqueleto), allowing `Haskell`s type safety to reach as far as into the database. 
 
-```bash
-$ ./cabal new-build all
-```
+#### Motivation
+`Servant` is a very well supported package for declaring APIs, and so is `Persisten` for databases. A web server is of course needed for them to sit on and in that department `Warp` is like the previous packages very well supported together with `Wai`.
 
-To build the GHCJS app, use the `./cabal-ghcjs` script:
+### Client
+The client is built using the FRP (Functional reactive programming) framework [Reflex](https://hackage.haskell.org/package/reflex-dom) together with [Reflex-DOM](https://hackage.haskell.org/package/reflex) for DOM manipulation.
 
-```bash
-$ ./cabal-ghcjs new-build all
-```
+#### Motivation
+FRP offers an interesting way of structuring user interfaces in a functional way and `Reflex` and `Servant` can share data, letting `Haskell` type check the communication between client and server at compile time. At this point all code between the database and the client is type checked, making it almost impossible to get a runtime crash.
 
-You can use GHCi with the `jsaddle-webkit2gtk` app for much better dev
-cycles:
-
-```bash
-$ ./cabal new-repl frontend
-```
-
-`nix-build`
----
-
-Nix is useful for creating deterministic, production ready build
-products. You can use the `nix-build` command to build all the parts
-of the project with Nix.
-
-- Build everything
-
-  ```bash
-  $ nix-build
-  trace:
-
-  Skipping ios apps; system is x86_64-linux, but x86_64-darwin is needed.
-  Use `nix-build -A all` to build with remote machines.
-  See: https://nixos.org/nixos/manual/options.html#opt-nix.buildMachines
-
-
-  /nix/store/5p041yq3ldniji7xizrxihmhmr576vah-reflex-project
-
-  $ tree result
-  result
-  ├── android
-  │   └── frontend -> /nix/store/4w62ly3hi75zpdmiq52lk1m4kir660vc-android-app
-  ├── ghc
-  │   ├── backend -> /nix/store/bgraikacjv68lfcghkprj3mspwx9f2bn-backend-0.1.0.0
-  │   ├── common -> /nix/store/lcgz36j77y6w7jyd39b14zp00hfaxn3s-common-0.1.0.0
-  │   └── frontend -> /nix/store/h9dbc2dvh11g1saj52ndn8ys3kj6f03l-frontend-0.1.0.0
-  └── ghcjs
-      ├── common -> /nix/store/fgbmn6mjgh7gfdbgnb7a21fsb9175gmv-common-0.1.0.0
-      └── frontend -> /nix/store/hfpq2580jbvgm20p992v8qjdczvr20gm-frontend-0.1.0.0
-
-  9 directories, 0 files
-  ```
-
-- Build the backend
-
-  ```bash
-  $ nix-build -o backend-result -A ghc.backend
-  ```
-
-- Build the JS app
-
-  ```bash
-  $ nix-build -o frontend-result -A ghcjs.frontend
-  ```
-
-- Build the native frontend
-
-  ```bash
-  $ nix-build -o native-frontend-result -A ghc.frontend
-  ```
-
-Motivation
----
-
-Building a multi-package project with Nix can be a pain because of
-Nix's lack of incremental building. A small change to a common package
-will require Nix to rebuild that package from scratch, causing a huge
-interruption during development. Although this is usually where Stack
-would shine, Stack doesn't officially support using Nix for Haskell
-derivations, and has zero support for Nix with GHCJS. You *can* build
-Reflex apps using only Stack and no Nix, but you lose a lot of
-benefits that `reflex-platform` provides, like the curated set of
-package versions that Reflex works best with (including a
-GHCJS-optimized `text`library), binary caches of all the Haskell
-derivations, and zero-effort cross compilation for native mobile apps.
-
-How it works
----
-
-See
-[project-development.md](https://github.com/reflex-frp/reflex-platform/blob/develop/docs/project-development.md).
-
----
-
-TODO
----
-
-- Actually implement a backend / frontend that uses the `common`
-  library to show that even cross-package dependencies are built
-  incrementally.
-- `new-build` doesn't yet support any means of programmatically
-  finding build products. It would be nice to have some kind of
-  solution for this, especially so that the backend could serve the
-  `dist-ghcjs` products without some hardcoded path.
+### Scraper
+To collect course data the [Liu course page](https://liu.se/studieinfo) has to be scraped (since LiU IT did not provide me with an API upon asking). This is done by running a scraper with a cron job at regular intervals. 
