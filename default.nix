@@ -21,7 +21,7 @@
   };
 
   shells = {
-    ghc = ["common" "server" "client" "scraper"];
+    ghc   = ["common" "client" "server" "scraper"];
     ghcjs = ["common" "client"];
   };
 
