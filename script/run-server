@@ -14,5 +14,3 @@ export PGPASS=handmina
 export PGDATABASE=master_explorer
 
 ./dist-newstyle/build/x86_64-linux/ghc-8.0.2/server-0.1.0.0/c/server/build/server/server
-#./server-result/bin/server
-
