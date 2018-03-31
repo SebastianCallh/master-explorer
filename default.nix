@@ -1,6 +1,6 @@
 {}:
 
-(import ./reflex-platform {}).project ({ pkgs, ... }: {
+(import ./deps/reflex-platform {}).project ({ pkgs, ... }: {
   packages = {
     common  = ./common;
     server  = ./server;

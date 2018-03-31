@@ -1,0 +1,204 @@
+Command:  ./reflex-platform/try-reflex
+If you have any trouble with this script, please submit an issue at https://github.com/reflex-frp/reflex-platform/issues
+Entering the reflex sandbox...
+these paths will be fetched (59.10 MiB download, 377.38 MiB unpacked):
+  /nix/store/0i9nmkplfsdg4257ml92rsh0fjsrvxl0-reflex-dom-core-0.4-aarch64-unknown-linux-android
+  /nix/store/4fm89wfqjzpy227crdpa1nkjchfsx3vq-reflex-0.5.0-doc
+  /nix/store/5fx519g8gmfdrakzgw137p411z5866b8-org.reflexfrp.todomvc
+  /nix/store/61qjsgwhb2n8jkhxcfc5ymspzaxyq58d-reflex-dom-0.4-aarch64-unknown-linux-android
+  /nix/store/70z596vwqxs9i7c4x3d82li98lmxxhp9-reflex-todomvc-0.1
+  /nix/store/flpr9yd4s3iyis2ym420jh88r8qbzb9i-aarch64-unknown-linux-android-ghc-8.2.1-with-packages
+  /nix/store/gfpkpkl5jd1mqn16d8z3wrns5hxsbyrc-arm-unknown-linux-androideabi-ghc-8.2.1-with-packages
+  /nix/store/hsv0jqi55sacw44lpkqlyf6fmf8rf93a-reflex-0.5.0
+  /nix/store/i3sqsl6hjvmsq4rjgazan5y6rnbqwwzq-reflex-dom-core-0.4-doc
+  /nix/store/i5ispwmvchw6l9yr6xpykx9564vxdama-ghc-8.0.2-with-packages
+  /nix/store/ia1bp9y38rajmj4j649gjy1x3wcclsbp-ghcjs-0.2.0-with-packages
+  /nix/store/iwzz7ws6gpwinsivkr0952xn6iaa9ch4-hoogle-local-0.1
+  /nix/store/jd4mpz6l5r5zac8ymkm2j8s4zq6lq5dn-reflex-0.5.0-arm-unknown-linux-androideabi
+  /nix/store/mxmyil8wvfgcr6v5fb5cprr4da3w74rw-reflex-dom-0.4-doc
+  /nix/store/nbc4fnrp835i51y10ap0q9g2linays5a-reflex-0.5.0-aarch64-unknown-linux-android
+  /nix/store/pmkzk1kxvm0wi7v5dd19ppqf63pigqm9-hoogle-local-0.1
+  /nix/store/rg81iiq0lm6babchgyxar5c9wnjadlhs-android-app
+  /nix/store/rp32jw7ddhppx1f818al40vpqn3kf3ma-reflex-dom-0.4
+  /nix/store/vcfawd92mvpny89anzmqnq2p14s5yskv-shell-x86_64-linux
+  /nix/store/vi6q3awr7yg5skvv77jp7xdzhmc4zapd-reflex-todomvc-0.1-doc
+  /nix/store/wgjc0rrr8yp8vsivh3mkdxx811jqh6k2-reflex-dom-0.4-arm-unknown-linux-androideabi
+  /nix/store/xwydm3bchj6gik69dvnwi26jdmpcl04i-reflex-dom-core-0.4-arm-unknown-linux-androideabi
+  /nix/store/y0p475fv5fl256pbs0c9v5vqq89nyp4m-reflex-dom-core-0.4
+  /nix/store/y4k0r29hy99krh65bxg3bmgzrf310fis-reflex-todomvc-0.1-doc
+  /nix/store/y4kyclirq6gspn86r6y9175bz4jrms1a-reflex-todomvc-0.1
+fetching path ‘/nix/store/5fx519g8gmfdrakzgw137p411z5866b8-org.reflexfrp.todomvc’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/0b9dq75p7hc1n7i9rgi8r2jcg29x1x5pfyq7j0mv8xfnhbqh21lg.nar.xz’ to ‘/nix/store/5fx519g8gmfdrakzgw137p411z5866b8-org.reflexfrp.todomvc’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 4627k  100 4627k    0     0  4627k      0  0:00:01 --:--:--  0:00:01 13.6M
+
+fetching path ‘/nix/store/nbc4fnrp835i51y10ap0q9g2linays5a-reflex-0.5.0-aarch64-unknown-linux-android’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/0vv3g3k6kc25n00sssmr2ihxgf0di7l18zbwq7gg8bw59pl5sxk9.nar.xz’ to ‘/nix/store/nbc4fnrp835i51y10ap0q9g2linays5a-reflex-0.5.0-aarch64-unknown-linux-android’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 2851k  100 2851k    0     0  2851k      0  0:00:01 --:--:--  0:00:01 8008k
+
+fetching path ‘/nix/store/rg81iiq0lm6babchgyxar5c9wnjadlhs-android-app’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/0wrmqfkm5vrqabg28qg2agh0s9xwvvhmwqp129x9anwr5aizg7yw.nar.xz’ to ‘/nix/store/rg81iiq0lm6babchgyxar5c9wnjadlhs-android-app’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 4628k  100 4628k    0     0  4628k      0  0:00:01 --:--:--  0:00:01 14.1M
+
+fetching path ‘/nix/store/jd4mpz6l5r5zac8ymkm2j8s4zq6lq5dn-reflex-0.5.0-arm-unknown-linux-androideabi’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/0svgq86kwkrsa23n7d2whjsbrqxky5vqvag6dnyfzd3i4ya1m79g.nar.xz’ to ‘/nix/store/jd4mpz6l5r5zac8ymkm2j8s4zq6lq5dn-reflex-0.5.0-arm-unknown-linux-androideabi’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 3293k  100 3293k    0     0  3293k      0  0:00:01 --:--:--  0:00:01 8033k
+
+fetching path ‘/nix/store/4fm89wfqjzpy227crdpa1nkjchfsx3vq-reflex-0.5.0-doc’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/15nzinvyl7hs0z7a0pvqfd6vdma365yv2fbhmjrrymsncz84krfv.nar.xz’ to ‘/nix/store/4fm89wfqjzpy227crdpa1nkjchfsx3vq-reflex-0.5.0-doc’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100  336k  100  336k    0     0   336k      0  0:00:01 --:--:--  0:00:01 1701k
+
+fetching path ‘/nix/store/0i9nmkplfsdg4257ml92rsh0fjsrvxl0-reflex-dom-core-0.4-aarch64-unknown-linux-android’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/15cwjfkng27w0348pni4l07pgzvw2bc3hndh071bwz2bx4vh0rqk.nar.xz’ to ‘/nix/store/0i9nmkplfsdg4257ml92rsh0fjsrvxl0-reflex-dom-core-0.4-aarch64-unknown-linux-android’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 2792k  100 2792k    0     0  2792k      0  0:00:01 --:--:--  0:00:01 7909k
+
+fetching path ‘/nix/store/hsv0jqi55sacw44lpkqlyf6fmf8rf93a-reflex-0.5.0’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/1d7dnpi1lqg1qajn0srlin23z8fvjclgkr3bqp1y0ji4f16kgrxn.nar.xz’ to ‘/nix/store/hsv0jqi55sacw44lpkqlyf6fmf8rf93a-reflex-0.5.0’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 16 2177k   16  368k    0     0   368k      0  0:00:05 --:--:--  0:00:05 2221k100 2177k  100 2177k    0     0  2177k      0  0:00:01 --:--:--  0:00:01 6310k
+
+fetching path ‘/nix/store/61qjsgwhb2n8jkhxcfc5ymspzaxyq58d-reflex-dom-0.4-aarch64-unknown-linux-android’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/15jffg82chql87p4p5sdnlqkainwbcbv4y55qw0vqn1rxi259xdi.nar.xz’ to ‘/nix/store/61qjsgwhb2n8jkhxcfc5ymspzaxyq58d-reflex-dom-0.4-aarch64-unknown-linux-android’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 21 79288   21 16958    0     0  16958      0  0:00:04 --:--:--  0:00:04 24938100 79288  100 79288    0     0  79288      0  0:00:01 --:--:--  0:00:01 95183
+
+fetching path ‘/nix/store/xwydm3bchj6gik69dvnwi26jdmpcl04i-reflex-dom-core-0.4-arm-unknown-linux-androideabi’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/12k5rwf3bv5w2b6ibrssqvlzhvgkli1wx8s6fqrvjdj5hq7x0zdw.nar.xz’ to ‘/nix/store/xwydm3bchj6gik69dvnwi26jdmpcl04i-reflex-dom-core-0.4-arm-unknown-linux-androideabi’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 3295k  100 3295k    0     0  3295k      0  0:00:01 --:--:--  0:00:01 8342k
+
+fetching path ‘/nix/store/flpr9yd4s3iyis2ym420jh88r8qbzb9i-aarch64-unknown-linux-android-ghc-8.2.1-with-packages’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/1b32kdzsr0gkxbllj1s0jrl9lqwd7h92y7ipclbba4fmwb088dkc.nar.xz’ to ‘/nix/store/flpr9yd4s3iyis2ym420jh88r8qbzb9i-aarch64-unknown-linux-android-ghc-8.2.1-with-packages’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 33  148k   33 50666    0     0  50666      0  0:00:02 --:--:--  0:00:02  434k100  148k  100  148k    0     0   148k      0  0:00:01 --:--:--  0:00:01 1083k
+
+fetching path ‘/nix/store/wgjc0rrr8yp8vsivh3mkdxx811jqh6k2-reflex-dom-0.4-arm-unknown-linux-androideabi’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/1nb3qrna06sv5lfz3bn21sgizpvjgjgi3bbdkhlqr9yq5118dw2n.nar.xz’ to ‘/nix/store/wgjc0rrr8yp8vsivh3mkdxx811jqh6k2-reflex-dom-0.4-arm-unknown-linux-androideabi’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 82252  100 82252    0     0  82252      0  0:00:01 --:--:--  0:00:01  341k
+
+fetching path ‘/nix/store/i3sqsl6hjvmsq4rjgazan5y6rnbqwwzq-reflex-dom-core-0.4-doc’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/1g8f0q60by7570ix6j2k27mhhnb12dgq3w9y9sjisj2w952gyx37.nar.xz’ to ‘/nix/store/i3sqsl6hjvmsq4rjgazan5y6rnbqwwzq-reflex-dom-core-0.4-doc’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100  217k  100  217k    0     0   217k      0  0:00:01 --:--:--  0:00:01  733k
+
+fetching path ‘/nix/store/gfpkpkl5jd1mqn16d8z3wrns5hxsbyrc-arm-unknown-linux-androideabi-ghc-8.2.1-with-packages’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/1kfphx8kzkijnl1ppv7ra6cjhs16q9qkj27ks078x1q81pplgxlp.nar.xz’ to ‘/nix/store/gfpkpkl5jd1mqn16d8z3wrns5hxsbyrc-arm-unknown-linux-androideabi-ghc-8.2.1-with-packages’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0  146k    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100  146k  100  146k    0     0   146k      0  0:00:01 --:--:--  0:00:01 1080k
+
+fetching path ‘/nix/store/mxmyil8wvfgcr6v5fb5cprr4da3w74rw-reflex-dom-0.4-doc’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/0na6ccvmdamwzx00xprb9f8d3nm86396ylcxg62gi4r8ba1cnzhw.nar.xz’ to ‘/nix/store/mxmyil8wvfgcr6v5fb5cprr4da3w74rw-reflex-dom-0.4-doc’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 38988  100 38988    0     0  38988      0  0:00:01 --:--:--  0:00:01 55936
+
+fetching path ‘/nix/store/y0p475fv5fl256pbs0c9v5vqq89nyp4m-reflex-dom-core-0.4’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/18f9pvra72lq8cpbjlfdgr5bfyj6wfg4x2smmgwvkjkmhn5csywy.nar.xz’ to ‘/nix/store/y0p475fv5fl256pbs0c9v5vqq89nyp4m-reflex-dom-core-0.4’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  7 1542k    7  117k    0     0   117k      0  0:00:13 --:--:--  0:00:13  119k 87 1542k   87 1342k    0     0  1342k      0  0:00:01  0:00:01 --:--:--  680k100 1542k  100 1542k    0     0   771k      0  0:00:02  0:00:02 --:--:--  753k
+
+fetching path ‘/nix/store/vi6q3awr7yg5skvv77jp7xdzhmc4zapd-reflex-todomvc-0.1-doc’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/15vmvgbsg4hszn1ymq0qasd7knf80zf51sadmr1k145rb2jbhl06.nar.xz’ to ‘/nix/store/vi6q3awr7yg5skvv77jp7xdzhmc4zapd-reflex-todomvc-0.1-doc’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 24360  100 24360    0     0  24360      0  0:00:01 --:--:--  0:00:01  317k
+
+fetching path ‘/nix/store/rp32jw7ddhppx1f818al40vpqn3kf3ma-reflex-dom-0.4’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/08a5nh0vnx7dn59vn7hw4f3hd8a61vb92mza4kj95dr842mk5xxr.nar.xz’ to ‘/nix/store/rp32jw7ddhppx1f818al40vpqn3kf3ma-reflex-dom-0.4’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 28772  100 28772    0     0  28772      0  0:00:01 --:--:--  0:00:01  374k
+
+fetching path ‘/nix/store/iwzz7ws6gpwinsivkr0952xn6iaa9ch4-hoogle-local-0.1’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/0kvs0xwhgq70yr9xniswcp5az3ccphs73z1i1kcnxqlyjff3cls9.nar.xz’ to ‘/nix/store/iwzz7ws6gpwinsivkr0952xn6iaa9ch4-hoogle-local-0.1’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0 10.6M    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  4 10.6M    4  474k    0     0   474k      0  0:00:22  0:00:01  0:00:21  340k 24 10.6M   24 2684k    0     0  1342k      0  0:00:08  0:00:02  0:00:06 1135k100 10.6M  100 10.6M    0     0  3619k      0  0:00:03  0:00:03 --:--:-- 3234k
+
+fetching path ‘/nix/store/70z596vwqxs9i7c4x3d82li98lmxxhp9-reflex-todomvc-0.1’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/1cm0kwsnjihz2c2hcp3ypvirk2wmjkplh9g4b0v2pz38f4cm2i5c.nar.xz’ to ‘/nix/store/70z596vwqxs9i7c4x3d82li98lmxxhp9-reflex-todomvc-0.1’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100  451k  100  451k    0     0   451k      0  0:00:01 --:--:--  0:00:01 1896k
+
+fetching path ‘/nix/store/y4k0r29hy99krh65bxg3bmgzrf310fis-reflex-todomvc-0.1-doc’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/1nlsx150v5nizdhhdankcfcqlh3g9w8224z8ncm6ygawq51rxqfw.nar.xz’ to ‘/nix/store/y4k0r29hy99krh65bxg3bmgzrf310fis-reflex-todomvc-0.1-doc’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 32496  100 32496    0     0  32496      0  0:00:01 --:--:--  0:00:01  401k
+
+fetching path ‘/nix/store/ia1bp9y38rajmj4j649gjy1x3wcclsbp-ghcjs-0.2.0-with-packages’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/095cpd95n9zrxaa6ixl5nmd048fjkd92fl14a7n12s6i37qh4m00.nar.xz’ to ‘/nix/store/ia1bp9y38rajmj4j649gjy1x3wcclsbp-ghcjs-0.2.0-with-packages’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0  333k    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 70  333k   70  236k    0     0   236k      0  0:00:01  0:00:01 --:--:--  124k100  333k  100  333k    0     0   333k      0  0:00:01  0:00:01 --:--:--  173k
+
+fetching path ‘/nix/store/pmkzk1kxvm0wi7v5dd19ppqf63pigqm9-hoogle-local-0.1’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/11l3lypf3yz0f2iabcbba4q73v4h1w8axm1zsncqa9a2h15dzj32.nar.xz’ to ‘/nix/store/pmkzk1kxvm0wi7v5dd19ppqf63pigqm9-hoogle-local-0.1’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0 21.6M    0 43310    0     0  43310      0  0:08:43 --:--:--  0:08:43 61345  4 21.6M    4 1069k    0     0  1069k      0  0:00:20  0:00:01  0:00:19  649k 21 21.6M   21 4673k    0     0  2336k      0  0:00:09  0:00:02  0:00:07 1760k 40 21.6M   40 9001k    0     0  3000k      0  0:00:07  0:00:03  0:00:04 2474k 66 21.6M   66 14.4M    0     0  3697k      0  0:00:05  0:00:04  0:00:01 3183k 92 21.6M   92 20.1M    0     0  4117k      0  0:00:05  0:00:05 --:--:-- 4156k100 21.6M  100 21.6M    0     0  4429k      0  0:00:05  0:00:05 --:--:-- 4940k
+
+fetching path ‘/nix/store/y4kyclirq6gspn86r6y9175bz4jrms1a-reflex-todomvc-0.1’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/148zdkyxnn56d5x3adsshsw4ya4bh9svn13fybcfa0bdsnw6kdln.nar.xz’ to ‘/nix/store/y4kyclirq6gspn86r6y9175bz4jrms1a-reflex-todomvc-0.1’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100  124k  100  124k    0     0   124k      0  0:00:01 --:--:--  0:00:01 1125k
+
+fetching path ‘/nix/store/i5ispwmvchw6l9yr6xpykx9564vxdama-ghc-8.0.2-with-packages’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/0zvfjrr69hc610fyhvkj0vjzkpqzyvz84l5ihrrgc5qc7fij8j3p.nar.xz’ to ‘/nix/store/i5ispwmvchw6l9yr6xpykx9564vxdama-ghc-8.0.2-with-packages’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 61  260k   61  159k    0     0   159k      0  0:00:01 --:--:--  0:00:01  466k100  260k  100  260k    0     0   260k      0  0:00:01 --:--:--  0:00:01  697k
+
+fetching path ‘/nix/store/vcfawd92mvpny89anzmqnq2p14s5yskv-shell-x86_64-linux’...
+
+*** Downloading ‘https://nixcache.reflex-frp.org/1x2hwl5b62r040xcg03ramkqbjc75kkbd87v0rd7aa0f5xh7n2gh.nar.xz’ to ‘/nix/store/vcfawd92mvpny89anzmqnq2p14s5yskv-shell-x86_64-linux’...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   880  100   880    0     0    880      0  0:00:01 --:--:--  0:00:01 11139
+
