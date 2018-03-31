@@ -14,14 +14,15 @@ cabal-version:       >=1.10
 executable client
   main-is:             Main.hs
   ghc-options:         -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
-  -- other-extensions:    
   default-extensions:  RecordWildCards
                      , OverloadedStrings
-  build-depends:       base >=4.9 && <4.11
+  build-depends:       base
                      , common
                      , reflex-dom
                      , servant
                      , servant-reflex
                      , text
+                     , jsaddle
+                     , jsaddle-warp
   hs-source-dirs:      src
   default-language:    Haskell2010

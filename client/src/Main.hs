@@ -14,9 +14,13 @@ import qualified Data.Text as T
 import           Control.Monad.Fix (MonadFix)
 import           Data.Monoid
 import           Data.Proxy (Proxy (..))
-import           Reflex.Dom
 import           Servant.Reflex
 import           Servant.API
+
+import Language.Javascript.JSaddle.Warp
+import Reflex.Dom.Core (mainWidget)
+import Reflex.Dom hiding (mainWidget, run)
+--import           Reflex.Dom
 
 import           MasterExplorer.Common.Data.Program
 import           MasterExplorer.Common.Api          (courseApi)
@@ -25,10 +29,11 @@ import           MasterExplorer.Common.Api          (courseApi)
 --let res = getCourses <$> client <*> pure prog
                    
 main :: IO ()
-main = mainWidget body
+main = run 3911 $ mainWidget app
+--main = mainWidget body
 
-body :: MonadWidget t m => m ()
-body  = el "div" $ do
+app :: MonadWidget t m => m ()
+app  = el "div" $ do
   input <- textInput def
   let keypressEvent = T.pack . show <$> _textInput_keypress input
   keypressDyn <- holdDyn "None" keypressEvent
