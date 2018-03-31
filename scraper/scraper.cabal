@@ -45,36 +45,36 @@ library
                      , safe
                      , scalpel
                      , text
-  exposed-modules:     CourseScalpel.Helpers
-                     , CourseScalpel.Web.Parsing
-                     , CourseScalpel.Web.Scrapers
-                     , CourseScalpel.Data.Area
-                     , CourseScalpel.Data.Block
-                     , CourseScalpel.Data.Credits
-                     , CourseScalpel.Data.Course
-                     , CourseScalpel.Data.CourseCode
-                     , CourseScalpel.Data.CourseContent
-                     , CourseScalpel.Data.Examination
-                     , CourseScalpel.Data.ExaminationType
-                     , CourseScalpel.Data.Field
-                     , CourseScalpel.Data.Grading
-                     , CourseScalpel.Data.Hours
-                     , CourseScalpel.Data.Importance
-                     , CourseScalpel.Data.Institution
-                     , CourseScalpel.Data.ListCourse
-                     , CourseScalpel.Data.PageCourse
-                     , CourseScalpel.Data.Program
-                     , CourseScalpel.Data.Prerequisites
-                     , CourseScalpel.Data.Level
-                     , CourseScalpel.Data.Models
-                     , CourseScalpel.Data.Period
-                     , CourseScalpel.Data.ProgramCode
-                     , CourseScalpel.Data.ProgramConf
-                     , CourseScalpel.Data.Semester
-                     , CourseScalpel.Data.Slot
-                     , CourseScalpel.Data.Subject
-                     , CourseScalpel.Data.Specialization
-                     , CourseScalpel.Data.Url
+  exposed-modules:     MasterExplorer.Scraper.Helpers
+                     , MasterExplorer.Scraper.Web.Parsing
+                     , MasterExplorer.Scraper.Web.Scrapers
+                     , MasterExplorer.Scraper.Data.Area
+                     , MasterExplorer.Scraper.Data.Block
+                     , MasterExplorer.Scraper.Data.Credits
+                     , MasterExplorer.Scraper.Data.Course
+                     , MasterExplorer.Scraper.Data.CourseCode
+                     , MasterExplorer.Scraper.Data.CourseContent
+                     , MasterExplorer.Scraper.Data.Examination
+                     , MasterExplorer.Scraper.Data.ExaminationType
+                     , MasterExplorer.Scraper.Data.Field
+                     , MasterExplorer.Scraper.Data.Grading
+                     , MasterExplorer.Scraper.Data.Hours
+                     , MasterExplorer.Scraper.Data.Importance
+                     , MasterExplorer.Scraper.Data.Institution
+                     , MasterExplorer.Scraper.Data.ListCourse
+                     , MasterExplorer.Scraper.Data.PageCourse
+                     , MasterExplorer.Scraper.Data.Program
+                     , MasterExplorer.Scraper.Data.Prerequisites
+                     , MasterExplorer.Scraper.Data.Level
+                     , MasterExplorer.Scraper.Data.Models
+                     , MasterExplorer.Scraper.Data.Period
+                     , MasterExplorer.Scraper.Data.ProgramCode
+                     , MasterExplorer.Scraper.Data.ProgramConf
+                     , MasterExplorer.Scraper.Data.Semester
+                     , MasterExplorer.Scraper.Data.Slot
+                     , MasterExplorer.Scraper.Data.Subject
+                     , MasterExplorer.Scraper.Data.Specialization
+                     , MasterExplorer.Scraper.Data.Url
   default-language:    Haskell2010
 
 test-suite scraper-test
@@ -90,15 +90,15 @@ test-suite scraper-test
                 , hspec
                 , scalpel
                 , text
-  other-modules:  CourseScalpel.Data.AreaSpec
-                , CourseScalpel.Data.CreditsSpec
-                , CourseScalpel.Data.ExaminationSpec
-                , CourseScalpel.Data.FieldSpec
-                , CourseScalpel.Data.GradingSpec
-                , CourseScalpel.Data.HoursSpec
-                , CourseScalpel.Data.ImportanceSpec
-                , CourseScalpel.Data.InstitutionSpec
-                , CourseScalpel.Data.ProgramSpec
-                , CourseScalpel.Data.UrlSpec
-                , CourseScalpel.Web.ScrapersSpec
+  other-modules:  MasterExplorer.Scraper.Data.AreaSpec
+                , MasterExplorer.Scraper.Data.CreditsSpec
+                , MasterExplorer.Scraper.Data.ExaminationSpec
+                , MasterExplorer.Scraper.Data.FieldSpec
+                , MasterExplorer.Scraper.Data.GradingSpec
+                , MasterExplorer.Scraper.Data.HoursSpec
+                , MasterExplorer.Scraper.Data.ImportanceSpec
+                , MasterExplorer.Scraper.Data.InstitutionSpec
+                , MasterExplorer.Scraper.Data.ProgramSpec
+                , MasterExplorer.Scraper.Data.UrlSpec
+                , MasterExplorer.Scraper.Web.ScrapersSpec
   default-language: Haskell2010

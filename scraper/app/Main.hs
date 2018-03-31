@@ -2,25 +2,25 @@
 
 module Main where
 
-import qualified Data.Map.Strict               as M
+import qualified Data.Map.Strict                        as M
 
-import           Control.Monad                 (forM)
-import           Data.Either                   (partitionEithers)
-import           Data.Map.Strict               (Map)
-import           Data.Semigroup                ((<>))
-import           Data.Text                     (Text, unpack)
-import           Text.HTML.Scalpel             (scrapeURL)
+import           Control.Monad                          (forM)
+import           Data.Either                            (partitionEithers)
+import           Data.Map.Strict                        (Map)
+import           Data.Semigroup                         ((<>))
+import           Data.Text                              (Text, unpack)
+import           Text.HTML.Scalpel                      (scrapeURL)
 
-import           CourseScalpel.Data.Course     (fromPartials)
-import           CourseScalpel.Data.CourseCode (CourseCode)
-import           CourseScalpel.Data.ListCourse (ListCourse (..))
-import           CourseScalpel.Data.PageCourse (PageCourse)
-import           CourseScalpel.Data.Program    (engD, programUrl)
-import           CourseScalpel.Data.Url        (getUrl)
-import           CourseScalpel.Helpers         (maybeToEither)
-import           CourseScalpel.Web.Scrapers    (pageCourseScraper,
-                                                programplanScraper)
-import           MasterExplorer.Common.Client  (apiClient, postCourses)
+import           MasterExplorer.Common.Client           (apiClient, postCourses)
+import           MasterExplorer.Scraper.Data.Course     (fromPartials)
+import           MasterExplorer.Scraper.Data.CourseCode (CourseCode)
+import           MasterExplorer.Scraper.Data.ListCourse (ListCourse (..))
+import           MasterExplorer.Scraper.Data.PageCourse (PageCourse)
+import           MasterExplorer.Scraper.Data.Program    (engD, programUrl)
+import           MasterExplorer.Scraper.Data.Url        (getUrl)
+import           MasterExplorer.Scraper.Helpers         (maybeToEither)
+import           MasterExplorer.Scraper.Web.Scrapers    (pageCourseScraper,
+                                                         programplanScraper)
 
 main :: IO ()
 main = do
