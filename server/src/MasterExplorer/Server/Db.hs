@@ -45,12 +45,12 @@ import           MasterExplorer.Server.Db.Models
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 DbCourse
   code          CourseCode
-  name          CourseName Maybe
+  name          CourseName
   urls          [Url]
-  credits       Credits Maybe
-  level         Level Maybe
+  credits       Credits
+  level         Level
   slots         [Slot]
-  importance    Importance Maybe
+  importance    Importance
   areas         [Area]
   institution   Institution Maybe
   field         Field Maybe
@@ -158,7 +158,7 @@ toDbCourse Course{..} =
     , dbCourseCredits       = courseCredits
     , dbCourseLevel         = courseLevel        
     , dbCourseSlots         = courseSlots        
-    , dbCourseImportance    = courseImportance   
+    , dbCourseImportance    = courseImportance
     , dbCourseAreas         = courseAreas        
     , dbCourseInstitution   = courseInstitution  
     , dbCourseField         = courseField        
