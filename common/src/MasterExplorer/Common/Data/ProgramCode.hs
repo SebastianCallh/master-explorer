@@ -96,8 +96,8 @@ instance Arbitrary ProgramCode where
 
 instance HasText ProgramCode where
   toText = T.pack . show
-  fromText p = maybe err Right (readMaybe $ T.unpack p)
-    where err = Left $ mconcat ["Could not parse ", p, " as ProgramCode."]
+  fromText t = maybe err Right (readMaybe $ T.unpack t)
+    where err = Left $ mconcat ["Could not parse ", t, " as ProgramCode."]
 
 instance FromHttpApiData ProgramCode where
   parseUrlPiece   = fromText
