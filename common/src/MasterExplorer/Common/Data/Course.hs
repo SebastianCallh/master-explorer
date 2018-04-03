@@ -3,15 +3,20 @@
 
 module MasterExplorer.Common.Data.Course
   ( Course (..)
+  , getCourseCode
+  , getCourseName
   ) where
 
 import           Data.Aeson                               (FromJSON, ToJSON)
+import           Data.Text                                (Text)
 import           GHC.Generics                             (Generic)
 
+import           MasterExplorer.Common.Class.ListItem     (ListItem,
+                                                           listItemText)
 import           MasterExplorer.Common.Data.Area          (Area)
-import           MasterExplorer.Common.Data.CourseCode    (CourseCode)
+import           MasterExplorer.Common.Data.CourseCode    (CourseCode (..))
 import           MasterExplorer.Common.Data.CourseContent (CourseContent)
-import           MasterExplorer.Common.Data.CourseName    (CourseName)
+import           MasterExplorer.Common.Data.CourseName    (CourseName (..))
 import           MasterExplorer.Common.Data.Credits       (Credits)
 import           MasterExplorer.Common.Data.Examination   (Examination)
 import           MasterExplorer.Common.Data.Examinator    (Examinator)
@@ -47,5 +52,13 @@ data Course = Course
   , courseUrls          :: ![Url]
   , courseScheduledTime :: !(Maybe Hours)
   , courseSelfStudyTime :: !(Maybe Hours)
---  , courseParts         :: ![CoursePart]
   } deriving (Show, Read, Generic, ToJSON, FromJSON)
+
+instance ListItem Course where
+  listItemText = getCourseCode
+
+getCourseCode :: Course -> Text
+getCourseCode = getCode . courseCode
+
+getCourseName :: Course -> Text
+getCourseName = getName . courseName

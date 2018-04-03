@@ -6,7 +6,9 @@ module MasterExplorer.Common.Data.Program where
 
 import qualified Data.Text                              as T
 
+
 import           Data.Aeson                             (FromJSON, ToJSON)
+import           Data.Semigroup                         ((<>))
 import           GHC.Generics                           (Generic)
 import           Servant.API                            (FromHttpApiData,
                                                          ToHttpApiData,
@@ -14,6 +16,9 @@ import           Servant.API                            (FromHttpApiData,
                                                          toUrlPiece)
 import           Test.QuickCheck                        (Arbitrary, arbitrary)
 
+import           MasterExplorer.Common.Class.HasText    (HasText, fromText,
+                                                         toText)
+import           MasterExplorer.Common.Class.ListItem   (ListItem, listItemText)
 import           MasterExplorer.Common.Data.ProgramCode (ProgramCode (..))
 import           MasterExplorer.Common.Data.ProgramSlug (ProgramSlug (..))
 
@@ -38,6 +43,20 @@ instance ToHttpApiData Program where
   toUrlPiece p = mconcat [code, sep, slug]
     where code = toUrlPiece $ programCode p
           slug = toUrlPiece $ programSlug p
+
+instance ListItem Program where
+  listItemText = toText . programCode
+
+instance HasText Program where
+  toText p = toText (programCode p)
+             <> sep
+             <> toText (programSlug p)
+
+  fromText t = do
+    let [ecode, eslug] = T.splitOn sep t
+    Program <$> fromText ecode <*> fromText eslug
+    where
+      sep = ":"
 
 sep :: T.Text
 sep = ":"
@@ -114,9 +133,37 @@ masterSus  = Program MasterSus   P6MSUS
 masterBio  = Program MasterBio   P6MBME
 masterEnv  = Program MasterEnv   PL7MOS
 
+
+
 allPrograms :: [Program]
 allPrograms =
-  [ bachD
+  masterPrograms <>
+  bachPrograms   <>
+  engPrograms
+
+engPrograms :: [Program]
+engPrograms =
+  [ engD
+  , engU
+  , engI
+  , engIInt
+  , engIT
+  , engY
+  , engYInt
+  , engMed
+  , engMT
+  , engED
+  , engKTS
+  , engM
+  , engEMM
+  , engTB
+  , engDPU
+  , engKB
+  ]
+
+bachPrograms :: [Program]
+bachPrograms =
+    [ bachD
   , bachElec
   , bachConst
   , bachKA
@@ -141,27 +188,11 @@ allPrograms =
   , bachStat
   , bachEnv
   , bachLaw
+  ]
 
-  -- Engineering
-  , engD
-  , engU
-  , engI
-  , engIInt
-  , engIT
-  , engY
-  , engYInt
-  , engMed
-  , engMT
-  , engED
-  , engKTS
-  , engM
-  , engEMM
-  , engTB
-  , engDPU
-  , engKB
-
-  -- Master programs
-  , masterCS
+masterPrograms :: [Program]
+masterPrograms =
+  [ masterCS
   , masterDAV
   , masterStat
   , masterSoc
@@ -188,3 +219,4 @@ allPrograms =
   , masterBio
   , masterEnv
   ]
+

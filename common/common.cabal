@@ -17,6 +17,7 @@ library
                      , OverloadedStrings
   exposed-modules:     MasterExplorer.Common.Api
                      , MasterExplorer.Common.Client
+                     , MasterExplorer.Common.Class.ListItem
                      , MasterExplorer.Common.Class.Pretty
                      , MasterExplorer.Common.Class.HasText
                      , MasterExplorer.Common.Data.Course

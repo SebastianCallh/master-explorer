@@ -13,16 +13,21 @@ cabal-version:       >=1.10
 
 executable client
   main-is:             Main.hs
+  hs-source-dirs:      app
   ghc-options:         -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
   default-extensions:  RecordWildCards
                      , OverloadedStrings
+                     , ScopedTypeVariables
   build-depends:       base
                      , common
-                     , reflex-dom
+                     , reflex == 0.5
+                     , reflex-dom == 0.4
+                     , reflex-dom-core
                      , servant
                      , servant-reflex
                      , text
-                     , jsaddle
                      , jsaddle-warp
-  hs-source-dirs:      src
+                     , turtle
+                     , fsnotify
+                     , containers
   default-language:    Haskell2010
