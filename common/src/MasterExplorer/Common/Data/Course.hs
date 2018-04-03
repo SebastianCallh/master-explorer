@@ -57,6 +57,12 @@ data Course = Course
 instance ListItem Course where
   listItemText = getCourseCode
 
+instance Eq Course where
+  (==) a b = courseCode a == courseCode b
+
+instance Ord Course where
+  (<=) a b = courseCode a <= courseCode b
+
 getCourseCode :: Course -> Text
 getCourseCode = getCode . courseCode
 
