@@ -7,3 +7,6 @@ Wrestling with Nix took quite a while. To get Dante to work the .emacs needed to
 
 ## JSaddle
 When running the app in jsaddle-warp the program spontaneously crashes with `Error : Unexpected Duplicate. syncCallbacks=True nBatch=35 nExpected=37` (example numbers) which is awful. This turned out to be a bug in Firefox. Running the app in chromium solved the issue.
+
+### Filtering dynamic
+Something very odd happened when I tried to filter a list inside a dynamic. Instead of displaying the filtered items it displayed the n first items, where n is the length of the filtered list. It had something to do with the usage of `sample . current` and filtering several items in a frame. It is still not clear how to generate DOM elements from a dynamic and mapping them onto an event.

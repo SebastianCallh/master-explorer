@@ -8,11 +8,11 @@ module MasterExplorer.Common.Data.Course
   ) where
 
 import           Data.Aeson                               (FromJSON, ToJSON)
-import           Data.Text                                (Text)
+import           Data.Text                                (Text, pack)
 import           GHC.Generics                             (Generic)
 
-import           MasterExplorer.Common.Class.ListItem     (ListItem,
-                                                           listItemText)
+import           MasterExplorer.Common.Class.FilterItem   (FilterItem (..))
+import           MasterExplorer.Common.Class.ListItem     (ListItem (..))
 import           MasterExplorer.Common.Data.Area          (Area)
 import           MasterExplorer.Common.Data.CourseCode    (CourseCode (..))
 import           MasterExplorer.Common.Data.CourseContent (CourseContent)
@@ -55,7 +55,13 @@ data Course = Course
   } deriving (Show, Read, Generic, ToJSON, FromJSON)
 
 instance ListItem Course where
-  listItemText = getCourseCode
+  listItemText =  getCourseCode
+
+instance FilterItem Course where
+  filterFields course =
+    [ getCourseCode
+    , getCourseName
+    ] <*> pure course
 
 instance Eq Course where
   (==) a b = courseCode a == courseCode b

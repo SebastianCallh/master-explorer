@@ -7,7 +7,7 @@ module MasterExplorer.Client.Course
 import           Reflex.Dom
 
 import MasterExplorer.Common.Data.Course (Course)
-import MasterExplorer.Client.Elems       (itemList)
+import MasterExplorer.Client.Elems       (filterList)
 
 courseList :: forall t m.
   (MonadWidget t m,
@@ -16,4 +16,4 @@ courseList :: forall t m.
   -> m (Event t Course)
 courseList coursesDyn = 
   divClass "course-list" $
-    itemList coursesDyn
+    filterList coursesDyn

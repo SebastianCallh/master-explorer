@@ -25,6 +25,7 @@ executable client
                      , reflex-dom-core
                      , servant
                      , servant-reflex
+                     , containers
                      , text
                      , jsaddle-warp
                      , turtle

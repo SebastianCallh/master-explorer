@@ -2,7 +2,6 @@
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE GADTs               #-}
 {-# LANGUAGE RankNTypes          #-}
---{-# LANGUAGE RecursiveDo         #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings   #-}
 
@@ -15,10 +14,11 @@ import            Reflex.Dom.Core (mainWidget)
 import            Reflex.Dom hiding (mainWidget, run)
 import            Servant.Reflex                       
 
-import           MasterExplorer.Client.Program       (programList)
-import           MasterExplorer.Common.Data.Program  (engPrograms)
-import           MasterExplorer.Client.Api           (programCourses)
-import           MasterExplorer.Client.Course        (courseList)
+import           MasterExplorer.Client.Program          (programList)
+import           MasterExplorer.Common.Data.Program     (engPrograms)
+import           MasterExplorer.Client.Api              (programCourses)
+import           MasterExplorer.Client.Course           (courseList)
+import           MasterExplorer.Client.CourseRepository (courseRepository)
 
 main :: IO ()
 main = run 3911 $ mainWidget app
@@ -30,16 +30,14 @@ app :: forall t m.
    DomBuilder t m)  
   => m ()
 app = divClass "header" $ do
-  selectProgramEv <- programList $ constDyn engPrograms
-  
-  input <- textInput def
-  let keypressEvent = T.pack . show <$> _textInput_keypress input
-  keypressDyn <- holdDyn "None" keypressEvent
-  dynText keypressDyn
+  programSelectEv <- programList $ constDyn engPrograms
   
   let url = constDyn $ BasePath "http://localhost:8080"
+  coursesEv      <- programCourses url programSelectEv
+  coursesDyn     <- holdDyn [] coursesEv
+  courseSelectEv <- courseList coursesDyn
+
+  selectedCourses <- courseRepository courseSelectEv
+  dynText $ T.pack . show <$> selectedCourses
   
-  coursesEv <- programCourses url selectProgramEv
-  coursesDyn <- holdDyn [] coursesEv
-  _clickEv <- courseList coursesDyn
   return ()
