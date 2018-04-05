@@ -7,6 +7,7 @@ module MasterExplorer.Client.Elems
   ) where
 
 import qualified Data.Text as T
+import qualified Data.Map  as M
 
 import           Data.Text                              (Text)
 import           Reflex.Dom
@@ -30,15 +31,17 @@ cancelButton :: forall t m.
   => m (Event t ())
 cancelButton = divClass "cancel-button" $ button "Cancel"
 
-clickableDynText :: forall t m.
+dynLink :: forall t m.
   (DomBuilder t m,
    PostBuild t m)
   => Dynamic t Text
   -> m (Event t ())
-clickableDynText textDyn = do
-  (e,_) <- elDynAttr' "a" (("class" =: "clickable") <$ textDyn) $
+dynLink textDyn = do
+  (e,_) <- elDynAttr' "a" (("class" =: "clicky") <$ textDyn) $
     dynText textDyn
   return $ domEvent Click e
+
+-- Item list --
 
 itemList :: forall t m a.
   (MonadWidget t m,
@@ -61,8 +64,10 @@ listItem :: forall t m a.
   -> m (Event t a)
 listItem itemDyn =
   el "li" $ do
-    ev <- clickableDynText $ listItemText <$> itemDyn
+    ev <- dynLink $ listItemText <$> itemDyn
     return $ tagPromptlyDyn itemDyn ev
+
+-- Filter list --
     
 filterList :: forall t m a.
   (MonadWidget t m,

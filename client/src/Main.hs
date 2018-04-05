@@ -20,6 +20,7 @@ import           MasterExplorer.Client.Api              (programCourses)
 import           MasterExplorer.Client.Course           (courseList)
 import           MasterExplorer.Client.CourseRepository (courseRepository)
 
+
 main :: IO ()
 main = run 3911 $ mainWidget app
 --main = mainWidget body
@@ -39,5 +40,5 @@ app = divClass "header" $ do
 
   selectedCourses <- courseRepository courseSelectEv
   dynText $ T.pack . show <$> selectedCourses
-  
-  return ()
+
+--  return ()
