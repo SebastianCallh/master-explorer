@@ -10,7 +10,7 @@ import           Data.Text                           (Text, unpack)
 import           Data.Map.Strict                     (Map)
 import           Reflex.Dom
 
-import           MasterExplorer.Client.Elems         (itemList)
+import           MasterExplorer.Client.Elems         (itemList, listItem)
 import           MasterExplorer.Common.Class.HasText (toText,fromText)
 import           MasterExplorer.Common.Data.Program  (Program, engPrograms)
 
@@ -21,7 +21,7 @@ programList :: forall t m.
   -> m (Event t Program)
 programList programsDyn =
   divClass "program-list" $ 
-    itemList programsDyn
+    itemList listItem programsDyn
 
 programDropDown :: forall t m.
   (MonadWidget t m,

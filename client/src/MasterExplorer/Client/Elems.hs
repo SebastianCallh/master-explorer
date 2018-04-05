@@ -1,9 +1,8 @@
 module MasterExplorer.Client.Elems
   ( itemList
+  , listItem
   , filterList
-  , okButton
-  , cancelButton
-  , customButton
+  , dynLink
   ) where
 
 import qualified Data.Text as T
@@ -14,17 +13,6 @@ import           Reflex.Dom
                         
 import           MasterExplorer.Common.Class.ListItem   (ListItem, listItemText)
 import           MasterExplorer.Common.Class.FilterItem (FilterItem, filterFields)
-
-customButton :: forall t m.
-  MonadWidget t m
-  => Text
-  -> m (Event t ())
-customButton txt = divClass "custom-button" $ button txt
-
-okButton :: forall t m.
-  MonadWidget t m
-  => m (Event t ())
-okButton = divClass "ok-button" $ button "Ok"
 
 cancelButton :: forall t m.
   MonadWidget t m
@@ -43,16 +31,17 @@ dynLink textDyn = do
 
 -- Item list --
 
-itemList :: forall t m a.
+itemList :: forall t m a b.
   (MonadWidget t m,
    DomBuilder t m,
    MonadSample t m,
    ListItem a)
-  => Dynamic t [a]
-  -> m (Event t a)
-itemList itemsDyn = do
+  => (Dynamic t a -> m (Event t b))
+  -> Dynamic t [a]
+  -> m (Event t b)
+itemList template itemsDyn = do
   eventsDyn <- el "ul" $
-    simpleList itemsDyn listItem
+    simpleList itemsDyn template
   return $ switchPromptlyDyn $ leftmost <$> eventsDyn
 
 listItem :: forall t m a.
@@ -69,17 +58,18 @@ listItem itemDyn =
 
 -- Filter list --
     
-filterList :: forall t m a.
+filterList :: forall t m a b.
   (MonadWidget t m,
    DomBuilder t m,
    ListItem a,
    FilterItem a)
-  => Dynamic t [a]
-  -> m (Event t a)
-filterList itemsDyn = do
+  => (Dynamic t a -> m (Event t b))
+  -> Dynamic t [a]
+  -> m (Event t b)
+filterList template itemsDyn = do
   filterDyn <- _textInput_value <$> textInput def
   let filteredCourses = filterItems <$> filterDyn <*> itemsDyn
-  itemList filteredCourses
+  itemList template filteredCourses 
 
 filterItems :: forall a.
   FilterItem a
