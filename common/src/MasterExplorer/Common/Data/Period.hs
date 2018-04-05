@@ -12,7 +12,13 @@ import           Test.QuickCheck.Arbitrary.ADT (ToADTArbitrary,
                                                 genericArbitrary)
 
 data Period = One | Two
-  deriving (Show, Read, Generic, ToJSON, FromJSON, ToADTArbitrary)
+  deriving (Show, Read, Eq, Generic, ToJSON, FromJSON, ToADTArbitrary)
+
+instance Ord Period where
+  compare One Two = LT
+  compare One One = EQ
+  compare Two One = GT
+  compare Two Two = EQ
 
 instance Arbitrary Period where
   arbitrary = genericArbitrary
