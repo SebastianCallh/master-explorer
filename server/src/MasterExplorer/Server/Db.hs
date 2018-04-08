@@ -7,6 +7,7 @@
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
 
 module MasterExplorer.Server.Db
   ( CourseProgram (..)
@@ -26,9 +27,11 @@ module MasterExplorer.Server.Db
   , toDbProgram
   ) where
 
+import           Data.Traversable                (for)
 import           Control.Applicative             (liftA2)
 import           Control.Monad.IO.Class          (liftIO)           
 import           Control.Monad.Reader            (ReaderT, asks)
+import           Database.Persist                (selectList, SelectOpt)
 import           Database.Persist.TH             (mkMigrate, mkPersist,
                                                   persistLowerCase, share,
                                                   sqlSettings)
@@ -67,7 +70,6 @@ DbCourse
 DbProgram
   code       ProgramCode
   slug       ProgramSlug
-  UniqueDbProgram code
   
 CourseProgram
   courseId  DbCourseId
@@ -92,7 +94,7 @@ selectCourse courseCode = do
     where_ $ c ?. DbCourseCode ==. just (val courseCode)
     return (c, p)
   return $ headMay res >>= unwrap
-  
+
 selectCourses :: Program -> App [(Entity DbCourse, Entity DbProgram)]
 selectCourses program = do
   res <- runDb $
@@ -103,13 +105,41 @@ selectCourses program = do
     return (c, p)
   return $ mapMaybe unwrap res
 
+removeCourses :: App ()
+removeCourses = do
+  runDb $ delete $
+    from $ \(_cp :: SqlExpr (Entity CourseProgram)) -> return ()
+             
+  runDb $ delete $
+    from $ \(_c  :: SqlExpr (Entity DbCourse)) -> return ()
+
+insertCourses :: [DbCourse] -> App ()
+insertCourses courses =
+  runDb $ insertMany_ courses
+
 unwrap :: (Maybe a, Maybe b) -> Maybe (a, b)
 unwrap = uncurry (liftA2 (,))
 
-updateCourses :: [Course] -> App [Entity DbCourse]
+updateCourses :: [Course] -> App () --[Entity DbCourse]
 updateCourses courses = do
-  dbcourses <- traverse (updateCourse . fst . toDbCourse) courses
+  _ <- removeCourses
+  let dbCourses = toDbCourse <$> courses
+  coursesAndPrograms <- for dbCourses $ \(course, programs) -> do
+        dbCourse   <- runDb $ insert course
+        dbPrograms <- for programs $ \program -> 
+          runDb $ select $ from $ \p -> do
+            where_ (p ^. DbProgramCode ==. val (programCode program))
+            return p
+        return (dbCourse, concat dbPrograms)
 
+  let programCourses = foldMap (\(c, ps) -> CourseProgram c . entityKey <$> ps) coursesAndPrograms 
+  _ <- runDb $ insertMany_ programCourses
+  return ()
+
+{-          
+
+  dbcourses <- traverse (updateCourse . fst . toDbCourse) courses
+  
   let programs = foldMap coursePrograms courses
   dbprograms <- traverse (updateProgram . toDbProgram) programs
   
@@ -117,7 +147,7 @@ updateCourses courses = do
   let programKeys = entityKey <$> dbprograms
   let coursePrograms = zipWith CourseProgram courseKeys programKeys  
   _pcs <- insertCoursePrograms coursePrograms
-  return dbcourses
+  return dbcourses-}
 
 -- Assume the code unique field is first!
 updateCourse :: DbCourse -> App (Entity DbCourse)

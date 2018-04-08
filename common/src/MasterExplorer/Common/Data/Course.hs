@@ -8,7 +8,7 @@ module MasterExplorer.Common.Data.Course
   ) where
 
 import           Data.Aeson                               (FromJSON, ToJSON)
-import           Data.Text                                (Text, pack)
+import           Data.Text                                (Text)
 import           GHC.Generics                             (Generic)
 
 import           MasterExplorer.Common.Class.FilterItem   (FilterItem (..))

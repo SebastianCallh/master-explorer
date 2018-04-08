@@ -1,9 +1,11 @@
 module MasterExplorer.Scraper.Data.Course
   ( Course (..)
   , fromPartials
+  , getCourseCode
   ) where
 
-import           MasterExplorer.Common.Data.Course  (Course (..))
+
+import           MasterExplorer.Common.Data.Course           (Course (..), getCourseCode)
 import           MasterExplorer.Scraper.Data.PageCourse      (PageCourse (..))
 import           MasterExplorer.Scraper.Data.ListCourse      (ListCourse (..))
 

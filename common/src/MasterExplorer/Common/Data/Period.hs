@@ -3,6 +3,7 @@
 
 module MasterExplorer.Common.Data.Period
   ( Period (..)
+  , allPeriods
   ) where
 
 import           Data.Aeson                    (FromJSON, ToJSON)
@@ -22,3 +23,6 @@ instance Ord Period where
 
 instance Arbitrary Period where
   arbitrary = genericArbitrary
+
+allPeriods :: [Period]
+allPeriods = [One, Two]

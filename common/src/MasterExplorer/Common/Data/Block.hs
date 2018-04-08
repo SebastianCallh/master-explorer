@@ -3,6 +3,7 @@
 
 module MasterExplorer.Common.Data.Block
   ( Block (..)
+  , allBlocks
   ) where
 
 import           Data.Aeson   (FromJSON, ToJSON)
@@ -42,3 +43,6 @@ instance Ord Block where
   compare Four Two    = GT
   compare Four Three  = GT
   compare Four Four   = EQ
+
+allBlocks :: [Block]
+allBlocks = [None, One, Two, Three, Four]

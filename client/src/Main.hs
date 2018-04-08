@@ -18,7 +18,7 @@ import           MasterExplorer.Client.Program          (programList)
 import           MasterExplorer.Common.Data.Program     (engPrograms)
 import           MasterExplorer.Client.Api              (programCourses)
 import           MasterExplorer.Client.Course           (courseList)
-import           MasterExplorer.Client.CourseRepository (courseRepository)
+import           MasterExplorer.Client.CourseGrid  (courseGrid)
 
 
 main :: IO ()
@@ -38,7 +38,7 @@ app = divClass "header" $ do
   coursesDyn     <- holdDyn [] coursesEv
   courseSelectEv <- courseList coursesDyn
 
-  selectedCourses <- courseRepository courseSelectEv
+  selectedCourses <- courseGrid courseSelectEv
   dynText $ T.pack . show <$> selectedCourses
 
 --  return ()

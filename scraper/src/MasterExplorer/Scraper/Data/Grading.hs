@@ -3,8 +3,6 @@ module MasterExplorer.Scraper.Data.Grading
   , parseGrading
   ) where
 
-import qualified Data.Text                          as T
-
 import           Data.Text                          (Text)
 
 import           MasterExplorer.Common.Data.Grading (Grading (..))

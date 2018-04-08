@@ -12,7 +12,8 @@ import           Data.Text                              (Text, unpack)
 import           Text.HTML.Scalpel                      (scrapeURL)
 
 import           MasterExplorer.Common.Client           (apiClient, postCourses)
-import           MasterExplorer.Scraper.Data.Course     (fromPartials)
+import           MasterExplorer.Scraper.Data.Course     (fromPartials,
+                                                         getCourseCode)
 import           MasterExplorer.Scraper.Data.CourseCode (CourseCode)
 import           MasterExplorer.Scraper.Data.ListCourse (ListCourse (..))
 import           MasterExplorer.Scraper.Data.PageCourse (PageCourse)
@@ -39,16 +40,16 @@ main = do
       let (pErrors, pCourses) = partitionEithers epCourses
 
       let errors  = lErrors <> pErrors
-      let courses = zipWith fromPartials lCourses pCourses
+      let courses = zipWith fromPartials (snd <$> M.toList lCoursesMap) pCourses
 
       print $ mconcat [ show . length $ errors
                       , " errors: "
-                      , show errors
+                      , show $ unpack <$> errors
                       ]
 
       print $ mconcat [ show . length $ courses
                       , " courses: "
-                      , show courses
+                      , show $  (unpack . getCourseCode) <$> courses
                       ]
 
       client   <- apiClient "localhost" 8080
@@ -61,8 +62,7 @@ main = do
 insert :: ListCourse
        -> Map CourseCode ListCourse
        -> Map CourseCode ListCourse
-insert lCourse =
-  M.insertWith (<>) (lCourseCode lCourse) lCourse
+insert lCourse = M.insertWith (<>) (lCourseCode lCourse) lCourse
 
 scrape :: ListCourse -> IO (Either Text PageCourse)
 scrape lc = do

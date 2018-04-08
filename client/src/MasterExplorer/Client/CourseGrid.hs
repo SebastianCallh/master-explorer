@@ -1,5 +1,5 @@
-module MasterExplorer.Client.CourseRepository
-  ( courseRepository
+module MasterExplorer.Client.CourseGrid
+  ( courseGrid
   ) where
 
 import qualified Data.Map                   as M
@@ -9,14 +9,14 @@ import           Data.Map                   (Map)
 import           Reflex.Dom
 
 import           MasterExplorer.Common.Data.Course (Course)
-import           MasterExplorer.Common.Data.Slot   (Slot)
+import           MasterExplorer.Common.Data.Slot   (Slot, allSlots)
 
-courseRepository :: forall t m.
+courseGrid :: forall t m.
   (MonadWidget t m,
    MonadHold t m)
   => Event t (Slot, Course)
   -> m (Dynamic t (Map Slot [Course]))
-courseRepository = foldDyn update M.empty
+courseGrid = foldDyn update M.empty
   where
     update :: (Slot, Course) -> Map Slot [Course] -> Map Slot [Course]
     update (slot, course) repo =

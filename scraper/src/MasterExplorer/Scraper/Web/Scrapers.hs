@@ -3,9 +3,7 @@ module MasterExplorer.Scraper.Web.Scrapers
   , programplanScraper
   , semesterScraper
   , listCoursesScraper
-  , testScraper
   ) where
-
 
 import qualified Data.Map.Strict                            as M
 import qualified Data.Text                                  as T
@@ -35,16 +33,13 @@ import           MasterExplorer.Scraper.Data.Period         (Period,
 import           MasterExplorer.Scraper.Data.Program        (Program)
 import           MasterExplorer.Scraper.Data.Semester       (Semester,
                                                              parseSemester)
-import           MasterExplorer.Scraper.Data.Slot           (Slot, mkSlot)
+import           MasterExplorer.Scraper.Data.Slot           (Slot (..))
 import           MasterExplorer.Scraper.Data.Specialization (Specialization,
                                                              parseSpecialization)
 import           MasterExplorer.Scraper.Data.Url            (Url (..))
 import           MasterExplorer.Scraper.Helpers             (maybeToEither)
 
 type Scalpel = Scraper Text
-
-testScraper :: Scalpel Text
-testScraper = text "body"
 
 pageCourseScraper :: Scalpel PageCourse
 pageCourseScraper = fromPageSections . M.fromList <$>
@@ -91,7 +86,8 @@ listCoursesScraper prog sem per spec = chroots ("tr" @: [hasClass "main-row"]) $
   else do
     let [code, href, creds, lvl, bls, impSpan, _] = tds
     return $ do
-      url         <- maybeToEither "Couldn't parse url" $ scrapeStringLike href $ attr "href" "a"
+      let murl = scrapeStringLike href $ attr "href" "a"
+      url         <- maybeToEither ("Couldn't parse url: " <> href) murl
       name        <- maybeToEither "" $  scrapeStringLike href $ text "a"
       credits     <- parseCredits creds
       level       <- parseLevel lvl
@@ -119,5 +115,5 @@ sanitize = T.strip . T.filter (not . isTrash)
   where isTrash = (`elem` ['\t', '\n', '\r'])
 
 makeSlots :: Period -> Text -> [Slot]
-makeSlots period txt = either (const mempty) pure slots
-  where slots = mkSlot period <$> parseBlocks txt
+makeSlots period txt = either (const mempty) id slots
+  where slots = fmap (Slot period) <$> parseBlocks txt
