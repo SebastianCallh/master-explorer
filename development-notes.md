@@ -14,6 +14,9 @@ Something very odd happened when I tried to filter a list inside a dynamic. Inst
 ### The Scraper
 The scraper does not parse all course pages successfully so the selection of courses is not complete. However I have decided to continue developing the web application firstly and then fix this issue when time permits.
 
-
 ### Missing URLS
-Some courses does not have urls in the course list, such as Avancerad programvarudesign, Maskininlärning, planering och reglering fär autonoma farkoster, and Avancerad programvarudesign. 
+Some courses does not have urls in the course list, such as Avancerad programvarudesign, Maskininlärning, planering och reglering fär autonoma farkoster, and Avancerad programvarudesign.
+
+
+### Workflow
+Using the workflow tools in Reflex has been pretty neat, but it took quite some time to wrap my head around how to pass data between them in a way that worked as intended (everything being events and dynamics is a bit tricky at times). Upon completing the course selection menu it became apparent that slots are not scraped correctly for all courses, making them simply disappear when being selected.

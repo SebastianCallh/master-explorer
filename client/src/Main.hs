@@ -7,8 +7,6 @@
 
 module Main where
 
-import qualified Data.Text as T
-
 import            Language.Javascript.JSaddle.Warp
 import            Reflex.Dom.Core (mainWidget)
 import            Reflex.Dom hiding (mainWidget, run)
@@ -38,7 +36,6 @@ app = divClass "header" $ do
   coursesDyn     <- holdDyn [] coursesEv
   courseSelectEv <- courseList coursesDyn
 
-  selectedCourses <- courseGrid courseSelectEv
-  dynText $ T.pack . show <$> selectedCourses
+  _courseClicks <- courseGrid courseSelectEv
+  pure ()
 
---  return ()
