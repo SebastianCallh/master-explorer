@@ -50,7 +50,7 @@ courseListItem courseDyn = do
       => Behavior t (Maybe Slot)
       -> Workflow t m (Event t (Course, Slot)) 
     deselectCourse slotClickedBe = Workflow $ do
-      clickEv <- elClass "li" "unavailible" $
+      clickEv <- elClass "li" "selected" $
         dynLink $ getCourseCode <$> courseDyn
 
       let courseEv = tagPromptlyDyn courseDyn clickEv

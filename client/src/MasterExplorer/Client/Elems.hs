@@ -67,9 +67,10 @@ filterList :: forall t m a b.
   -> Dynamic t [a]
   -> m (Event t b)
 filterList template itemsDyn = do
-  filterDyn <- _textInput_value <$> textInput def
+  filterDyn <- _textInput_value <$> textInput def  
   let filteredCourses = filterItems <$> filterDyn <*> itemsDyn
-  itemList template filteredCourses 
+  divClass "filter-list" $
+    itemList template filteredCourses 
 
 filterItems :: forall a.
   FilterItem a

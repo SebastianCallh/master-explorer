@@ -4,13 +4,15 @@
 {-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Main where
 
-import            Language.Javascript.JSaddle.Warp
-import            Reflex.Dom.Core (mainWidget)
-import            Reflex.Dom hiding (mainWidget, run)
-import            Servant.Reflex                       
+import           Language.Javascript.JSaddle.Warp
+import           Reflex.Dom                      hiding (mainWidgetWithCss, run)
+import           Reflex.Dom.Core                        (mainWidgetWithCss)
+import           Servant.Reflex
+import           Data.FileEmbed                         (embedFile)
 
 import           MasterExplorer.Client.Program          (programList)
 import           MasterExplorer.Common.Data.Program     (engPrograms)
@@ -20,22 +22,32 @@ import           MasterExplorer.Client.CourseGrid  (courseGrid)
 
 
 main :: IO ()
-main = run 3911 $ mainWidget app
+main = let css = $(embedFile "css/style.css") in
+         run 3911 $ mainWidgetWithCss css app
 --main = mainWidget body
---  let url = constDyn $ BasePath "http://localhost:8080"
+--let url = constDyn $ BasePath "http://localhost:8080"
+
+-- neat font <link href="https://fonts.googleapis.com/css?family=Abel" rel="stylesheet">
 
 app :: forall t m.
   (MonadWidget t m,
    DomBuilder t m)  
   => m ()
-app = divClass "header" $ do
-  programSelectEv <- programList $ constDyn engPrograms
+app = divClass "container" $ do
+  programSelectEv <- divClass "header" $
+    programList $ constDyn engPrograms
   
   let url = constDyn $ BasePath "http://localhost:8080"
-  coursesEv      <- programCourses url programSelectEv
-  coursesDyn     <- holdDyn [] coursesEv
-  courseSelectEv <- courseList coursesDyn
+  coursesEv  <- programCourses url programSelectEv
+  coursesDyn <- holdDyn [] coursesEv
+  
+  courseSelectEv <- divClass "sidebar" $
+    courseList coursesDyn
 
-  _courseClicks <- courseGrid courseSelectEv
+  _courseClicks <- divClass "content" $
+    courseGrid courseSelectEv
+
+  divClass "footer" $ pure ()
+  
   pure ()
 

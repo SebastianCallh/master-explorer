@@ -28,4 +28,5 @@ executable client
                      , text
                      , jsaddle-warp
                      , containers
+                     , file-embed
   default-language:    Haskell2010
