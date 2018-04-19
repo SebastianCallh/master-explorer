@@ -3,27 +3,36 @@
 
 module MasterExplorer.Common.Data.Slot
   ( Slot (..)
-  , allSlots
+  , masterSlots
   ) where
 
-import           Data.Aeson                        (FromJSON, ToJSON)
-import           Data.Ord                          (comparing)
-import           GHC.Generics                      (Generic)
 
-import           MasterExplorer.Common.Data.Block  (Block, allBlocks)
-import           MasterExplorer.Common.Data.Period (Period, allPeriods)
+import           Data.Aeson                          (FromJSON, ToJSON)
+import           Data.Ord                            (comparing)
+import           GHC.Generics                        (Generic)
+
+import           MasterExplorer.Common.Data.Block    (Block, allBlocks)
+import           MasterExplorer.Common.Data.Period   (Period, allPeriods)
+import           MasterExplorer.Common.Data.Semester (Semester, masterSemesters)
 
 data Slot = Slot
-  { slotPeriod :: !Period
-  , slotBlocks :: !Block
+  { slotSemester :: !Semester
+  , slotPeriod   :: !Period
+  , slotBlocks   :: !Block
   } deriving (Show, Read, Eq, Generic, ToJSON, FromJSON)
 
 instance Ord Slot where
   compare a b =
-    case comparing slotPeriod a b of
-      EQ -> comparing slotBlocks a b
+    case comparing slotSemester a b of
       LT -> LT
       GT -> GT
+      EQ -> case comparing slotPeriod a b of
+        LT -> LT
+        GT -> GT
+        EQ -> comparing slotBlocks a b
 
-allSlots :: [Slot]
-allSlots = Slot <$> allPeriods <*> allBlocks
+masterSlots :: [Slot]
+masterSlots = Slot <$>
+  masterSemesters  <*>
+  allPeriods       <*>
+  allBlocks

@@ -110,7 +110,6 @@ header ul li.selected:hover {
     overflow: auto;
 }
 
-
 .sidebar .course-list li.available {
     
 }
@@ -122,6 +121,16 @@ header ul li.selected:hover {
     grid-row-end: 16;
 }
 
+.content .course-grid ul li {
+    background-color: #f4f4f4;
+    width: 150px;
+    height: 75px;
+}
+
+.content .course-grid ul {
+    columns: 6;
+}
+
 .container .footer {
     grid-column-start: 1;
     grid-column-end: 13;
@@ -129,6 +138,32 @@ header ul li.selected:hover {
     grid-row-end: 16;
     background: #333;
 }  
+
+.course-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 25px repeat(6, 1fr);
+    padding: 15px;
+}
+
+.course-grid .row-header {
+    line-height: 115px;
+    margin-top: 15px;
+    margin-right: 15px;
+}
+
+.course-grid .grid-header {
+    height: 25px;
+    margin-bottom: -15px;
+    text-align: center;
+}
+
+.course-grid .grid-item {
+    background-color : #e5e5e5;
+    height: 115px;
+    margin-top: 15px;
+    margin-right: 15px;
+}
 
 @media (max-width:480px) {
 
@@ -144,5 +179,9 @@ header ul li.selected:hover {
     grid-column-end: 4;
     grid-row-start: 5;
     grid-row-end: 6;
+  }
+  
+  .content .course-grid ul {
+      columns: 2;
   }
 }

@@ -6,8 +6,10 @@ module MasterExplorer.Common.Data.Block
   , allBlocks
   ) where
 
-import           Data.Aeson   (FromJSON, ToJSON)
-import           GHC.Generics (Generic)
+import           Data.Aeson                         (FromJSON, ToJSON)
+import           GHC.Generics                       (Generic)
+
+import           MasterExplorer.Common.Class.Pretty (Pretty, pretty)
 
 data Block
   = One
@@ -43,6 +45,13 @@ instance Ord Block where
   compare Four Two    = GT
   compare Four Three  = GT
   compare Four Four   = EQ
+
+instance Pretty Block where
+  pretty One   = "1"
+  pretty Two   = "2"
+  pretty Three = "3"
+  pretty Four  = "4"
+  pretty None  = "-"
 
 allBlocks :: [Block]
 allBlocks = [None, One, Two, Three, Four]

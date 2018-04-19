@@ -105,7 +105,7 @@ listCoursesScraper prog sem per spec = chroots ("tr" @: [hasClass "main-row"]) $
         , lCourseCredits    = credits
         , lCourseLevel      = level
         , lCourseImportance = importance
-        , lCourseSlots      = makeSlots per bls
+        , lCourseSlots      = makeSlots sem per bls
         }
 
 -- | Strips leading and trailing whitespace and removes
@@ -114,6 +114,6 @@ sanitize :: Text -> Text
 sanitize = T.strip . T.filter (not . isTrash)
   where isTrash = (`elem` ['\t', '\n', '\r'])
 
-makeSlots :: Period -> Text -> [Slot]
-makeSlots period txt = either (const mempty) id slots
-  where slots = fmap (Slot period) <$> parseBlocks txt
+makeSlots :: Semester -> Period -> Text -> [Slot]
+makeSlots semester period txt = either (const mempty) id slots
+  where slots = fmap (Slot semester period) <$> parseBlocks txt
