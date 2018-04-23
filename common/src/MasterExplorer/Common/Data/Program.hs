@@ -19,6 +19,7 @@ import           Test.QuickCheck                        (Arbitrary, arbitrary)
 import           MasterExplorer.Common.Class.HasText    (HasText, fromText,
                                                          toText)
 import           MasterExplorer.Common.Class.ListItem   (ListItem, listItemText)
+import           MasterExplorer.Common.Class.Pretty     (Pretty, pretty)
 import           MasterExplorer.Common.Data.ProgramCode (ProgramCode (..))
 import           MasterExplorer.Common.Data.ProgramSlug (ProgramSlug (..))
 
@@ -57,6 +58,9 @@ instance HasText Program where
     Program <$> fromText ecode <*> fromText eslug
     where
       sep = ":"
+
+instance Pretty Program where
+  pretty = pretty . programCode
 
 sep :: T.Text
 sep = ":"

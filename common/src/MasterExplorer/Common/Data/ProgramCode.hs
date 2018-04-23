@@ -18,6 +18,7 @@ import           Test.QuickCheck.Arbitrary.ADT       (genericArbitrary)
 import           Text.Read                           (readMaybe)
 
 import           MasterExplorer.Common.Class.HasText (HasText, fromText, toText)
+import           MasterExplorer.Common.Class.Pretty  (Pretty, pretty)
 
 data ProgramCode
   = EngD         -- Datateknik
@@ -104,3 +105,22 @@ instance FromHttpApiData ProgramCode where
 
 instance ToHttpApiData ProgramCode where
   toUrlPiece   = toText
+
+instance Pretty ProgramCode where
+  pretty EngD    = "D"
+  pretty EngU    = "U"
+  pretty EngI    = "I"
+  pretty EngIInt = "Ii"
+  pretty EngIT   = "IT"
+  pretty EngY    = "Y"
+  pretty EngYInt = "Yi"
+  pretty EngMed  = "YMed"
+  pretty EngED   = "ED"
+  pretty EngMT   = "MT"
+  pretty EngKTS  = "KTS"
+  pretty EngM    = "M"
+  pretty EngEMM  = "EMM"
+  pretty EngDPU  = "DPU"
+  pretty EngTB   = "TB"
+  pretty EngKB   = "KB"
+  pretty _       = "Not implemented pretty for other programs than TekFak!"

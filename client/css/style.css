@@ -2,11 +2,15 @@ body {
     margin: 0px;    
 }
 
+.faded {
+  background: #000000;
+  opacity: 0.5;
+}
+
 .container {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    /* grid-gap: 10px; */
-    grid-auto-rows: minmax(70px, auto);
+    grid-auto-rows: 70px 40px minmax(70px, auto);
     height: 100vh;
 }
 
@@ -15,6 +19,8 @@ body {
     grid-column-end: 13;
     grid-row-start: 1;
     grid-row-end: 1;
+    border-bottom: solid 2px #282828;
+    color: #f4f4f4;
 }
 
 .program-list {
@@ -59,7 +65,7 @@ body {
 
 .sidebar input[type=text] {
     width: 200px;
-    height: 26px;
+    line-height: 25px;
     padding: 5px 5px 5px 5px;
     background: #ffffff;
     border: solid 5px #373737;
@@ -74,26 +80,27 @@ body {
     margin: 0;
 }
 
-.sidebar ul li {
-    font-size: 1.15em;
-    cursor: pointer;
-    padding: 10px 0 10px 0;
-}
 
-.sidebar ul li.available:hover {
+.sidebar ul .available:hover {
     background-color : #e5e5e5;
 }
 
-.sidebar ul li.selected {
+
+.sidebar ul .select-slot {
     background-color: #57622a;
     color: #f4f4f4;
 }
 
-header ul li.selected:hover {
+.sidebar ul .selected {
+    background-color: #57622a;
+    color: #f4f4f4;
+}
+
+header ul .selected:hover {
     background-color : #48531b;
 }
 
-.sidebar ul li.select-slot {
+.sidebar ul .select-slot {
     
 }
 
@@ -105,6 +112,13 @@ header ul li.selected:hover {
     
 }
 
+.sidebar .course-list a {
+    display: block; 
+    font-size: 1.15em;
+    cursor: pointer;
+    padding: 15px;
+}
+
 .sidebar .filter-list {
     width: 100%;
     overflow: auto;
@@ -114,21 +128,19 @@ header ul li.selected:hover {
     
 }
 
-.container .content {
+.container .info-bar {
     grid-column-start: 2;
     grid-column-end: 13;
     grid-row-start: 2;
+    grid-row-end: 2;
+    background-color: #333;
+    color: #f4f4f4;
+}
+.container .content {
+    grid-column-start: 2;
+    grid-column-end: 13;
+    grid-row-start: 3;
     grid-row-end: 16;
-}
-
-.content .course-grid ul li {
-    background-color: #f4f4f4;
-    width: 150px;
-    height: 75px;
-}
-
-.content .course-grid ul {
-    columns: 6;
 }
 
 .container .footer {
@@ -163,6 +175,10 @@ header ul li.selected:hover {
     height: 115px;
     margin-top: 15px;
     margin-right: 15px;
+}
+
+.course-grid .focus {
+    outline : solid 2px #57622a;
 }
 
 @media (max-width:480px) {

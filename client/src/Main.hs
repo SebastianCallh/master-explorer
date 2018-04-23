@@ -9,17 +9,16 @@
 module Main where
 
 import           Language.Javascript.JSaddle.Warp
-import           Reflex.Dom                      hiding (mainWidgetWithCss, run)
+import           Reflex.Dom.Extended                      hiding (mainWidgetWithCss, run)
 import           Reflex.Dom.Core                        (mainWidgetWithCss)
 import           Servant.Reflex
 import           Data.FileEmbed                         (embedFile)
 
-import           MasterExplorer.Client.Program          (programList)
 import           MasterExplorer.Common.Data.Program     (engPrograms)
+import           MasterExplorer.Client.ProgramList      (programList)
+import           MasterExplorer.Client.CourseGrid       (courseGrid)
 import           MasterExplorer.Client.Api              (programCourses)
-import           MasterExplorer.Client.Course           (courseList)
-import           MasterExplorer.Client.CourseGrid  (courseGrid)
-
+import           MasterExplorer.Client.CourseList       (courseList)
 
 main :: IO ()
 main = let css = $(embedFile "css/style.css") in
@@ -44,8 +43,11 @@ app = divClass "container" $ do
   courseSelectEv <- divClass "sidebar" $
     courseList coursesDyn
 
+  divClass "info-bar" $
+    text "HP: 12"
+  
   _courseClicks <- divClass "content" $
-    courseGrid courseSelectEv
+    courseGrid $ traceEvent "courseselectev" courseSelectEv
 
   divClass "footer" $ pure ()
   
