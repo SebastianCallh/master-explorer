@@ -6,12 +6,17 @@ module MasterExplorer.Client.CourseList
   , courseList
   ) where
 
+import qualified Data.Text                as T
+
+import           Data.Text                (Text)
+import           Data.Semigroup           ((<>))
 import           Data.Maybe               (listToMaybe)
 import           Reflex.Dom
 
 import MasterExplorer.Common.Class.Pretty   (pretty)
-import MasterExplorer.Common.Data.Occasion  (Occasion)
-import MasterExplorer.Common.Data.Course    (Course (..), getCourseCode, masterOccasions)
+import MasterExplorer.Common.Data.Occasion  (Occasion, occasionSemester)
+import MasterExplorer.Common.Data.Course    (Course (..), getCourseCode,
+                                             getCourseName, masterOccasions)
 import MasterExplorer.Client.Elems          (filterList, dynLink)
 
 data CourseListEvent
@@ -37,12 +42,19 @@ courseListItem :: forall t m.
   -> m (Event t CourseListEvent)
 courseListItem courseDyn = do
   let
+      
+    listItem style =
+      elAttr' "div" ("class" =: ("list-item " <> style)) $ do
+        dynText $ getCourseCode <$> courseDyn
+        divClass "course-name" $ dynText $ shortName <$> courseDyn
+
     selectCourse ::  MonadWidget t m
       => Workflow t m (Event t CourseListEvent)
     selectCourse = Workflow $ do
-      courseClickedEv <- divClass "available" $
-        dynLink $ getCourseCode <$> courseDyn
-      
+        
+      (e, _)  <- listItem "available" 
+      let courseClickedEv = domEvent Click e
+
        -- If there is only one slot availible, immediately choose it
       course <- sample . current $ courseDyn
       let next = if (length . masterOccasions $ course) > 1
@@ -59,8 +71,10 @@ courseListItem courseDyn = do
     selectSlot :: MonadWidget t m
       => Workflow t m (Event t CourseListEvent)
     selectSlot = Workflow $ do
-      clickEvs <- divClass "select-slot faded" $
-        simpleList (masterOccasions <$> courseDyn) template
+      clickEvs <- divClass "select-slot list-item" $
+        simpleList (masterOccasions <$> courseDyn) $ \occasionDyn -> do
+          clickEv <- dynLink $ pretty . occasionSemester <$> occasionDyn
+          return $ tagPromptlyDyn occasionDyn clickEv
 
       let slotEv = switchPromptlyDyn $ leftmost <$> clickEvs
       let event  = selectEvent courseDyn slotEv
@@ -73,20 +87,14 @@ courseListItem courseDyn = do
       => Behavior t (Maybe Occasion)
       -> Workflow t m (Event t CourseListEvent) 
     deselectCourse slotClickedBe = Workflow $ do
-      clickEv <- divClass "selected" $
-        dynLink $ getCourseCode <$> courseDyn
 
-      let courseEv = tagPromptlyDyn courseDyn clickEv
+      (e, _)  <- listItem "selected"
+      let courseClickedEv = domEvent Click e
+      let courseEv = tagPromptlyDyn courseDyn courseClickedEv
       let makeTuple mslot course = (course,) <$> mslot
       let courseSlotEv = attachWithMaybe makeTuple slotClickedBe courseEv
-      pure (uncurry CourseDeselected <$> courseSlotEv, selectCourse <$ clickEv)
+      pure (uncurry CourseDeselected <$> courseSlotEv, selectCourse <$ courseClickedEv)
 
-    template :: MonadWidget t m
-      => Dynamic t Occasion
-      -> m (Event t Occasion)
-    template occasionDyn = do
-      clickEv <- dynLink $ pretty <$> occasionDyn
-      return $ tagPromptlyDyn occasionDyn clickEv
 
     selectEvent :: MonadWidget t m
       => Dynamic t Course
@@ -103,5 +111,8 @@ courseListItem courseDyn = do
 
   return $ leftmost [mouseLeaveEv, mouseEnterEv, workflowEv]
 
-
--- TSKS10, semester 6, TAOP33, semester 5, TATA24 smester 3, TATA40 semester 3
+shortName :: Course -> Text
+shortName course =
+  if   (T.length . getCourseName $ course) > 12
+  then (T.take 16 . getCourseName $ course) <> "..."
+  else getCourseName course

@@ -4,6 +4,7 @@
 module MasterExplorer.Common.Data.Occasion
   ( Occasion (..)
   , toMasterOccasions
+  , occasionSemester
   ) where
 
 import           Data.Aeson                          (FromJSON, ToJSON)
@@ -29,16 +30,16 @@ instance Pretty Occasion where
 
 toMasterOccasions :: Occasion -> [Occasion]
 toMasterOccasions occasion
-  | occasionSemester == Semester.One   = oddSem
-  | occasionSemester == Semester.Two   = evenSem
-  | occasionSemester == Semester.Three = oddSem
-  | occasionSemester == Semester.Four  = evenSem
-  | occasionSemester == Semester.Five  = oddSem
-  | occasionSemester == Semester.Six   = evenSem
-  | occasionSemester == Semester.Seven = oddSem
-  | occasionSemester == Semester.Eight = evenSem
-  | occasionSemester == Semester.Nine  = oddSem
-  | occasionSemester == Semester.Ten   = evenSem
+  | semester == Semester.One   = oddSem
+  | semester == Semester.Two   = evenSem
+  | semester == Semester.Three = oddSem
+  | semester == Semester.Four  = evenSem
+  | semester == Semester.Five  = oddSem
+  | semester == Semester.Six   = evenSem
+  | semester == Semester.Seven = oddSem
+  | semester == Semester.Eight = evenSem
+  | semester == Semester.Nine  = oddSem
+  | semester == Semester.Ten   = evenSem
   | otherwise                          = []
   where
     oddSem  = [ moveToSemester Semester.Seven occasion
@@ -47,7 +48,7 @@ toMasterOccasions occasion
     evenSem = [ moveToSemester Semester.Eight occasion ]
 
     -- Assumes all slots in occasion has the same semester
-    occasionSemester = slotSemester . head $ getOccasion occasion
+    semester = slotSemester . head $ getOccasion occasion
 
 moveToSemester :: Semester -> Occasion -> Occasion
 moveToSemester semester =
@@ -55,3 +56,5 @@ moveToSemester semester =
   where
     setSemester s = s { slotSemester = semester }
 
+occasionSemester :: Occasion -> Semester
+occasionSemester = slotSemester . head . getOccasion
