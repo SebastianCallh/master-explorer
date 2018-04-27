@@ -2,13 +2,14 @@ module MasterExplorer.Scraper.Web.Scrapers
   ( pageCourseScraper
   , programplanScraper
   , semesterScraper
-  , listCoursesScraper
+  , coursesScraper
   ) where
 
 import qualified Data.Map.Strict                            as M
 import qualified Data.Text                                  as T
 
-import           Data.Monoid                                ((<>))
+import           Data.Either                                (partitionEithers)
+import           Data.Semigroup                             ((<>))
 import           Data.Text                                  (Text)
 import           Text.HTML.Scalpel                          (Scraper, attr,
                                                              chroot, chroots,
@@ -18,16 +19,18 @@ import           Text.HTML.Scalpel                          (Scraper, attr,
                                                              scrapeStringLike,
                                                              text, (@:))
 
-import           MasterExplorer.Scraper.Data.Block          (parseBlocks)
+import           MasterExplorer.Scraper.Data.Block          (Block, parseBlocks)
 import           MasterExplorer.Scraper.Data.CourseCode     (CourseCode (..))
 import           MasterExplorer.Scraper.Data.CourseName     (CourseName (..))
-import           MasterExplorer.Scraper.Data.Credits        (parseCredits)
-import           MasterExplorer.Scraper.Data.Level          (parseLevel)
+import           MasterExplorer.Scraper.Data.Credits        (Credits,
+                                                             parseCredits)
+import           MasterExplorer.Scraper.Data.Importance     (Importance,
+                                                             parseImportance)
+import           MasterExplorer.Scraper.Data.Level          (Level, parseLevel)
 import           MasterExplorer.Scraper.Data.ListCourse     (ListCourse (..))
+import           MasterExplorer.Scraper.Data.Occasion       (Occasion (..))
 import           MasterExplorer.Scraper.Data.PageCourse     (PageCourse (..),
                                                              fromPageSections)
-
-import           MasterExplorer.Scraper.Data.Importance     (parseImportance)
 import           MasterExplorer.Scraper.Data.Period         (Period,
                                                              parsePeriod)
 import           MasterExplorer.Scraper.Data.Program        (Program)
@@ -56,30 +59,59 @@ programplanScraper program =
 
 semesterScraper :: Program -> Scalpel [Either Text ListCourse]
 semesterScraper program =
-  fmap concat $ chroots ("article" @: [hasClass "semester"]) $ do
+  fmap (merge occasions . concat) $ chroots ("article" @: [hasClass "semester"]) $ do
 
     -- Semester string is on format 'Termin 8 (VT 2022)' so needs some processing
-    semester <- parseSemester . T.strip . T.takeWhile (/= '(') <$> text "h3"
+    esemester <- parseSemester . T.strip . T.takeWhile (/= '(') <$> text "h3"
+    case esemester of
+      Left err       -> return [Left err]
+      Right semester -> specializationScraper program semester
 
-    fmap concat $ chroots ("div" @: [hasClass "specialization"]) $ do
-      spec <- parseSpecialization <$> attr "data-specialization" ("div" @: [hasClass "specialization"])
-      fmap concat $ chroots ("tbody" @: [hasClass "period"]) $ do
+  where
+    occasions :: (ListCourse -> ListCourse -> ListCourse)
+    occasions lc1 lc2 =
+      lc1 { --lCourseSems      = lCourseSems lc1 <> lCourseSems lc2 -- Should handle periods 7/9 the same
+           lCourseOccasions = lCourseOccasions lc1 <> lCourseOccasions lc2
+          }
 
-        period <- parsePeriod . sanitize <$> text "tr"
-        let ecourses = listCoursesScraper program
-                       <$> semester
-                       <*> period
-                       <*> spec
+specializationScraper :: Program -> Semester -> Scalpel [Either Text ListCourse]
+specializationScraper program semester =
+    fmap (merge specs . concat) $ chroots ("div" @: [hasClass "specialization"]) $ do
+      espec <- parseSpecialization <$> attr "data-specialization"
+        ("div" @: [hasClass "specialization"])
+      case espec of
+        Left err   -> return [Left err]
+        Right spec -> periodScraper program semester spec
 
-        either (fail . show) id ecourses
+    where
+      specs :: (ListCourse -> ListCourse -> ListCourse)
+      specs lc1 lc2 =
+        lc1 { lCourseSpecs = lCourseSpecs lc1 <> lCourseSpecs lc2 }
 
-listCoursesScraper
+periodScraper :: Program -> Semester -> Specialization -> Scalpel [Either Text ListCourse]
+periodScraper program semester spec =
+  fmap (merge occasion . concat) $ chroots ("tbody" @: [hasClass "period"]) $ do
+    eperiod <- parsePeriod . sanitize <$> text "tr"
+    case eperiod of
+      Left err     -> return [Left err]
+      Right period -> coursesScraper program semester spec period
+
+  where
+    occasion :: (ListCourse -> ListCourse -> ListCourse)
+    occasion lc1 lc2 =
+      lc1 { lCourseOccasions =
+            zipWith (<>)
+            (lCourseOccasions lc1)
+            (lCourseOccasions lc2)
+          }
+
+coursesScraper
   :: Program
   -> Semester
-  -> Period
   -> Specialization
+  -> Period
   -> Scalpel [Either Text ListCourse]
-listCoursesScraper prog sem per spec = chroots ("tr" @: [hasClass "main-row"]) $ do
+coursesScraper prog sem spec per = chroots ("tr" @: [hasClass "main-row"]) $ do
   tds <- fmap sanitize <$> innerHTMLs "td"
   if length tds /= 7 then
     return $ Left $ "Ill formed markup while parsing row: " <> T.pack (show tds)
@@ -96,8 +128,6 @@ listCoursesScraper prog sem per spec = chroots ("tr" @: [hasClass "main-row"]) $
 
       return ListCourse
         { lCourseProgram    = prog
-        , lCourseSems       = [sem]
-        , lCoursePeriod     = [per]
         , lCourseSpecs      = [spec]
         , lCourseCode       = CourseCode code
         , lCourseName       = CourseName name
@@ -105,7 +135,7 @@ listCoursesScraper prog sem per spec = chroots ("tr" @: [hasClass "main-row"]) $
         , lCourseCredits    = credits
         , lCourseLevel      = level
         , lCourseImportance = importance
-        , lCourseSlots      = makeSlots sem per bls
+        , lCourseOccasions  = makeOccasion sem per bls
         }
 
 -- | Strips leading and trailing whitespace and removes
@@ -114,6 +144,22 @@ sanitize :: Text -> Text
 sanitize = T.strip . T.filter (not . isTrash)
   where isTrash = (`elem` ['\t', '\n', '\r'])
 
+makeOccasion :: Semester -> Period -> Text -> [Occasion]
+makeOccasion semester period txt = [Occasion slots]
+  where
+    slots  = either (const mempty) id eslots
+    eslots = fmap (Slot semester period) <$> parseBlocks txt
+
 makeSlots :: Semester -> Period -> Text -> [Slot]
-makeSlots semester period txt = either (const mempty) id slots
-  where slots = fmap (Slot semester period) <$> parseBlocks txt
+makeSlots semester period txt = either (const mempty) id eslots
+  where
+    eslots = fmap (Slot semester period) <$> parseBlocks txt
+
+merge :: (ListCourse -> ListCourse -> ListCourse)
+      -> [Either Text ListCourse]
+      -> [Either Text ListCourse]
+merge f ecourses = (Right <$> x courses) <> (Left <$> errors)
+  where
+    (errors, courses) = partitionEithers ecourses
+    x cs = fmap snd $ M.toList $ foldr insert M.empty cs
+    insert c = M.insertWith f (lCourseCode c) c
