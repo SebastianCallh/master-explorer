@@ -52,7 +52,7 @@ DbCourse
   urls          [Url]
   credits       Credits
   level         Level
-  slots         [Slot]
+  occasions     [Occasion]
   importance    Importance
   areas         [Area]
   institution   Institution Maybe
@@ -187,7 +187,7 @@ toDbCourse Course{..} =
     , dbCourseName          = courseName
     , dbCourseCredits       = courseCredits
     , dbCourseLevel         = courseLevel        
-    , dbCourseSlots         = courseSlots        
+    , dbCourseOccasions     = courseOccasions
     , dbCourseImportance    = courseImportance
     , dbCourseAreas         = courseAreas        
     , dbCourseInstitution   = courseInstitution  
@@ -209,7 +209,7 @@ fromDbCourse DbCourse{..} programs = Course
   , courseUrls          = dbCourseUrls
   , courseCredits       = dbCourseCredits
   , courseLevel         = dbCourseLevel
-  , courseSlots         = dbCourseSlots
+  , courseOccasions     = dbCourseOccasions
   , courseImportance    = dbCourseImportance
   , courseAreas         = dbCourseAreas 
   , courseInstitution   = dbCourseInstitution

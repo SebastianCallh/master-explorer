@@ -25,7 +25,8 @@ data Specialization
   | SignalProcessing
   | SoftwareEngineering
   | SystemsTechnology
-  deriving (Show, Generic, ToADTArbitrary)
+  | SystemOnChip
+  deriving (Show, Eq, Generic, ToADTArbitrary)
 
 instance Arbitrary Specialization where
   arbitrary = genericArbitrary

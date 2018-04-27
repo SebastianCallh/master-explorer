@@ -14,8 +14,9 @@ import           Data.Map                   (Map)
 import           Reflex.Dom
 
 import           MasterExplorer.Client.CourseList    (CourseListEvent (..))
-import           MasterExplorer.Common.Data.Course   (Course, getCourseCode, courseSlots)
+import           MasterExplorer.Common.Data.Course   (Course, getCourseCode, masterOccasions)
 import           MasterExplorer.Common.Data.Slot     (Slot (..))
+import           MasterExplorer.Common.Data.Occasion (getOccasion)
 import           MasterExplorer.Common.Data.Block    (allBlocks)
 import           MasterExplorer.Common.Data.Period   (Period, allPeriods)
 import           MasterExplorer.Common.Data.Semester (Semester, masterSemesters)
@@ -42,10 +43,23 @@ courseGrid courseSelectedEv = do
   gridWidget coursesGridDyn
   where
     update :: CourseListEvent -> CourseGrid -> CourseGrid
-    update (CourseSelected   c s) g = g { gridSlots = M.insertWith (++) s [c] $ gridSlots g }
-    update (CourseDeselected c s) g = g { gridSlots = M.adjust (L.delete c) s $ gridSlots g }
-    update (CourseMouseEnter c  ) g = g { gridFocus = foldr addFocus    (gridFocus g) $ courseSlots c }
-    update (CourseMouseLeave c  ) g = g { gridFocus = foldr removeFocus (gridFocus g) $ courseSlots c }
+    update (CourseSelected   c o) g = g {
+      gridSlots = foldr (addToSlots c) (gridSlots g) (getOccasion o) }
+
+    update (CourseDeselected c o) g = g {
+      gridSlots = foldr (removeFromSlots c) (gridSlots g) (getOccasion o) }
+    
+    update (CourseMouseEnter c) g = g {
+      gridFocus = foldr addFocus (gridFocus g) $ concatMap getOccasion $ masterOccasions c }
+
+    update (CourseMouseLeave c) g = g {
+      gridFocus = foldr removeFocus (gridFocus g) $ concatMap getOccasion $ masterOccasions c }
+
+    addToSlots :: Course -> Slot -> Map Slot [Course] -> Map Slot [Course]
+    addToSlots c s = M.insertWith (++) s [c]
+    
+    removeFromSlots :: Course -> Slot -> Map Slot [Course] -> Map Slot [Course]
+    removeFromSlots c = M.adjust (L.delete c) 
 
     removeFocus = M.delete
     addFocus s  = M.insert s ("class" =: "grid-item focused")

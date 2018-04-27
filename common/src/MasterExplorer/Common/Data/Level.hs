@@ -15,4 +15,4 @@ data Level
   | A
   | A1
   | A2
-  deriving (Show, Read, Generic, ToJSON, FromJSON)
+  deriving (Show, Read, Eq, Generic, ToJSON, FromJSON)

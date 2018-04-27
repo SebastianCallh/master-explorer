@@ -42,6 +42,7 @@ library
                      , MasterExplorer.Common.Data.Hours
                      , MasterExplorer.Common.Data.Credits
                      , MasterExplorer.Common.Data.Institution
+                     , MasterExplorer.Common.Data.Occasion
                      , MasterExplorer.Common.Data.Period
                      , MasterExplorer.Common.Data.Program
                      , MasterExplorer.Common.Data.ProgramCode
@@ -53,6 +54,7 @@ library
   build-depends:       base >=4.9 && <4.11
                      , aeson
                      , base >=4.7 && <5
+                     , containers
                      , http-client
                      , servant
                      , servant-client

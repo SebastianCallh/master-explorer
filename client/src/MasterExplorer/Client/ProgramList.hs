@@ -2,16 +2,11 @@ module MasterExplorer.Client.ProgramList
   ( programList
   ) where
 
-import qualified Data.Map.Strict                     as M
+import           Reflex.Dom
 
-import           Reflex.Dom.Extended
-import           Data.Maybe                          (fromJust)
-import           Data.Text                           (Text, unpack)
-import           Data.Map.Strict                     (Map)
-
-import           MasterExplorer.Common.Class.HasText (toText,fromText)
 import           MasterExplorer.Common.Class.Pretty  (pretty)
 import           MasterExplorer.Common.Data.Program  (Program)
+import           MasterExplorer.Client.Elems         (dynLink)
 
 programList :: forall t m.
   (MonadWidget t m,
@@ -27,12 +22,3 @@ programList programsDyn =
       return $ tagPromptlyDyn programDyn ev
 
   return $ switchPromptlyDyn $ leftmost <$> eventsDyn
-
-toProgram :: Map Int Text -> Int -> Program
-toProgram progs i = either (error . unpack) id $ fromText selection
-  where
-    selection :: Text
-    selection = fromJust $ M.lookup i progs
-
-toMap :: [Program] -> Map Int Text
-toMap =  M.fromList . zip [1..] . fmap toText

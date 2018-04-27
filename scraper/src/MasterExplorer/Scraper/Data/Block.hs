@@ -13,12 +13,12 @@ import           MasterExplorer.Scraper.Web.Parsing (parseError)
 
 parseBlocks :: Text -> Either Text [Block]
 parseBlocks x = traverse (parseBlock . T.singleton) digits
-    where digits = T.unpack $ T.filter isDigit x
+    where digits = T.unpack $ T.filter (\c -> isDigit c || c == '-') x
 
 parseBlock :: Text -> Either Text Block
-parseBlock "1" = Right MasterExplorer.Common.Data.Block.One
-parseBlock "2" = Right MasterExplorer.Common.Data.Block.Two
-parseBlock "3" = Right MasterExplorer.Common.Data.Block.Three
-parseBlock "4" = Right MasterExplorer.Common.Data.Block.Four
-parseBlock "-" = Right MasterExplorer.Common.Data.Block.None
+parseBlock "1" = Right One
+parseBlock "2" = Right Two
+parseBlock "3" = Right Three
+parseBlock "4" = Right Four
+parseBlock "-" = Right None
 parseBlock  x  = parseError x "Block"

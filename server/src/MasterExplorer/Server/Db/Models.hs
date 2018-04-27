@@ -18,6 +18,7 @@ module MasterExplorer.Server.Db.Models
   , Importance
   , Institution
   , Level
+  , Occasion
   , Prerequisites
   , Program (..)
   , ProgramCode
@@ -42,6 +43,7 @@ import           MasterExplorer.Common.Data.Hours         (Hours)
 import           MasterExplorer.Common.Data.Importance    (Importance)
 import           MasterExplorer.Common.Data.Institution   (Institution)
 import           MasterExplorer.Common.Data.Level         (Level)
+import           MasterExplorer.Common.Data.Occasion      (Occasion)
 import           MasterExplorer.Common.Data.Prerequisites (Prerequisites)
 import           MasterExplorer.Common.Data.Program       (Program (..))
 import           MasterExplorer.Common.Data.ProgramCode   (ProgramCode)
@@ -66,6 +68,7 @@ derivePersistField "Hours"
 derivePersistField "Importance"
 derivePersistField "Institution"
 derivePersistField "Level"
+derivePersistField "Occasion"
 derivePersistField "Prerequisites"
 derivePersistField "Program"
 derivePersistField "ProgramCode"
@@ -73,3 +76,4 @@ derivePersistField "ProgramSlug"
 derivePersistField "Slot"
 derivePersistField "Subject"
 derivePersistField "Url"
+

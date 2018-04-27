@@ -6,18 +6,12 @@ module MasterExplorer.Client.Elems
   ) where
 
 import qualified Data.Text as T
-import qualified Data.Map  as M
 
 import           Data.Text                              (Text)
 import           Reflex.Dom
                         
 import           MasterExplorer.Common.Class.ListItem   (ListItem, listItemText)
 import           MasterExplorer.Common.Class.FilterItem (FilterItem, filterFields)
-
-cancelButton :: forall t m.
-  MonadWidget t m
-  => m (Event t ())
-cancelButton = divClass "cancel-button" $ button "Cancel"
 
 dynLink :: forall t m.
   (DomBuilder t m,

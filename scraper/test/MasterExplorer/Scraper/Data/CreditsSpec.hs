@@ -8,6 +8,12 @@ import           MasterExplorer.Scraper.Web.Parsing  (parseError)
 
 spec :: SpecWith ()
 spec = describe "parseCredits" $ do
+  it "parses integer" $
+    parseCredits "5" `shouldBe` (Right $ Credits 5)
+
+  it "parses integer with asterisk" $
+    parseCredits "5*" `shouldBe` (Right $ Credits 5)
+
   it "parses integer will trailing hp" $
     parseCredits "5 hp" `shouldBe` (Right $ Credits 5)
 

@@ -10,8 +10,6 @@ import           Data.Text                                  (Text)
 import           MasterExplorer.Common.Data.ExaminationType (ExaminationType (..))
 import           MasterExplorer.Scraper.Web.Parsing         (parseError)
 
---parseExaminationTypes :: Text -> Either Text [ExaminationType]
---parseExaminationTypes = undefined
 
 parseExaminationType :: Text -> Either Text ExaminationType
 parseExaminationType x

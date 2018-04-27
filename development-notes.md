@@ -24,4 +24,15 @@ The courses being scraped correctly are: [TAMS22,TAMS24,TAMS32,TAMS39,TANA09,TAN
 
 
 ### Modeling selections
-As of now the selections are made on a slot basis, even though a course in fact runs across many slots. For instance TANA09.
+The selections are made on a slot basis, even though a course in fact runs across many slots. For instance TANA09. It has been solved by introducing a "occasion" data type which models one occasion the course is given.
+
+
+### G1/G2 courses
+There are many courses on G1/G2 level that are classified to semesters 1-6. The application should only differentiate on courses given on autumn or spring and let the user choose accordingly.
+
+### Period 0
+The course in discrete math appears in an imaginary "period 0" which causes it to end up in two blocks at the same time.
+
+
+Course {courseCode = CourseCode {getCode = "TATA24"}, courseName = CourseName {getName = "Linj\228r algebra"}, courseCredits = Credits {getCredits = 8.0}, courseLevel = G1, courseOccasions = [Occasion {getOccasion = [Slot {slotSemester = Three, slotPeriod = One, slotBlocks = Four},Slot {slotSemester = Three, slotPeriod = Two, slotBlocks = Four}]}], courseImportance = O, courseAreas = [Maths,AppliedMaths], courseInstitution = Just MAI, coursePrograms = [Program {programCode = EngD, programSlug = P6CDDD}], courseField = Just Science, coursePrerequisites = Just (Prerequisites {getPrerequisites = "<p>OBS! Tilltr\228deskrav f\246r icke programstudenter omfattar vanligen ocks\229 tilltr\228deskrav f\246r programmet och ev. tr\246skelkrav f\246r progression inom programmet, eller motsvarande.</p>"}), courseGrades = Just Scale, courseExaminator = Just (Examinator {getExaminator = "Tomas Sj\246din (D,U,IT), Jesper Thor\233n (FyN,Mat,MED,Y,Yi)"}), courseExaminations = [], courseContent = Just (CourseContent {getCourseContent = "<p>Linj\228ra ekvationssystem. Geometriska vektorer, r\228ta linjer och plan. Matriser. Vektorrum. Euklidiska rum. Determinanter. Linj\228ra avbildningar. Egenv\228rden och egenvektorer. Symmetriska avbildningar. Kvadratiska former. System av differentialekvationer och differensekvationer.</p>"}), courseSubject = [Matematik], courseUrls = [Url {getUrl = "http://courses.mai.liu.se/Lists/html/index-amne-tm.html"}], courseScheduledTime = Just (Hours {getHours = 108}), courseSelfStudyTime = Just (Hours {getHours = 105})}
+: Course {courseCode = CourseCode {getCode = "TATA40"}, courseName = CourseName {getName = "Matematiska utblickar"}, courseCredits = Credits {getCredits = 1.0}, courseLevel = G1, courseOccasions = [Occasion {getOccasion = [Slot {slotSemester = Three, slotPeriod = One, slotBlocks = None},Slot {slotSemester = Three, slotPeriod = Two, slotBlocks = None}]},Occasion {getOccasion = [Slot {slotSemester = Four, slotPeriod = One, slotBlocks = None},Slot {slotSemester = Four, slotPeriod = Two, slotBlocks = None}]}], courseImportance = F, courseAreas = [Maths,AppliedMaths], courseInstitution = Just MAI, coursePrograms = [Program {programCode = EngD, programSlug = P6CDDD}], courseField = Just Science, coursePrerequisites = Just (Prerequisites {getPrerequisites = "<p>OBS! Tilltr\228deskrav f\246r icke programstudenter omfattar vanligen ocks\229 tilltr\228deskrav f\246r programmet och ev. tr\246skelkrav f\246r progression inom programme

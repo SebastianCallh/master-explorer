@@ -53,6 +53,7 @@ library
                      , MasterExplorer.Scraper.Data.Credits
                      , MasterExplorer.Scraper.Data.Course
                      , MasterExplorer.Scraper.Data.CourseCode
+                     , MasterExplorer.Scraper.Data.CourseName
                      , MasterExplorer.Scraper.Data.CourseContent
                      , MasterExplorer.Scraper.Data.Examination
                      , MasterExplorer.Scraper.Data.ExaminationType
@@ -67,6 +68,7 @@ library
                      , MasterExplorer.Scraper.Data.Prerequisites
                      , MasterExplorer.Scraper.Data.Level
                      , MasterExplorer.Scraper.Data.Models
+                     , MasterExplorer.Scraper.Data.Occasion
                      , MasterExplorer.Scraper.Data.Period
                      , MasterExplorer.Scraper.Data.ProgramCode
                      , MasterExplorer.Scraper.Data.ProgramConf

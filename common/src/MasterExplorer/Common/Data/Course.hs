@@ -5,7 +5,11 @@ module MasterExplorer.Common.Data.Course
   ( Course (..)
   , getCourseCode
   , getCourseName
+  , getCourseSlots
+  , masterOccasions
   ) where
+
+import qualified Data.Set                                 as S
 
 import           Data.Aeson                               (FromJSON, ToJSON)
 import           Data.Text                                (Text)
@@ -26,6 +30,8 @@ import           MasterExplorer.Common.Data.Hours         (Hours)
 import           MasterExplorer.Common.Data.Importance    (Importance)
 import           MasterExplorer.Common.Data.Institution   (Institution)
 import           MasterExplorer.Common.Data.Level         (Level)
+import           MasterExplorer.Common.Data.Occasion      (Occasion (..),
+                                                           toMasterOccasions)
 import           MasterExplorer.Common.Data.Prerequisites (Prerequisites)
 import           MasterExplorer.Common.Data.Program       (Program)
 import           MasterExplorer.Common.Data.Slot          (Slot)
@@ -37,7 +43,7 @@ data Course = Course
   , courseName          :: !CourseName
   , courseCredits       :: !Credits
   , courseLevel         :: !Level
-  , courseSlots         :: ![Slot]
+  , courseOccasions     :: ![Occasion]
   , courseImportance    :: !Importance
   , courseAreas         :: ![Area]
   , courseInstitution   :: !(Maybe Institution)
@@ -74,3 +80,17 @@ getCourseCode = getCode . courseCode
 
 getCourseName :: Course -> Text
 getCourseName = getName . courseName
+
+getCourseSlots :: Course -> [Slot]
+getCourseSlots = concatMap getOccasion . courseOccasions
+
+-- | Since courses can be choosen every autumn/spring and not
+--   just semester 5 or 6 or whatever the studieinfo says, all
+--   courses are mapped onto their equivalent master semesters [7, 8, 9].
+--   A set is used to avoid duplicates (courses can be both in semester
+--   5 and 9 for instance).
+masterOccasions :: Course -> [Occasion]
+masterOccasions = S.toList . foldr insertMasterOccasions S.empty . courseOccasions
+  where
+    insertMasterOccasions o s = foldr S.insert s $ toMasterOccasions o
+
