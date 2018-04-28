@@ -25,6 +25,7 @@ executable client
                      , servant
                      , servant-reflex
                      , containers
+                     , lens
                      , text
                      , jsaddle-warp
                      , containers

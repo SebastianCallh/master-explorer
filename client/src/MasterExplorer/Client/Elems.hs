@@ -1,12 +1,18 @@
+{-# LANGUAGE RecursiveDo     #-}
+
 module MasterExplorer.Client.Elems
   ( itemList
   , listItem
   , filterList
   , dynLink
+  , eventTabDisplay
   ) where
 
-import qualified Data.Text as T
+import qualified Data.Map                               as M
+import qualified Data.Text                              as T
 
+import           Control.Lens                           (iforM, imapM)
+import           Data.Maybe                             (listToMaybe)
 import           Data.Text                              (Text)
 import           Reflex.Dom
                         
@@ -19,7 +25,7 @@ dynLink :: forall t m.
   => Dynamic t Text
   -> m (Event t ())
 dynLink textDyn = do
-  (e,_) <- elDynAttr' "a" (("class" =: "clicky") <$ textDyn) $
+  (e,_) <- elDynAttr' "a" (M.empty <$ textDyn) $
     dynText textDyn
   return $ domEvent Click e
 
@@ -74,3 +80,37 @@ filterItems :: forall a.
 filterItems query = filter prefixFilter
   where
     prefixFilter c = any (\f -> T.toLower query `T.isPrefixOf` T.toLower f)  (filterFields c) 
+
+
+-- | A widget to construct a tabbed view that shows only one of its child widgets at a time.
+--   Creates a header bar containing a <ul> with one <li> per child; clicking a <li> displays
+--   the corresponding child and hides all others.
+eventTabDisplay :: forall t m k a. (MonadWidget t m, Ord k)
+  => Text               -- ^ Class applied to <ul> element
+  -> Text               -- ^ Class applied to currently active <li> element
+  -> M.Map k (Text, m (Event t a)) -- ^ Map from (arbitrary) key to (tab label, child widget)
+  -> m (Event t a) --a
+eventTabDisplay ulClass activeClass tabItems = do
+  let t0 = listToMaybe $ M.keys tabItems
+  rec currentTab :: Demux t (Maybe k) <- elAttr "ul" ("class" =: ulClass) $ do
+        tabClicksList :: [Event t k] <- M.elems <$> imapM (\k (s,_) -> 
+          headerBarLink s k $ demuxed currentTab (Just k)) tabItems
+        let eTabClicks :: Event t k = leftmost tabClicksList
+        fmap demux $ holdDyn t0 $ fmap Just eTabClicks
+        
+  el "div" $ do
+    aMap <- iforM tabItems $ \k (_, w) -> do
+          let isSelected = demuxed currentTab $ Just k
+              attrs = ffor isSelected $ \s ->
+                if s then M.empty else M.singleton "style" "display:none;"
+          elDynAttr "div" attrs w
+    
+    return . leftmost $ snd <$> M.toList aMap
+
+  where
+    headerBarLink :: Text -> k -> Dynamic t Bool -> m (Event t k)
+    headerBarLink x k isSelected = do
+      let attrs = fmap (\b -> if b then M.singleton "class" activeClass else M.empty) isSelected
+      elDynAttr "li" attrs $ do
+        a <- link x
+        return $ fmap (const k) (_link_clicked a)
