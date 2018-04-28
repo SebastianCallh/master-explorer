@@ -49,6 +49,7 @@ app =
     _courseClicks <- divClass "content" $
       courseGrid courseSelectEv
 
+    
     divClass "footer" $ pure ()
   
     pure ()

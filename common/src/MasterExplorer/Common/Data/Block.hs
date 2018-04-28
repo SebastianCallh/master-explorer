@@ -20,11 +20,6 @@ data Block
   deriving (Show, Read, Eq, Generic, ToJSON, FromJSON)
 
 instance Ord Block where
-  compare None None   = EQ
-  compare None One    = LT
-  compare None Two    = LT
-  compare None Three  = LT
-  compare None Four   = LT
   compare One None    = GT
   compare One One     = EQ
   compare One Two     = LT
@@ -45,6 +40,11 @@ instance Ord Block where
   compare Four Two    = GT
   compare Four Three  = GT
   compare Four Four   = EQ
+  compare None None   = EQ
+  compare None One    = GT
+  compare None Two    = GT
+  compare None Three  = GT
+  compare None Four   = GT
 
 instance Pretty Block where
   pretty One   = "1"
@@ -54,4 +54,4 @@ instance Pretty Block where
   pretty None  = "-"
 
 allBlocks :: [Block]
-allBlocks = [None, One, Two, Three, Four]
+allBlocks = [One, Two, Three, Four, None]

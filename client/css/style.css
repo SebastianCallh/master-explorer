@@ -208,11 +208,49 @@ header ul .selected:hover {
     text-align: center;
 }
 
-.course-grid .grid-item {
-    background-color : #e5e5e5;
+.course-grid .grid-slot {
     height: 115px;
     margin-top: 15px;
     margin-right: 15px;
+}
+
+.course-grid .grid-slot .course-list {
+    display: flex;
+    flex-flow: row;
+    font-size: 0.8em;
+    background-color: #cdc1b1;
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+    height: auto;
+    width: 100%;
+}
+
+.course-grid .grid-slot li a {
+    padding: 9px;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.course-grid .non-empty {
+    background-color: #dcd0c0;
+}
+
+.course-grid .empty {
+    background-color : #e5e5e5;
+}
+ 
+.course-grid .grid-slot .active-course {
+    background-color: #dcd0c0;
+}
+
+.course-grid .grid-slot .active-course a {
+    cursor: default !important;
+}
+
+.course-grid .grid-slot .visible-course {
+    padding: 10px;
 }
 
 .course-grid .focused {

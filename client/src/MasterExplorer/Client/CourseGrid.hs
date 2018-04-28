@@ -1,9 +1,9 @@
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE LambdaCase      #-}
 
 module MasterExplorer.Client.CourseGrid
   ( courseGrid
   ) where
-
 
 import qualified Data.Map                   as M
 import qualified Data.List                  as L
@@ -13,14 +13,16 @@ import           Data.Text                  (Text)
 import           Data.Map                   (Map)
 import           Reflex.Dom
 
-import           MasterExplorer.Client.CourseList    (CourseListEvent (..))
-import           MasterExplorer.Common.Data.Course   (Course, getCourseCode, masterOccasions)
-import           MasterExplorer.Common.Data.Slot     (Slot (..))
-import           MasterExplorer.Common.Data.Occasion (getOccasion)
-import           MasterExplorer.Common.Data.Block    (allBlocks)
-import           MasterExplorer.Common.Data.Period   (Period, allPeriods)
-import           MasterExplorer.Common.Data.Semester (Semester, masterSemesters)
-import           MasterExplorer.Common.Class.Pretty  (Pretty, pretty)
+import           MasterExplorer.Client.Elems           (eventTabDisplay)
+import           MasterExplorer.Client.CourseList      (CourseListEvent (..))
+import           MasterExplorer.Common.Data.Course     (Course, getCourseName,
+                                                        getCourseCode, masterOccasions)
+import           MasterExplorer.Common.Data.Slot       (Slot (..))
+import           MasterExplorer.Common.Data.Occasion   (getOccasion)
+import           MasterExplorer.Common.Data.Block      (allBlocks)
+import           MasterExplorer.Common.Data.Period     (Period, allPeriods)
+import           MasterExplorer.Common.Data.Semester   (Semester, masterSemesters)
+import           MasterExplorer.Common.Class.Pretty    (Pretty, pretty)
 
 
 data CourseGrid = CourseGrid
@@ -62,7 +64,7 @@ courseGrid courseSelectedEv = do
     removeFromSlots c = M.adjust (L.delete c) 
 
     removeFocus = M.delete
-    addFocus s  = M.insert s ("class" =: "grid-item focused")
+    addFocus s  = M.insert s ("class" =: "focused")
 
 data SemesterPeriod = SemesterPeriod
   { spSemester :: !Semester
@@ -100,9 +102,9 @@ gridWidget grid = do
     
     let rowData = (\sp -> (sp, semesterPeriodsSlots sp)) <$> semesterPeriods
     simpleList (constDyn rowData) $ gridCol grid
-      
-  return $ switchPromptlyDyn $ leftmost <$> eventsDyn
 
+  return $ switchPromptlyDyn $ leftmost <$> eventsDyn
+  
 gridCol :: forall m t.
   MonadWidget t m
   => Dynamic t CourseGrid
@@ -115,32 +117,38 @@ gridCol gridDyn periodSlotsDyn = do
   eventsDyn <- divClass "grid-col" $ do
     divClass "grid-header" $
       dynText $ pretty <$> semesterPeriod
-    
-    simpleList slotsDyn $ \slot -> do
-      let courses = M.findWithDefault []                       <$> slot <*> (gridSlots <$> gridDyn)
-      let style   = M.findWithDefault ("class" =: "grid-item") <$> slot <*> (gridFocus <$> gridDyn)
-      gridItem style courses
+
+    simpleList slotsDyn $ \slotDyn ->
+      gridItem gridDyn slotDyn
 
   return $ switchPromptlyDyn $ leftmost <$> eventsDyn
-    
+  
 gridItem :: forall m t.
   MonadWidget t m
-  => Dynamic t (Map Text Text)
-  -> Dynamic t [Course]
+  => Dynamic t CourseGrid
+  -> Dynamic t Slot
   -> m (Event t Course)
-gridItem styleDyn coursesDyn = do
-  eventsDyn <- elDynAttr "div" styleDyn $
-    simpleList coursesDyn gridSlotItem
-  return $ switchPromptlyDyn $ leftmost <$> eventsDyn
+gridItem gridDyn slotDyn = do
+  let coursesDyn    = M.findWithDefault []              <$> slotDyn <*> (gridSlots <$> gridDyn)
+  let focusStyleDyn = M.findWithDefault ("class" =: "") <$> slotDyn <*> (gridFocus <$> gridDyn)
+  let styleAdjust   = ffor coursesDyn $ \case
+        [] -> M.adjust ("grid-slot empty "     <>) "class"
+        _  -> M.adjust ("grid-slot non-empty " <>) "class"
 
-gridSlotItem :: forall m t.
-  MonadWidget t m  
-  => Dynamic t Course
-  -> m (Event t Course)
-gridSlotItem courseDyn =
-  dyn $ widget <$> courseDyn
+  elDynAttr "div" (styleAdjust <*> focusStyleDyn)  $ do
+    event <- dyn $ ffor coursesDyn $ \courses -> do
+      let widgetMap = foldr makeWidgetMap M.empty courses 
+      eventTabDisplay "course-list" "active-course" widgetMap
+    switchPromptly never event
+    
   where
-    widget :: MonadWidget t m => Course -> m Course
-    widget course = do
-      _ <- link $ getCourseCode course
-      return course
+    makeWidgetMap :: forall t m.
+      MonadWidget t m
+      => Course
+      -> Map Text (Text, m (Event t Course))
+      -> Map Text (Text, m (Event t Course))
+    makeWidgetMap c = M.insert (getCourseCode c)
+      (getCourseCode c,
+        divClass "visible-course" $ do
+          l <- button $ getCourseName c
+          return $ c <$ l)

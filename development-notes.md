@@ -32,3 +32,6 @@ There are many courses on G1/G2 level that are classified to semesters 1-6. The 
 
 ### Period 0
 The course in discrete math appears in an imaginary "period 0" which causes it to end up in two blocks at the same time.
+
+### Course list state
+It seems like the list items in the course list carry their own state, so if item on index 1 is selected it will continue to be so even if the list should be filtered so that another course appears on that index.
