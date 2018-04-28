@@ -1,5 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE LambdaCase      #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module MasterExplorer.Client.CourseGrid
   ( courseGrid
@@ -8,6 +9,7 @@ module MasterExplorer.Client.CourseGrid
 import qualified Data.Map                   as M
 import qualified Data.List                  as L
 
+import           Control.Lens
 import           Data.Semigroup             ((<>))
 import           Data.Text                  (Text)
 import           Data.Map                   (Map)
@@ -23,16 +25,17 @@ import           MasterExplorer.Common.Data.Period     (Period, allPeriods)
 import           MasterExplorer.Common.Data.Semester   (Semester, masterSemesters)
 import           MasterExplorer.Common.Class.Pretty    (Pretty, pretty)
 
-
 data CourseGrid = CourseGrid
-  { gridSlots :: !(Map Slot [Course])
-  , gridFocus :: !(Map Slot (Map Text Text))
+  { _slots :: !(Map Slot [Course])
+  , _focus :: !(Map Slot (Map Text Text))
   }
+
+makeLenses ''CourseGrid
 
 emptyGrid :: CourseGrid
 emptyGrid = CourseGrid
-  { gridSlots = M.empty
-  , gridFocus = M.empty
+  { _slots = M.empty
+  , _focus = M.empty
   }
 
 courseGrid :: forall t m.
@@ -44,17 +47,17 @@ courseGrid courseSelectedEv = do
   gridWidget coursesGridDyn
   where
     update :: CourseListEvent -> CourseGrid -> CourseGrid
-    update (CourseSelected   c o) g = g {
-      gridSlots = foldr (addToSlots c) (gridSlots g) (getOccasion o) }
+    update (CourseSelected   c o) g =
+      g & slots .~ foldr (addToSlots c) (g ^. slots) (getOccasion o)
 
-    update (CourseDeselected c o) g = g {
-      gridSlots = foldr (removeFromSlots c) (gridSlots g) (getOccasion o) }
+    update (CourseDeselected c o) g =
+      g & slots .~ foldr (removeFromSlots c) (g ^. slots) (getOccasion o)
     
-    update (CourseMouseEnter c) g = g {
-      gridFocus = foldr addFocus (gridFocus g) $ concatMap getOccasion $ masterOccasions c }
+    update (CourseMouseEnter c) g = 
+      g & focus .~ foldr addFocus (g ^. focus) (concatMap getOccasion (masterOccasions c))
 
-    update (CourseMouseLeave c) g = g {
-      gridFocus = foldr removeFocus (gridFocus g) $ concatMap getOccasion $ masterOccasions c }
+    update (CourseMouseLeave c) g =
+      g & focus .~ foldr removeFocus (g ^. focus) (concatMap getOccasion (masterOccasions c))
 
     addToSlots :: Course -> Slot -> Map Slot [Course] -> Map Slot [Course]
     addToSlots c s = M.insertWith (++) s [c]
@@ -128,8 +131,8 @@ gridItem :: forall m t.
   -> Dynamic t Slot
   -> m (Event t Course)
 gridItem gridDyn slotDyn = do
-  let coursesDyn    = M.findWithDefault []              <$> slotDyn <*> (gridSlots <$> gridDyn)
-  let focusStyleDyn = M.findWithDefault ("class" =: "") <$> slotDyn <*> (gridFocus <$> gridDyn)
+  let coursesDyn    = M.findWithDefault []              <$> slotDyn <*> (view slots <$> gridDyn)
+  let focusStyleDyn = M.findWithDefault ("class" =: "") <$> slotDyn <*> (view focus <$> gridDyn)
   let styleAdjust   = ffor coursesDyn $ \case
         [] -> M.adjust ("grid-slot empty "     <>) "class"
         _  -> M.adjust ("grid-slot non-empty " <>) "class"
@@ -140,12 +143,7 @@ gridItem gridDyn slotDyn = do
       eventTabDisplay "course-list" "active-course" widgetMap
     switchPromptly never event
     
-  where
-    makeWidgetMap :: forall t m.
-      MonadWidget t m
-      => Course
-      -> Map Text (Text, m (Event t Course))
-      -> Map Text (Text, m (Event t Course))
+  where    
     makeWidgetMap c = M.insert (getCourseCode c)
       (getCourseCode c,
         divClass "visible-course" $ do
