@@ -238,7 +238,7 @@ header ul .selected:hover {
 }
 
 .course-grid .empty {
-    background-color : #e5e5e5;
+    background-color: #f4f4f4;
 }
  
 .course-grid .grid-slot .active-course {
