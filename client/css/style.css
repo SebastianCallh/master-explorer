@@ -37,10 +37,6 @@ body {
   background-color: #333;
 }
 
-.program-list ul li  {
-    cursor: pointer;
-}
-
 .program-list ul {
     list-style-type: none;
     margin: 0;
@@ -49,18 +45,30 @@ body {
     background-color: #333;
 }
 
-.program-list ul li {
+.program-list ul li  {
     float: left;
     display: block;
-    width: 60px;
 }
 
 .program-list ul li a {
+    cursor: pointer;
     display: block;
     color: white;
     text-align: center;
     padding: 26px 16px;
     text-decoration: none;
+}
+
+.program-list .selected {
+    background: #c0b283;
+}
+
+.program-list .selected:hover {
+    background-color: #b1a374;
+}
+
+.program-list .not-selected {
+
 }
 
 .program-list ul li a:hover {

@@ -1,5 +1,6 @@
 module MasterExplorer.Client.App
-  where
+  ( app
+  ) where
 
 import           Reflex.Dom.Extended
 import           Servant.Reflex                         (BaseUrl)
@@ -18,7 +19,7 @@ app :: forall t m.
 app apiUrlDyn =
   divClass "container" $ do
     programSelectEv <- divClass "header" $
-      programList $ constDyn engPrograms
+      programList engPrograms
   
     coursesEv  <- programCourses apiUrlDyn programSelectEv
     coursesDyn <- holdDyn [] coursesEv
