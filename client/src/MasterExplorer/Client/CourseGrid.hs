@@ -11,9 +11,8 @@ import qualified Data.List                  as L
 import           Data.Semigroup             ((<>))
 import           Data.Text                  (Text)
 import           Data.Map                   (Map)
-import           Reflex.Dom
+import           Reflex.Dom.Extended
 
-import           MasterExplorer.Client.Elems           (eventTabDisplay)
 import           MasterExplorer.Client.CourseList      (CourseListEvent (..))
 import           MasterExplorer.Common.Data.Course     (Course, getCourseName,
                                                         getCourseCode, masterOccasions)

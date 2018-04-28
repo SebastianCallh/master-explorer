@@ -2,11 +2,10 @@ module MasterExplorer.Client.ProgramList
   ( programList
   ) where
 
-import           Reflex.Dom
+import           Reflex.Dom.Extended
 
 import           MasterExplorer.Common.Class.Pretty  (pretty)
 import           MasterExplorer.Common.Data.Program  (Program)
-import           MasterExplorer.Client.Elems         (dynLink)
 
 programList :: forall t m.
   (MonadWidget t m,

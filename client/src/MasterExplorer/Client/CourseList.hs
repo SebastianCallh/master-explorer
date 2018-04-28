@@ -11,13 +11,12 @@ import qualified Data.Text                as T
 import           Data.Text                (Text)
 import           Data.Semigroup           ((<>))
 import           Data.Maybe               (listToMaybe)
-import           Reflex.Dom
+import           Reflex.Dom.Extended
 
 import MasterExplorer.Common.Class.Pretty   (pretty)
 import MasterExplorer.Common.Data.Occasion  (Occasion, occasionSemester)
 import MasterExplorer.Common.Data.Course    (Course (..), getCourseCode,
                                              getCourseName, masterOccasions)
-import MasterExplorer.Client.Elems          (filterList, dynLink)
 
 data CourseListEvent
   = CourseSelected    Course Occasion
@@ -43,7 +42,7 @@ courseListItem :: forall t m.
 courseListItem courseDyn = do
   let
       
-    listItem style =
+    cListItem style =
       elAttr' "div" ("class" =: ("list-item " <> style)) $ do
         dynText $ getCourseCode <$> courseDyn
         divClass "course-name" $ dynText $ shortName <$> courseDyn
@@ -52,7 +51,7 @@ courseListItem courseDyn = do
       => Workflow t m (Event t CourseListEvent)
     selectCourse = Workflow $ do
         
-      (e, _)  <- listItem "available" 
+      (e, _)  <- cListItem "available" 
       let courseClickedEv = domEvent Click e
 
        -- If there is only one slot availible, immediately choose it
@@ -88,7 +87,7 @@ courseListItem courseDyn = do
       -> Workflow t m (Event t CourseListEvent) 
     deselectCourse slotClickedBe = Workflow $ do
 
-      (e, _)  <- listItem "selected"
+      (e, _)  <- cListItem "selected"
       let courseClickedEv = domEvent Click e
       let courseEv = tagPromptlyDyn courseDyn courseClickedEv
       let makeTuple mslot course = (course,) <$> mslot
