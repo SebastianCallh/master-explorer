@@ -38,6 +38,8 @@ emptyGrid = CourseGrid
   , _focus = M.empty
   }
 
+-- | Grid view of all master semesters and
+--   currently selected courses.
 courseGrid :: forall t m.
   MonadWidget t m
   => Event t CourseListEvent
@@ -52,12 +54,14 @@ courseGrid courseSelectedEv = do
 
     update (CourseDeselected c o) g =
       g & slots .~ foldr (removeFromSlots c) (g ^. slots) (getOccasion o)
+
+    update (CoursePreSelected _) g = g
     
-    update (CourseMouseEnter c) g = 
-      g & focus .~ foldr addFocus (g ^. focus) (concatMap getOccasion (masterOccasions c))
+    update (CourseMouseEnter c) g =
+      g & focus .~ foldr addFocus (g ^. focus) (masterSlots c) 
 
     update (CourseMouseLeave c) g =
-      g & focus .~ foldr removeFocus (g ^. focus) (concatMap getOccasion (masterOccasions c))
+      g & focus .~ foldr removeFocus (g ^. focus) (masterSlots c)
 
     addToSlots :: Course -> Slot -> Map Slot [Course] -> Map Slot [Course]
     addToSlots c s = M.insertWith (++) s [c]
@@ -68,6 +72,9 @@ courseGrid courseSelectedEv = do
     removeFocus = M.delete
     addFocus s  = M.insert s ("class" =: "focused")
 
+    masterSlots :: Course -> [Slot]
+    masterSlots = concatMap getOccasion . masterOccasions
+    
 data SemesterPeriod = SemesterPeriod
   { spSemester :: !Semester
   , spPeriod   :: !Period

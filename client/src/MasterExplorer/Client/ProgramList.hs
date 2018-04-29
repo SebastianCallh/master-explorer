@@ -35,8 +35,8 @@ programList :: forall t m.
   => [Program]
   -> m (Event t ProgramListEvent)
 programList ps = do
-  rec events <- programListWidget programList
-      programList <- foldDyn updateSelection (mkProgramList ps) events
+  rec list   <- foldDyn updateSelection (mkProgramList ps) events
+      events <- programListWidget list      
   return events
 
   where

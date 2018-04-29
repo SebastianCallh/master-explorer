@@ -107,15 +107,30 @@ body {
     background-color : #e5e5e5;
 }
 
-.course-list .select-slot {
+.course-list .in-selection {
     background-color: #888;
 }
 
-.course-list .select-slot a {
+.course-list .in-selection a {
     border: 1px solid #f4f4f4;
     background: white;
     padding: 10px;
     color: #57622a;
+}
+
+.course-list ul .in-selection {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: row !important;
+}
+
+.course-list ul .in-selection a {
+    border: 1px solid black;
+}
+
+.course-list ul .in-selection a:hover {
+    background-color: 1px solid black;
 }
 
 .course-list .selected {
@@ -123,24 +138,6 @@ body {
     color: #f4f4f4;
 }
 
-header ul .selected:hover {
-    background-color : #48531b;
-}
-
-.course-list ul .select-slot {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex-direction: row !important;
-}
-
-.course-list ul .select-slot a {
-    border: 1px solid black;
-}
-
-.course-list ul .select-slot a:hover {
-    background-color: 1px solid black;
-}
 
 .course-list {
     display: flex;
