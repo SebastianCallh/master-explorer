@@ -12,8 +12,12 @@ body {
 }
 
 .faded {
-  background: #000000;
-  opacity: 0.5;
+    background: #000000;
+    opacity: 0.5;
+}
+
+.hidden {
+    display: none;
 }
 
 .container {
