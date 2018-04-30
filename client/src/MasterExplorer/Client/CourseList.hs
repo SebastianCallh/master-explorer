@@ -43,7 +43,6 @@ data CourseListEvent
   | CourseMouseLeave  Course
   deriving Show
 
-
 -- | The list to the left in the app for selecting courses. 
 courseList :: forall t m.
   MonadWidget t m
@@ -80,8 +79,8 @@ courseListItem :: forall t m.
   -> m (Event t CourseListEvent)
 courseListItem courseListDyn courseDyn = do
   let
-    cListItem :: MonadWidget t m => Text -> m (Event t ())    
-    cListItem style = do
+    cListItem :: MonadWidget t m => m (Event t ())    
+    cListItem = do
       attrsDyn  <- itemAttrs courseListDyn courseDyn
       (e, _)    <- elDynAttr' "div" attrsDyn $ do
         dynText $ getCourseCode <$> courseDyn
@@ -92,7 +91,7 @@ courseListItem courseListDyn courseDyn = do
       => Workflow t m (Event t CourseListEvent)
     selectCourse = Workflow $ do
         
-      courseClickedEv  <- cListItem "available" 
+      courseClickedEv  <- cListItem
         
        -- If there is only one slot availible, immediately choose it
       course <- sample . current $ courseDyn
@@ -131,7 +130,7 @@ courseListItem courseListDyn courseDyn = do
       -> Workflow t m (Event t CourseListEvent) 
     deselectCourse slotClickedBe = Workflow $ do
 
-      courseClickedEv  <- cListItem "selected"
+      courseClickedEv  <- cListItem
       let courseEv = tag (current courseDyn) courseClickedEv
       let makeTuple mslot course = (course,) <$> mslot
       let courseSlotEv = attachWithMaybe makeTuple slotClickedBe courseEv
