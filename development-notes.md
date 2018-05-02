@@ -34,4 +34,7 @@ There are many courses on G1/G2 level that are classified to semesters 1-6. The 
 The course in discrete math appears in an imaginary "period 0" which causes it to end up in two blocks at the same time.
 
 ### Course list state
-It seems like the list items in the course list carry their own state, so if item on index 1 is selected it will continue to be so even if the list should be filtered so that another course appears on that index.
+It seems like the list items in the course list carry their own state, so if item on index 1 is selected it will continue to be so even if the list should be filtered so that another course appears on that index. This was solved by introducint an internal state of the CourseList widget. However, this made it possible to select the same course by filtering the list. Apparently it is treated as a separate course if it has been filtered.
+
+### Onmouseover firing
+After rewriting the courselist to not use workflow (instead mapping the courses state to certain widgets) the onmouseover event fires continuously while mousing over an item. This has made me very upset.
