@@ -2,6 +2,7 @@
 {-# LANGUAGE TupleSections   #-}
 {-# LANGUAGE RecursiveDo     #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE LambdaCase      #-}
 
 module MasterExplorer.Client.CourseList
   ( CourseListEvent(..)
@@ -15,7 +16,6 @@ import           Control.Lens
 import           Data.Text                (Text)
 import           Data.Map                 (Map)
 import           Data.Semigroup           ((<>))
-import           Data.Maybe               (listToMaybe)
 import           Reflex.Dom.Extended
 
 import MasterExplorer.Common.Class.Pretty   (pretty)
@@ -26,7 +26,7 @@ import MasterExplorer.Common.Data.Course    (Course (..), getCourseCode,
 data CourseStatus
   = Available
   | InSelection
-  | Selected
+  | Selected Occasion
 
 data CourseList = CourseList
   { _courses    :: ![Course]
@@ -49,107 +49,86 @@ courseList :: forall t m.
   => Dynamic t [Course]
   -> m (Event t CourseListEvent)
 courseList coursesDyn = do
-  rec selections <- foldDyn updateCourseStatus M.empty event
+  rec selections <- foldDynMaybe updateCourseStatus M.empty event
       let list = CourseList <$> coursesDyn <*> selections
       event <- courseListWidget list
   return event
 
   where
-    updateCourseStatus (CourseSelected      c _) = M.insert c Selected
-    updateCourseStatus (CoursePreSelected   c  ) = M.insert c InSelection
-    updateCourseStatus (CourseDeselected    c _) = M.insert c Available
-    updateCourseStatus _                         = id
+    -- | Map into Maybe to supress events firing on mouse events
+    updateCourseStatus (CourseSelected      c o) = pure . M.insert c (Selected o)
+    updateCourseStatus (CoursePreSelected   c  ) = pure . M.insert c InSelection
+    updateCourseStatus (CourseDeselected    c _) = pure . M.insert c Available
+    updateCourseStatus _                         = const Nothing
 
 courseListWidget :: forall t m.
   MonadWidget t m
   => Dynamic t CourseList
   -> m (Event t CourseListEvent)
 courseListWidget courseListDyn =
-  divClass "course-list" $ 
+  divClass "course-list" $
     filterList (courseListItem courseListDyn) $
       view courses <$> courseListDyn
-
--- | Utilizes the Reflex Workflow for selecting courses.
---   Events propagate to the CourseList which keeps track of
---   the courses state to correctly render dynamic markup.
+  
 courseListItem :: forall t m.
   MonadWidget t m
   => Dynamic t CourseList
   -> Dynamic t Course
   -> m (Event t CourseListEvent)
 courseListItem courseListDyn courseDyn = do
-  let
-    cListItem :: MonadWidget t m => m (Event t ())    
-    cListItem = do
+  let statusDyn =
+        M.findWithDefault Available
+        <$> courseDyn
+        <*> (view selections <$> courseListDyn)
+
+  (e, event) <- el' "li" $ do
+    event <- dyn $ ffor statusDyn $ \case
+      Available   -> available
+      InSelection -> inSelection
+      Selected o  -> selected o
+
+    switchPromptly never event
+
+  let tagCourse = tag (current courseDyn)
+  let mouseEnterEv = CourseMouseEnter <$> tagCourse (domEvent Mouseenter e)
+  let mouseLeaveEv = CourseMouseLeave <$> tagCourse (domEvent Mouseleave e)
+  return $ leftmost [mouseLeaveEv, mouseEnterEv, event]
+
+  where
+    available :: m (Event t CourseListEvent)
+    available = do
+      courseEv <- tag (current courseDyn) <$> item
+      return $ ffor courseEv $ \course ->
+        if (length . masterOccasions $ course) > 1
+        then CoursePreSelected course
+        else
+          let occasion = head $ courseOccasions course
+          in CourseSelected course occasion
+
+    inSelection :: m (Event t CourseListEvent)
+    inSelection = do
+      attrsDyn <- itemAttrs courseListDyn courseDyn
+      event <- elDynAttr "div" attrsDyn $
+        simpleList (masterOccasions <$> courseDyn) $ \occasionDyn -> do
+          event <- dynLink $ pretty . occasionSemester <$> occasionDyn
+          let courseListEv = CourseSelected <$> courseDyn <*> occasionDyn
+          return $ tag (current courseListEv) event
+          
+      return . switch . current $ leftmost <$> event
+
+    selected :: Occasion -> m (Event t CourseListEvent)
+    selected occasion = do
+      courseEv <- tag (current courseDyn) <$> item
+      return $ ffor courseEv $ \course ->
+        CourseDeselected course occasion
+
+    item :: m (Event t ())
+    item = do
       attrsDyn  <- itemAttrs courseListDyn courseDyn
       (e, _)    <- elDynAttr' "div" attrsDyn $ do
         dynText $ getCourseCode <$> courseDyn
         divClass "course-name" $ dynText $ shortName <$> courseDyn
       return $ domEvent Click e
-      
-    selectCourse :: MonadWidget t m
-      => Workflow t m (Event t CourseListEvent)
-    selectCourse = Workflow $ do
-        
-      courseClickedEv  <- cListItem
-        
-       -- If there is only one slot availible, immediately choose it
-      course <- sample . current $ courseDyn
-      let next =
-            if (length . masterOccasions $ course) > 1
-            then let 
-              event = tag (current $ CoursePreSelected <$> courseDyn) courseClickedEv
-            in (event, selectSlot <$ event)
-            else
-              let mslotBe = listToMaybe . courseOccasions <$> current courseDyn
-                  slotDyn = head . courseOccasions <$> courseDyn
-                  slotEv  = tag (current slotDyn) courseClickedEv
-                  event   = selectEvent courseDyn slotEv
-              in (event, deselectCourse mslotBe <$ event)
-
-      pure next
-      
-    selectSlot :: MonadWidget t m
-      => Workflow t m (Event t CourseListEvent)
-    selectSlot = Workflow $ do
-      attrsDyn <- itemAttrs courseListDyn courseDyn
-      clickEvs <- elDynAttr "div" attrsDyn $
-        simpleList (masterOccasions <$> courseDyn) $ \occasionDyn -> do
-          clickEv <- dynLink $ pretty . occasionSemester <$> occasionDyn
-          return $ tag (current occasionDyn) clickEv
-
-      let slotEv = switch . current $ leftmost <$> clickEvs
-      let event  = selectEvent courseDyn slotEv
-
-      -- Behavior to let next step in workflow know what slot was selected
-      slotClickedBe <- hold Nothing $ Just <$> slotEv
-      pure (event, deselectCourse slotClickedBe <$ slotEv)
-
-    deselectCourse :: MonadWidget t m
-      => Behavior t (Maybe Occasion)
-      -> Workflow t m (Event t CourseListEvent) 
-    deselectCourse slotClickedBe = Workflow $ do
-
-      courseClickedEv  <- cListItem
-      let courseEv = tag (current courseDyn) courseClickedEv
-      let makeTuple mslot course = (course,) <$> mslot
-      let courseSlotEv = attachWithMaybe makeTuple slotClickedBe courseEv
-      pure (uncurry CourseDeselected <$> courseSlotEv, selectCourse <$ courseClickedEv)
-
-    selectEvent :: MonadWidget t m
-      => Dynamic t Course
-      -> Event t Occasion
-      -> Event t CourseListEvent
-    selectEvent selCourseDyn occasionEv =
-      uncurry CourseSelected <$> attach (current selCourseDyn) occasionEv
-
-  (e, workflowEv) <- el' "li" $
-    switch . current <$> workflow selectCourse
-
-  let mouseEnterEv = CourseMouseEnter <$> tag (current courseDyn) (domEvent Mouseenter e)
-  let mouseLeaveEv = CourseMouseLeave <$> tag (current courseDyn) (domEvent Mouseleave e)
-
-  return $ leftmost [mouseLeaveEv, mouseEnterEv, workflowEv]
 
 -- | Dynamically calculates attributes for a course list item
 --   depending on what state the course is in. Anchoring the state
@@ -166,7 +145,7 @@ itemAttrs courseListDyn courseDyn =
    f c cl = case M.findWithDefault Available c (cl ^. selections) of
      Available   -> "class" =: "list-item available"
      InSelection -> "class" =: "list-item in-selection"
-     Selected    -> "class" =: "list-item selected"
+     Selected _  -> "class" =: "list-item selected"
      
 -- | Is used to "truncate" the name of a course
 --   in the course list.
