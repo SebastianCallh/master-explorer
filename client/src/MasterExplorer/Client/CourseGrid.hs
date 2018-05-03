@@ -73,7 +73,7 @@ courseGrid courseSelectedEv = do
     addToSlots c s = M.insertWith (++) s [c]
     
     removeFromSlots :: Course -> Slot -> Map Slot [Course] -> Map Slot [Course]
-    removeFromSlots c = M.adjust (L.delete c) 
+    removeFromSlots c = M.adjust (L.delete c)
 
     removeFocus = M.delete
     addFocus s  = M.insert s ("class" =: "focused")
@@ -118,7 +118,7 @@ gridWidget grid = do
     let rowData = (\sp -> (sp, semesterPeriodsSlots sp)) <$> semesterPeriods
     simpleList (constDyn rowData) $ gridCol grid
 
-  return $ switchPromptlyDyn $ leftmost <$> eventsDyn
+  return . switch . current $ leftmost <$> eventsDyn
   
 gridCol :: forall m t.
   MonadWidget t m
@@ -136,7 +136,7 @@ gridCol gridDyn periodSlotsDyn = do
     simpleList slotsDyn $ \slotDyn ->
       gridItem gridDyn slotDyn
 
-  return $ switchPromptlyDyn $ leftmost <$> eventsDyn
+  return . switch . current $ leftmost <$> eventsDyn
   
 gridItem :: forall m t.
   MonadWidget t m

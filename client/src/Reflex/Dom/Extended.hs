@@ -44,7 +44,7 @@ itemList :: forall t m a b.
 itemList template itemsDyn = do
   eventsDyn <- el "ul" $
     simpleList itemsDyn template
-  return $ switchPromptlyDyn $ leftmost <$> eventsDyn
+  return . switch . current $ leftmost <$> eventsDyn
 
 listItem :: forall t m a.
   (DomBuilder t m,
@@ -56,7 +56,7 @@ listItem :: forall t m a.
 listItem itemDyn =
   el "li" $ do
     ev <- dynLink $ listItemText <$> itemDyn
-    return $ tagPromptlyDyn itemDyn ev
+    return $ tag (current itemDyn) ev
 
 -- Filter list --
     
