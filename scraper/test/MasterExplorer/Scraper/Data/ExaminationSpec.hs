@@ -28,3 +28,10 @@ spec =
     it "failes to parse" $ do
       let input = "not an examination"
       parseExaminations input `shouldBe` parseError input "Examinations"
+
+    it "parses expected markup" $ do
+      input <- T.pack <$> readFile "markup/examination-tams22.html"
+      let eexams = parseExaminations input
+      let expected1 = Examination "TEN1" TEN "En skriftlig tentamen (U,3,4,5)" Scale (Credits  5)
+      let expected2 = Examination "LAB1" LAB "Obligatoriska inlämningsuppgifter (U,3,4,5)" Scale (Credits 1)
+      eexams `shouldBe` Right [expected1, expected2]

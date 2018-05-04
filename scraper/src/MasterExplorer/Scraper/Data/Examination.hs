@@ -19,7 +19,7 @@ import           MasterExplorer.Scraper.Web.Parsing          (parseError)
 parseExaminations :: Text -> Either Text [Examination]
 parseExaminations x = maybe (parseError x "Examinations") sequence eexams
   where
-    eexams = scrapeStringLike x $chroot "tbody" $ chroots "tr" $ do
+    eexams = scrapeStringLike x $ chroot "table" $ chroots "tr" $ do
       txts <- texts "td"
       if length txts /= 4
         then return $ Left $

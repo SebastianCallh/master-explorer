@@ -39,3 +39,13 @@ It seems like the list items in the course list carry their own state, so if ite
 ### Onmouseover firing
 After rewriting the courselist to not use workflow (instead mapping the courses state to certain widgets) the onmouseover event fires continuously while mousing over an item. This has made me very upset.
 It was solved by using foldDynMaybe to map the mouseevents onto Nothing and supress them firing alltogether.
+
+### Rounded credits or not
+The credits for a course should not be written out with decimals unless they are non-zero
+
+### The state of widgets
+Widgets should probably return an data types of themselves with fields of dynamics/events/behaviours instead of doing the Widget + WidgetEvent with pattern matching that's currently in place.
+
+
+### Empty examinations
+The examinations was parsed by scraping a "tbody" element while they appeared in a "table" element. Wonder if it has always been like this? Seems like the tests to not correspond to the markup being pulled from the URL. 
