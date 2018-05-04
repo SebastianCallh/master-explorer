@@ -12,6 +12,3 @@ eitherToMaybe (Left _)  = Nothing
 maybeToEither :: Text -> Maybe a -> Either Text a
 maybeToEither _ (Just a) = Right a
 maybeToEither e Nothing  = Left  e
-
-
-

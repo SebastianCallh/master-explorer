@@ -45,12 +45,13 @@ import           MasterExplorer.Scraper.Helpers             (maybeToEither)
 type Scalpel = Scraper Text
 
 pageCourseScraper :: Scalpel PageCourse
-pageCourseScraper = fromPageSections . M.fromList <$>
-    chroot ("section" @: [hasClass "studyguide-block"])
-    (chroots "div" $ do
-        title   <- innerHTML "h3"
-        content <- sanitize . snd . T.breakOnEnd "</h3>" <$> innerHTML "div"
-        return (title, content))
+pageCourseScraper =
+  fmap (fromPageSections . M.fromList) $
+  chroot ("section" @: [hasClass "studyguide-block"]) $
+    chroots "div" $ do
+      title   <- innerHTML "h3"
+      content <- sanitize . snd . T.breakOnEnd "</h3>" <$> innerHTML "div"
+      return (title, content)
 
 programplanScraper :: Program -> Scalpel [Either Text ListCourse]
 programplanScraper program =
@@ -70,8 +71,7 @@ semesterScraper program =
   where
     occasions :: (ListCourse -> ListCourse -> ListCourse)
     occasions lc1 lc2 =
-      lc1 { --lCourseSems      = lCourseSems lc1 <> lCourseSems lc2 -- Should handle periods 7/9 the same
-           lCourseOccasions = lCourseOccasions lc1 <> lCourseOccasions lc2
+      lc1 { lCourseOccasions = lCourseOccasions lc1 <> lCourseOccasions lc2
           }
 
 specializationScraper :: Program -> Semester -> Scalpel [Either Text ListCourse]
@@ -148,11 +148,6 @@ makeOccasion :: Semester -> Period -> Text -> [Occasion]
 makeOccasion semester period txt = [Occasion slots]
   where
     slots  = either (const mempty) id eslots
-    eslots = fmap (Slot semester period) <$> parseBlocks txt
-
-makeSlots :: Semester -> Period -> Text -> [Slot]
-makeSlots semester period txt = either (const mempty) id eslots
-  where
     eslots = fmap (Slot semester period) <$> parseBlocks txt
 
 merge :: (ListCourse -> ListCourse -> ListCourse)

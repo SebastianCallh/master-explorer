@@ -6,6 +6,7 @@ import           MasterExplorer.Scraper.Data.Institution (Institution (..),
                                                           parseInstitution)
 import           MasterExplorer.Scraper.Web.Parsing      (parseError)
 
+
 spec :: SpecWith ()
 spec = describe "parseInstitution" $ do
   it "parses valid values" $ do

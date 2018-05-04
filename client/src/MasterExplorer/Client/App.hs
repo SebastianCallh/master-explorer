@@ -25,13 +25,13 @@ app apiUrlDyn =
   
     courseListEv <- divClass "sidebar" $
       courseList coursesDyn
-
+    
     divClass "info-bar" $
       text "HP: 12"
   
     _ <- divClass "content" $
       content courseListEv
-    
+
     divClass "footer" $ pure ()
   
     pure ()

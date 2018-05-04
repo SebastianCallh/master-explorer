@@ -1,11 +1,9 @@
 module MasterExplorer.Scraper.Data.FieldSpec where
 
-
 import           Test.Hspec
 
 import           MasterExplorer.Scraper.Data.Field  (Field (..), parseField)
 import           MasterExplorer.Scraper.Web.Parsing (parseError)
-
 
 spec :: SpecWith ()
 spec = describe "parseField" $ do

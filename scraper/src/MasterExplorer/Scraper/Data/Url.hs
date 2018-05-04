@@ -12,4 +12,3 @@ parseUrls :: Text -> Either Text [Url]
 parseUrls x = Right $ maybe [] (fmap Url) hrefs
   where
     hrefs = scrapeStringLike x $ attrs "href" "a"
-
