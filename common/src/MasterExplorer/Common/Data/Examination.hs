@@ -15,8 +15,9 @@ import           MasterExplorer.Common.Data.Grading         (Grading)
 
 data Examination = Examination
   { examCode        :: !Text
-  , examTypes       :: !ExaminationType
+  , examType        :: !ExaminationType
   , examDescription :: !Text
   , examGrading     :: !Grading
   , examCredits     :: !Credits
   } deriving (Show, Read, Eq, Generic, ToJSON, FromJSON)
+

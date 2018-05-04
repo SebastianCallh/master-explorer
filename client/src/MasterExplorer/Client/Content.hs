@@ -50,7 +50,7 @@ content courseListEv = do
       activeEv <- selectViewListWithKey (view activeView <$> c) w
         $ \_key valDyn selectedDyn -> do
           let dynAttrs = ffor selectedDyn $ \case
-                True  -> M.empty
+                True  -> ("class" =: "content-wrap")
                 False -> ("class" =: "hidden")
           
           elDynAttr "div" dynAttrs (dyn valDyn) >>=

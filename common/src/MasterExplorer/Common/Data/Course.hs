@@ -6,6 +6,7 @@ module MasterExplorer.Common.Data.Course
   , getCourseCode
   , getCourseName
   , getCourseSlots
+  , getCourseContent
   , masterOccasions
   ) where
 
@@ -19,7 +20,7 @@ import           MasterExplorer.Common.Class.FilterItem   (FilterItem (..))
 import           MasterExplorer.Common.Class.ListItem     (ListItem (..))
 import           MasterExplorer.Common.Data.Area          (Area)
 import           MasterExplorer.Common.Data.CourseCode    (CourseCode (..))
-import           MasterExplorer.Common.Data.CourseContent (CourseContent)
+import           MasterExplorer.Common.Data.CourseContent (CourseContent (..))
 import           MasterExplorer.Common.Data.CourseName    (CourseName (..))
 import           MasterExplorer.Common.Data.Credits       (Credits)
 import           MasterExplorer.Common.Data.Examination   (Examination)
@@ -83,6 +84,9 @@ getCourseName = getName . courseName
 
 getCourseSlots :: Course -> [Slot]
 getCourseSlots = concatMap getOccasion . courseOccasions
+
+getCourseContent :: Course -> Maybe Text
+getCourseContent = fmap getContent . courseContent
 
 -- | Since courses can be choosen every autumn/spring and not
 --   just semester 5 or 6 or whatever the studieinfo says, all

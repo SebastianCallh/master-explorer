@@ -18,12 +18,6 @@ body {
     cursor: pointer;
 }
 
-h1 {
-    border-bottom: 2px solid #57622a;
-    width: fit-content;
-    margin: 15px;
-}
-
 .container {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
@@ -187,12 +181,17 @@ h1 {
     background-color: #333;
     color: #f4f4f4;
 }
+
 .container .content {
     grid-column-start: 2;
     grid-column-end: 13;
     grid-row-start: 3;
     grid-row-end: 16;
     margin: 15px;
+}
+
+.content .content-wrap {
+    height: 100%;
 }
 
 .container .footer {
@@ -268,6 +267,36 @@ h1 {
 
 .course-grid .focused {
     outline : solid 2px #57622a;
+}
+
+.course-info {
+    position: relative;
+    height: 100%;
+    padding-left: 15px;
+}
+
+.course-info .course-header h1 {
+    border-bottom: 2px solid #57622a;
+    width: fit-content;
+}
+
+.course-info .course-header p {
+    margin-top: -21px;
+    margin-left: 15px;
+    font-size: 1.5em;
+}
+
+.course-info h2 {
+    border-bottom: 2px solid #57622a;
+    width: fit-content;
+}
+
+.course-info .button-menu {
+    width: fit-content;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 25px;
 }
 
 @media (max-width:480px) {
