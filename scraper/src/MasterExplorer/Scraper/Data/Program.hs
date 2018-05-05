@@ -23,6 +23,7 @@ module MasterExplorer.Scraper.Data.Program
   , engED
   ) where
 
+import           Data.Either                         (rights)
 import           Data.Text                           (Text)
 import           Text.HTML.Scalpel
 
@@ -31,11 +32,10 @@ import           MasterExplorer.Common.Data.Program
 import           MasterExplorer.Common.Data.Url      (Url (..))
 import           MasterExplorer.Scraper.Web.Parsing  (parseError)
 
-parsePrograms :: Text -> Either Text [Program]
-parsePrograms x = maybe errorMsg (traverse parseProgram) mitems
-  where
-    mitems    = scrapeStringLike x . chroot "ul" $ texts "li"
-    errorMsg  = parseError x "Programs"
+-- | Will ignore programs that have not been manually put into the system.
+parsePrograms :: Text -> [Program]
+parsePrograms x = maybe [] (rights . fmap parseProgram) $
+                        scrapeStringLike x $ chroot "ul" $ texts "li"
 
 parseProgram :: Text -> Either Text Program
 parseProgram "Civilingenjör i medicinsk teknik"                      = Right engMed

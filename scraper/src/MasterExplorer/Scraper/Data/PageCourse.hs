@@ -12,7 +12,8 @@ import           Data.Maybe                                (fromMaybe)
 import           Data.Text                                 (Text)
 
 import           MasterExplorer.Scraper.Data.Area          (Area, parseAreas)
-import           MasterExplorer.Scraper.Data.CourseContent (CourseContent (..))
+import           MasterExplorer.Scraper.Data.CourseContent (CourseContent,
+                                                            parseContent)
 import           MasterExplorer.Scraper.Data.Examination   (Examination,
                                                             parseExaminations)
 import           MasterExplorer.Scraper.Data.Examinator    (Examinator (..))
@@ -46,17 +47,17 @@ data PageCourse = PageCourse
   , pCourseScheduledTime :: !(Maybe Hours)
   } deriving (Show)
 
-fromPageSections :: Map Text Text  -> PageCourse
+fromPageSections :: Map Text Text -> PageCourse
 fromPageSections sections = PageCourse
   { pCourseAreas         = parseList parseAreas        "Huvudomr\229de"
   , pCourseInstitution   = parse parseInstitution      "Institution"
-  , pCoursePrograms      = parseList parsePrograms     "Kursen ges f\246r"
+  , pCoursePrograms      = maybe [] parsePrograms $ M.lookup  "Kursen ges f\246r" sections
   , pCourseField         = parse parseField            "Utbildningsomr\229de"
   , pCoursePrerequisites = Prerequisites <$> M.lookup  "F\246rkunskapskrav" sections
   , pCourseGrading       = parse parseGrading          "Betygsskala"
   , pCourseExaminator    = Examinator <$> M.lookup     "Examinator" sections
   , pCourseExaminations  = parseList parseExaminations "Examination"
-  , pCourseContent       = CourseContent <$> M.lookup  "Kursinneh\229ll" sections
+  , pCourseContent       = parse parseContent          "Kursinneh\229ll"
   , pCourseSubject       = parseList parseSubjects     "\196mnesomr\229de"
   , pCourseUrls          = parseList parseUrls         "Kurshemsida och andra l\228nkar"
   , pCourseScheduledTime = scheduledTime
