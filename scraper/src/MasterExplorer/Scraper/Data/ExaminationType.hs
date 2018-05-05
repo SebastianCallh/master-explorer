@@ -19,5 +19,6 @@ parseExaminationType x
   | "OPPO" `T.isPrefixOf` x = Right OPPO
   | "AUSK" `T.isPrefixOf` x = Right AUSK
   | "PRA"  `T.isPrefixOf` x = Right PROJ
+  | "KTR"  `T.isPrefixOf` x = Right KTR
   | otherwise = parseError x "ExaminationType"
 

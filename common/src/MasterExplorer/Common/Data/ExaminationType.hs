@@ -17,6 +17,7 @@ data ExaminationType
   | AUSK
   | OPPO
   | PROJ
+  | KTR
   deriving (Show, Read, Eq, Generic, ToJSON, FromJSON)
 
 instance Pretty ExaminationType where
@@ -26,4 +27,5 @@ instance Pretty ExaminationType where
   pretty AUSK = "Auskultation"
   pretty OPPO = "Opponering"
   pretty PROJ = "Projekt"
+  pretty KTR  = "Kontrollskrivning"
 
