@@ -18,14 +18,26 @@ data ExaminationType
   | OPPO
   | PROJ
   | KTR
+  | MUN
+  | ANN
+  | MOM
+  | BAS
+  | DAT
+  | HEM
   deriving (Show, Read, Eq, Generic, ToJSON, FromJSON)
 
 instance Pretty ExaminationType where
   pretty TEN  = "Tentamen"
   pretty LAB  = "Laboration"
-  pretty UPG  = "Övrig Uppgift"
   pretty AUSK = "Auskultation"
   pretty OPPO = "Opponering"
   pretty PROJ = "Projekt"
   pretty KTR  = "Kontrollskrivning"
+  pretty MUN  = "Muntri"
+  pretty ANN  = "Aktiv närvaro"
+  pretty UPG  = "Övrigt moment"
+  pretty MOM  = "Övrigt moment"
+  pretty BAS  = "Basgruppsarbete"
+  pretty DAT  = "Datortentamen"
+  pretty HEM  = "Hemtentamen"
 

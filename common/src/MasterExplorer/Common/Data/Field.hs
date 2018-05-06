@@ -15,4 +15,5 @@ data Field
   | Technical
   | Science
   | Society
+  | Law
   deriving (Show, Read, Eq, Generic, ToJSON, FromJSON)

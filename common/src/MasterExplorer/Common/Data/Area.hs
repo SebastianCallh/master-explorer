@@ -20,6 +20,7 @@ data Area
   | Maths
   | MedicinalEngineering
   | MediaEngineering
+  | Law
   | Physics
   | ProductDevelopment
   | Programming

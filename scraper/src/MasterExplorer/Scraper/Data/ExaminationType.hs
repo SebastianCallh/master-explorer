@@ -10,15 +10,20 @@ import           Data.Text                                  (Text)
 import           MasterExplorer.Common.Data.ExaminationType (ExaminationType (..))
 import           MasterExplorer.Scraper.Web.Parsing         (parseError)
 
-
 parseExaminationType :: Text -> Either Text ExaminationType
 parseExaminationType x
-  | "TEN"  `T.isPrefixOf` x = Right TEN
-  | "LAB"  `T.isPrefixOf` x = Right LAB
-  | "UPG"  `T.isPrefixOf` x = Right UPG
-  | "OPPO" `T.isPrefixOf` x = Right OPPO
+  | "ANN"  `T.isPrefixOf` x = Right ANN
   | "AUSK" `T.isPrefixOf` x = Right AUSK
-  | "PRA"  `T.isPrefixOf` x = Right PROJ
+  | "BAS"  `T.isPrefixOf` x = Right BAS
+  | "DAT"  `T.isPrefixOf` x = Right DAT
+  | "HEM"  `T.isPrefixOf` x = Right HEM
   | "KTR"  `T.isPrefixOf` x = Right KTR
+  | "LAB"  `T.isPrefixOf` x = Right LAB
+  | "MOM"  `T.isPrefixOf` x = Right MOM
+  | "MUN"  `T.isPrefixOf` x = Right MUN
+  | "OPPO" `T.isPrefixOf` x = Right OPPO
+  | "PRA"  `T.isPrefixOf` x = Right PROJ
+  | "TEN"  `T.isPrefixOf` x = Right TEN
+  | "UPG"  `T.isPrefixOf` x = Right UPG
   | otherwise = parseError x "ExaminationType"
 
