@@ -2,7 +2,7 @@ module MasterExplorer.Scraper.Data.Program
   ( Program (..)
   , parsePrograms
   , programUrl
-
+  , engPrograms
 
   -- the programs below are exported for unit testing
   , engD
@@ -23,7 +23,8 @@ module MasterExplorer.Scraper.Data.Program
   , engED
   ) where
 
-import           Data.Either                         (rights)
+import           Data.Either                         (isRight)
+import           Data.List                           (filter)
 import           Data.Text                           (Text)
 import           Text.HTML.Scalpel
 
@@ -33,9 +34,10 @@ import           MasterExplorer.Common.Data.Url      (Url (..))
 import           MasterExplorer.Scraper.Web.Parsing  (parseError)
 
 -- | Will ignore programs that have not been manually put into the system.
-parsePrograms :: Text -> [Program]
-parsePrograms x = maybe [] (rights . fmap parseProgram) $
-                        scrapeStringLike x $ chroot "ul" $ texts "li"
+parsePrograms :: Text -> Either Text [Program]
+parsePrograms x =
+  sequence . filter isRight . maybe [] (fmap parseProgram) $
+    scrapeStringLike x $ chroot "ul" $ texts "li"
 
 parseProgram :: Text -> Either Text Program
 parseProgram "Civilingenjör i medicinsk teknik"                      = Right engMed

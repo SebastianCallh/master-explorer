@@ -12,10 +12,7 @@ import           MasterExplorer.Scraper.Data.Credits        (Credits)
 import           MasterExplorer.Scraper.Data.Importance     (Importance)
 import           MasterExplorer.Scraper.Data.Level          (Level)
 import           MasterExplorer.Scraper.Data.Occasion       (Occasion)
-import           MasterExplorer.Scraper.Data.Period         (Period)
 import           MasterExplorer.Scraper.Data.Program        (Program)
-import           MasterExplorer.Scraper.Data.Semester       (Semester)
-import           MasterExplorer.Scraper.Data.Slot           (Slot)
 import           MasterExplorer.Scraper.Data.Specialization (Specialization)
 import           MasterExplorer.Scraper.Data.Url            (Url)
 
@@ -25,8 +22,6 @@ import           MasterExplorer.Scraper.Data.Url            (Url)
 -}
 data ListCourse = ListCourse
   { lCourseProgram    :: !Program
---  , lCourseSems       :: ![Semester]
---  , lCoursePeriod     :: ![Period]
   , lCourseSpecs      :: ![Specialization]
   , lCourseCode       :: !CourseCode
   , lCourseName       :: !CourseName
@@ -39,8 +34,6 @@ data ListCourse = ListCourse
 
 instance Semigroup ListCourse where
   x <> y =
-    x { --lCourseSems       = lCourseSems       x <> lCourseSems       y
---      , lCoursePeriod     = lCoursePeriod     x <> lCoursePeriod     y
-        lCourseSpecs      = lCourseSpecs      x <> lCourseSpecs      y
+    x { lCourseSpecs      = lCourseSpecs      x <> lCourseSpecs      y
       , lCourseOccasions  = lCourseOccasions  x <> lCourseOccasions  y
       }

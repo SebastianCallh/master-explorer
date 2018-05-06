@@ -47,18 +47,18 @@ data Course = Course
   , courseOccasions     :: ![Occasion]
   , courseImportance    :: !Importance
   , courseAreas         :: ![Area]
-  , courseInstitution   :: !(Maybe Institution)
+  , courseInstitution   :: !Institution
   , coursePrograms      :: ![Program]
-  , courseField         :: !(Maybe Field)
+  , courseField         :: !Field
   , coursePrerequisites :: !(Maybe Prerequisites)
-  , courseGrades        :: !(Maybe Grading)
+  , courseGrades        :: !Grading
   , courseExaminator    :: !(Maybe Examinator)
   , courseExaminations  :: ![Examination]
-  , courseContent       :: !(Maybe CourseContent)
+  , courseContent       :: !CourseContent
   , courseSubject       :: ![Subject]
   , courseUrls          :: ![Url]
-  , courseScheduledTime :: !(Maybe Hours)
-  , courseSelfStudyTime :: !(Maybe Hours)
+  , courseScheduledTime :: !Hours
+  , courseSelfStudyTime :: !Hours
   } deriving (Show, Read, Generic, ToJSON, FromJSON)
 
 instance ListItem Course where
@@ -85,8 +85,8 @@ getCourseName = getName . courseName
 getCourseSlots :: Course -> [Slot]
 getCourseSlots = concatMap getOccasion . courseOccasions
 
-getCourseContent :: Course -> Maybe Text
-getCourseContent = fmap getContent . courseContent
+getCourseContent :: Course -> Text
+getCourseContent = getContent . courseContent
 
 -- | Since courses can be choosen every autumn/spring and not
 --   just semester 5 or 6 or whatever the studieinfo says, all

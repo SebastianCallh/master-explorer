@@ -31,7 +31,6 @@ import           Data.Traversable                (for)
 import           Control.Applicative             (liftA2)
 import           Control.Monad.IO.Class          (liftIO)           
 import           Control.Monad.Reader            (ReaderT, asks)
-import           Database.Persist                (selectList, SelectOpt)
 import           Database.Persist.TH             (mkMigrate, mkPersist,
                                                   persistLowerCase, share,
                                                   sqlSettings)
@@ -55,16 +54,16 @@ DbCourse
   occasions     [Occasion]
   importance    Importance
   areas         [Area]
-  institution   Institution Maybe
-  field         Field Maybe
+  institution   Institution
+  field         Field
   prerequisites Prerequisites Maybe
-  grades        Grading Maybe
+  grades        Grading
   subject       [Subject]
   examinator    Examinator Maybe
   examinations  [Examination]
-  content       CourseContent Maybe
-  selfStudyTime Hours Maybe
-  scheduledTime Hours Maybe
+  content       CourseContent
+  selfStudyTime Hours
+  scheduledTime Hours
   UniqueDbCourse code
 
 DbProgram
@@ -136,19 +135,6 @@ updateCourses courses = do
   _ <- runDb $ insertMany_ programCourses
   return ()
 
-{-          
-
-  dbcourses <- traverse (updateCourse . fst . toDbCourse) courses
-  
-  let programs = foldMap coursePrograms courses
-  dbprograms <- traverse (updateProgram . toDbProgram) programs
-  
-  let courseKeys  = entityKey <$> dbcourses
-  let programKeys = entityKey <$> dbprograms
-  let coursePrograms = zipWith CourseProgram courseKeys programKeys  
-  _pcs <- insertCoursePrograms coursePrograms
-  return dbcourses-}
-
 -- Assume the code unique field is first!
 updateCourse :: DbCourse -> App (Entity DbCourse)
 updateCourse dbcourse = runDb $ upsertBy (code dbcourse) dbcourse []
@@ -190,7 +176,7 @@ toDbCourse Course{..} =
     , dbCourseOccasions     = courseOccasions
     , dbCourseImportance    = courseImportance
     , dbCourseAreas         = courseAreas        
-    , dbCourseInstitution   = courseInstitution  
+    , dbCourseInstitution   = courseInstitution
     , dbCourseField         = courseField        
     , dbCoursePrerequisites = coursePrerequisites
     , dbCourseGrades        = courseGrades       
