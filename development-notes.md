@@ -49,4 +49,7 @@ Widgets should probably return an data types of themselves with fields of dynami
 ### Empty examinations
 The examinations was parsed by scraping a "tbody" element while they appeared in a "table" element. Wonder if it has always been like this? Seems like the tests to not correspond to the markup being pulled from the URL.
 
-## It seems like TATA42 is not being selected when clicked. Other courses with the same amount of slots seem to work though.
+### It seems like TATA42 is not being selected when clicked. Other courses with the same amount of slots seem to work though.
+
+### CourseFields
+Courses can in theory (and a few actually does) belong to more than one field and should be parsed accordingly.
