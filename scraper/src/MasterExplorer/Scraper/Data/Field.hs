@@ -1,12 +1,17 @@
 module MasterExplorer.Scraper.Data.Field
   ( Field (..)
-  , parseField
+  , parseFields
   ) where
+
+import qualified Data.Text                          as T
 
 import           Data.Text                          (Text)
 
 import           MasterExplorer.Common.Data.Field   (Field (..))
 import           MasterExplorer.Scraper.Web.Parsing (parseError)
+
+parseFields :: Text -> Either Text [Field]
+parseFields = traverse parseField . T.splitOn ","
 
 parseField :: Text -> Either Text Field
 parseField "Humanistiska omr\229det"             = Right Humanities

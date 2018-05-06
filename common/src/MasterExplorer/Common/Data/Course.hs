@@ -49,13 +49,13 @@ data Course = Course
   , courseAreas         :: ![Area]
   , courseInstitution   :: !Institution
   , coursePrograms      :: ![Program]
-  , courseField         :: !Field
+  , courseFields        :: ![Field]
   , coursePrerequisites :: !(Maybe Prerequisites)
   , courseGrades        :: !Grading
   , courseExaminator    :: !(Maybe Examinator)
   , courseExaminations  :: ![Examination]
   , courseContent       :: !CourseContent
-  , courseSubject       :: ![Subject]
+  , courseSubjects      :: ![Subject]
   , courseUrls          :: ![Url]
   , courseScheduledTime :: !Hours
   , courseSelfStudyTime :: !Hours

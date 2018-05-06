@@ -21,7 +21,7 @@ import           MasterExplorer.Scraper.Data.Examination   (Examination,
                                                             parseExaminations)
 import           MasterExplorer.Scraper.Data.Examinator    (Examinator (..),
                                                             parseExaminator)
-import           MasterExplorer.Scraper.Data.Field         (Field, parseField)
+import           MasterExplorer.Scraper.Data.Field         (Field, parseFields)
 import           MasterExplorer.Scraper.Data.Grading       (Grading,
                                                             parseGrading)
 import           MasterExplorer.Scraper.Data.Hours         (Hours, parseHours)
@@ -41,7 +41,7 @@ data PageCourse = PageCourse
   { pCourseAreas         :: ![Area]
   , pCourseInstitution   :: !Institution
   , pCoursePrograms      :: ![Program]
-  , pCourseField         :: !Field
+  , pCourseFields        :: ![Field]
   , pCoursePrerequisites :: !(Maybe Prerequisites)
   , pCourseGrading       :: !Grading
   , pCourseExaminator    :: !(Maybe Examinator)
@@ -58,7 +58,7 @@ fromPageSections sections = pure PageCourse
    -: parse parseAreas         Nothing        "Huvudomr\229de"
    -: parse parseInstitution   Nothing        "Institution"
    -: parse parsePrograms      Nothing        "Kursen ges f\246r"
-   -: parse parseField         Nothing        "Utbildningsomr\229de"
+   -: parse parseFields        Nothing        "Utbildningsomr\229de"
    -: parse parsePrerequisites (Just Nothing) "F\246rkunskapskrav"
    -: parse parseGrading       Nothing        "Betygsskala"
    -: parse parseExaminator    (Just Nothing) "Examinator"

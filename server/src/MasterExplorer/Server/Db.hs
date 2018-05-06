@@ -15,7 +15,6 @@ module MasterExplorer.Server.Db
   , DbProgram
   , SelectResult
   , migrateAll
---  , insertCourse
   , selectCourse
   , selectCourses
   , updateCourse
@@ -38,9 +37,8 @@ import           Database.Esqueleto
 import           Data.Maybe                      (mapMaybe)
 import           Safe                            (headMay)
 
-
-import           MasterExplorer.Server.Config        (Config (..), App)
-import           MasterExplorer.Server.Db.Models
+import           MasterExplorer.Server.Config    (Config (..), App)
+import           MasterExplorer.Server.Db.Models 
 
 -- The field for unique code should be the only unique field
 -- on Course or the upsert will fail :(
@@ -55,10 +53,10 @@ DbCourse
   importance    Importance
   areas         [Area]
   institution   Institution
-  field         Field
+  fields        [Field]
   prerequisites Prerequisites Maybe
   grades        Grading
-  subject       [Subject]
+  subjects      [Subject]
   examinator    Examinator Maybe
   examinations  [Examination]
   content       CourseContent
@@ -177,13 +175,13 @@ toDbCourse Course{..} =
     , dbCourseImportance    = courseImportance
     , dbCourseAreas         = courseAreas        
     , dbCourseInstitution   = courseInstitution
-    , dbCourseField         = courseField        
+    , dbCourseFields        = courseFields
     , dbCoursePrerequisites = coursePrerequisites
     , dbCourseGrades        = courseGrades       
     , dbCourseExaminator    = courseExaminator   
     , dbCourseExaminations  = courseExaminations
     , dbCourseContent       = courseContent      
-    , dbCourseSubject       = courseSubject      
+    , dbCourseSubjects      = courseSubjects
     , dbCourseSelfStudyTime = courseSelfStudyTime
     , dbCourseScheduledTime = courseScheduledTime
     }, coursePrograms)
@@ -200,13 +198,13 @@ fromDbCourse DbCourse{..} programs = Course
   , courseAreas         = dbCourseAreas 
   , courseInstitution   = dbCourseInstitution
   , coursePrograms      = programs
-  , courseField         = dbCourseField
+  , courseFields        = dbCourseFields
   , coursePrerequisites = dbCoursePrerequisites
   , courseGrades        = dbCourseGrades
   , courseExaminator    = dbCourseExaminator
   , courseExaminations  = dbCourseExaminations
   , courseContent       = dbCourseContent
-  , courseSubject       = dbCourseSubject
+  , courseSubjects       = dbCourseSubjects
   , courseSelfStudyTime = dbCourseSelfStudyTime
   , courseScheduledTime = dbCourseScheduledTime
   } 
