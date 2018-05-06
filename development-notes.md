@@ -46,6 +46,7 @@ The credits for a course should not be written out with decimals unless they are
 ### The state of widgets
 Widgets should probably return an data types of themselves with fields of dynamics/events/behaviours instead of doing the Widget + WidgetEvent with pattern matching that's currently in place.
 
-
 ### Empty examinations
-The examinations was parsed by scraping a "tbody" element while they appeared in a "table" element. Wonder if it has always been like this? Seems like the tests to not correspond to the markup being pulled from the URL. 
+The examinations was parsed by scraping a "tbody" element while they appeared in a "table" element. Wonder if it has always been like this? Seems like the tests to not correspond to the markup being pulled from the URL.
+
+## It seems like TATA42 is not being selected when clicked. Other courses with the same amount of slots seem to work though.
