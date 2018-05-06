@@ -27,8 +27,6 @@ import           MasterExplorer.Scraper.Data.Program    (Program, engD,
 import           MasterExplorer.Scraper.Data.Url        (Url, getUrl)
 import           MasterExplorer.Scraper.Data.Validation (ValidationError (..),
                                                          valErr)
-
-import           MasterExplorer.Scraper.Helpers         (maybeToEither)
 import           MasterExplorer.Scraper.Web.Scrapers    (pageCourseScraper,
                                                          programplanScraper)
 main :: IO ()

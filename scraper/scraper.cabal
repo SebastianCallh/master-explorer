@@ -49,7 +49,6 @@ library
                      , scalpel
                      , text
   exposed-modules:     MasterExplorer.Scraper.Config
-                     , MasterExplorer.Scraper.Helpers
                      , MasterExplorer.Scraper.Data.Area
                      , MasterExplorer.Scraper.Data.Block
                      , MasterExplorer.Scraper.Data.Course
