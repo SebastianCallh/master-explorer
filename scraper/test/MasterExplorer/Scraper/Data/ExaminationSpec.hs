@@ -23,6 +23,8 @@ spec =
                               , Examination "OPPO" OPPO "Opponering"         Binary   (Credits 2)
                               , Examination "AUSK" AUSK "Auskonsultation"    Presence (Credits 2)
                               , Examination "PRA1" PROJ "Project"            Presence (Credits 1.5)
+                              , Examination "DAT1" DAT  "Datortentamen"      Binary   (Credits 5)
+                              , Examination "HEM2" HEM  "Hemtentamen"        Scale    (Credits 6)
                               ]
 
     it "failes to parse" $ do
