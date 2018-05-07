@@ -32,11 +32,23 @@ body {
     grid-row-end: 1;
     border-bottom: solid 2px #282828;
     color: #f4f4f4;
+    overflow: hidden;
+    background-color: #333;
+    display: flex;
+}
+
+.logo {
+    display: inline-block;
+    line-height: 67px;
+    font-size: 1.6em;
+    text-align: center;
+    width: 182px;
 }
 
 .program-list {
-  overflow: hidden;
-  background-color: #333;
+    display: inline-block;
+    overflow: hidden;
+    background-color: #333;
 }
 
 .program-list ul {
@@ -49,7 +61,7 @@ body {
 
 .program-list ul li  {
     float: left;
-    display: block;
+    font-size: 1.6em;
 }
 
 .program-list ul li a {
@@ -57,8 +69,8 @@ body {
     display: block;
     color: white;
     text-align: center;
-    padding: 26px 16px;
     text-decoration: none;
+    padding: 18px 26px;
 }
 
 .program-list .selected {
@@ -85,7 +97,7 @@ body {
 }
 
 .sidebar input[type=text] {
-    width: 200px;
+    width: 172px;
     line-height: 25px;
     padding: 5px 5px 5px 5px;
     background: #ffffff;
@@ -192,6 +204,7 @@ body {
 
 .content .content-wrap {
     height: 100%;
+    overflow: auto;
 }
 
 .container .footer {
@@ -273,6 +286,10 @@ body {
     position: relative;
     height: 100%;
     padding-left: 15px;
+}
+
+.course-info .course-section {
+    max-width: 600px;
 }
 
 .course-info .course-header h1 {

@@ -17,7 +17,8 @@ app :: forall t m.
   -> m ()
 app apiUrlDyn =
   divClass "container" $ do
-    programSelectEv <- divClass "header" $
+    programSelectEv <- divClass "header" $ do
+      divClass "logo" $ text "Master Explorer"        
       programList engPrograms
   
     coursesEv  <- programCourses apiUrlDyn programSelectEv
@@ -27,7 +28,7 @@ app apiUrlDyn =
       courseList coursesDyn
     
     divClass "info-bar" $
-      text "HP: 12"
+      pure ()
   
     _ <- divClass "content" $
       content courseListEv
