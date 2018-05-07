@@ -4,11 +4,9 @@ module MasterExplorer.Client.CourseInfo
   , courseInfo
   ) where
 
-import qualified Data.Map.Strict                        as M
-
 import           Data.Text                              (Text, pack)
+import           Data.Semigroup                         ((<>))
 import           Reflex.Dom.Extended 
-import           Text.HTML.Scalpel                      hiding (text)
 
 import           MasterExplorer.Common.Data.Examination (Examination (..))
 import           MasterExplorer.Common.Data.Course      (Course (..), getCourseCode,
@@ -40,22 +38,18 @@ courseInfo courseDyn =
                 ]
         
     el "h2" $ text "Kursinnehåll"
-    _ <- divClass "course-content" $
-      dyn $ ffor (getCourseContent <$> courseDyn) $ \case
-        Nothing      -> text ""
-        Just content -> text content
-                                                          
+    _ <- divClass "course-section content" $
+      dynText $ getCourseContent <$> courseDyn
 
     el "h2" $ text "Examinationsmoment" 
-    _ <- divClass "course-examinations" $
+    _ <- divClass "course-section examinations" $
       el "table" $ do
         el "thead" $
           el "tr" $ do
-            el "th" $ text "Code"
+            el "th" $ text "Kod"
             el "th" $ text "Beskrivning"
             el "th" $ text "Betygsättning"
             el "th" $ text "Hp"
-            
         el "tbody" $     
           simpleList (courseExaminations <$> courseDyn) $ \examinationDyn -> do
             let examTd f = el "td" $ dynText (f <$> examinationDyn)    
@@ -64,56 +58,40 @@ courseInfo courseDyn =
               examTd examDescription
               examTd (pretty . examGrading)
               examTd (pretty . examCredits)
-            
-            
-          {-simpleList (courseExaminations <$> courseDyn) $ \examinationDyn -> 
---        dynText $ pretty <$> examinationDyn
-        tableDynAttr "Examinations-Table"        
-        [("Code", \_k _rDyn -> dynText $ examCode <$> examinationDyn)]
-        (constDyn (M.empty :: M.Map Int Bool))
-        (const (pure $ constDyn M.empty))
-        -}
-{-ableDynAttr :: forall t m r k v. (Ord k, DomBuilder t m, MonadHold t m, PostBuild t m, MonadFix m)
-  => Text                                   -- ^ Class applied to <table> element
-  -> [(Text, k -> Dynamic t r -> m v)]      -- ^ Columns of (header, row key -> row value -> child widget)
-  -> Dynamic t (Map k r)                      -- ^ Map from row key to row value
-  -> (k -> m (Dynamic t (Map Text Text))) -- ^ Function to compute <tr> element attributes from row key
-  -> m (Dynamic t (Map k (Element EventResult (DomBuilderSpace m) t, [v])))        -- ^ Map from row key to (El, list of widget return values)
--}
+
+    el "h2" $ text "Huvudområde" 
+    _ <-divClass "course-section field" $
+        el "ul" $
+          simpleList (courseFields <$> courseDyn) $ \fieldDyn ->
+            el "li" $
+              dynText $ pretty <$> fieldDyn
+
+    el "h2" $ text "Examinator" 
+    _ <-divClass "course-section examinator" $
+        dyn $ ffor (courseExaminator <$> courseDyn) $ \case
+          Nothing         -> text "-"
+          Just examinator -> text $ pretty examinator            
+
+    el "h2" $ text "Ämnesområde" 
+    _ <- divClass "course-section subject" $
+      el "ul" $
+        simpleList (courseSubjects <$> courseDyn) $ \subjectDyn ->
+          el "li" $
+            dynText $ pretty <$> subjectDyn            
+      
+    el "h2" $ text "Länkar" 
+    _ <- divClass "course-section links" $
+      el "ul" $
+        simpleList (courseUrls <$> courseDyn) $ \dynUrl -> do
+          let pUrl = pretty <$> dynUrl
+          let attrs = ffor pUrl $ \url ->
+                ("target" =: "_blank") <>
+                ("href"   =: url)
+                
+          el "li" $ 
+            elDynAttr "a" attrs $ dynText pUrl
+
     divClass "button-menu" $ do
       (e,_) <- elClass' "a" "button" $
         text "Tillbaka"
       return $ CourseInfoEvent <$ domEvent Click e
-
-getField :: Int -> Examination -> Text
-getField _ _ = "hej"
-
-
-
-    {-_ <- divClass "course-content" $ do
-
-      
-      let contentParser = (chroot "p" $
-            chroot "ul" $
-              texts "li") :: Scraper Text [Text]
-
-      ev <- dyn $ ffor (getCourseContent <$> courseDyn) $ \mContent -> do
-        text $ case mContent of
-                 Just x -> pack $ show x
-                 Nothing -> "nothing"
-                 
-        case mContent >>= flip scrapeStringLike contentParser of
-          Nothing -> text "nothing"
-          Just cs -> do
-            simpleList (constDyn cs) display
-            text "het"
-
-      return ""
--}
---      undefined
-      {-
-      simpleList (parseDynContent <$> courseDyn) $ \case
-          Nothing      -> text "Inget kursinnehåll tillgängligt :("
-          Just content -> do
-            return ()
--}
