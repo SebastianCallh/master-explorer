@@ -42,7 +42,7 @@ body {
     line-height: 67px;
     font-size: 1.6em;
     text-align: center;
-    width: 182px;
+    width: 187px;
 }
 
 .program-list {
@@ -79,10 +79,6 @@ body {
 
 .program-list .selected:hover {
     background-color: #b1a374;
-}
-
-.program-list .not-selected {
-
 }
 
 .program-list ul li a:hover {
@@ -185,26 +181,61 @@ body {
     overflow: auto;
 }
 
-.container .info-bar {
-    grid-column-start: 2;
-    grid-column-end: 13;
-    grid-row-start: 2;
-    grid-row-end: 2;
-    background-color: #333;
-    color: #f4f4f4;
-}
-
 .container .content {
     grid-column-start: 2;
     grid-column-end: 13;
-    grid-row-start: 3;
+    grid-row-start: 2;
     grid-row-end: 16;
-    margin: 15px;
+    overflow: auto;
+}
+
+.content .content-menu {
+    background-color: #333;
+    color: #f4f4f4;
+    padding: 0px;
+    margin: 0px;
+    list-style: none;
+    height: 40px;
+}
+
+.content .content-menu a {
+    padding: 9.5px 11px;
+    cursor: pointer;
+    float: left;
+}
+
+/*
+
+.program-list .selected {
+    background: #c0b283;
+}
+
+.program-list .selected:hover {
+    background-color: #b1a374;
+}
+
+.program-list ul li a:hover {
+    background-color: #111;
+}
+
+*/
+
+.content .content-menu a:hover {
+    background-color: #111;
+}
+
+.content .content-menu .active-content a {
+    background: #c0b283;
+}
+
+.content .content-menu .active-content a:hover {
+    background-color: #b1a374;
 }
 
 .content .content-wrap {
     height: 100%;
     overflow: auto;
+    margin: 15px;
 }
 
 .container .footer {
