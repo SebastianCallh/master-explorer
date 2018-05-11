@@ -6,7 +6,6 @@ module MasterExplorer.Common.Data.Level
   ) where
 
 import           Data.Aeson                         (FromJSON, ToJSON)
-import           Data.Text                          (pack)
 import           GHC.Generics                       (Generic)
 
 import           MasterExplorer.Common.Class.Pretty (Pretty, pretty)
@@ -24,6 +23,4 @@ instance Pretty Level where
   pretty G2 = "Grundläggande nivå 2"
   pretty A  = "Avancerad nivå"
   pretty A1 = "Avancerad nivå 1"
-  pretty A1 = "Avancerad nivå 2"
-
-
+  pretty A2 = "Avancerad nivå 2"
