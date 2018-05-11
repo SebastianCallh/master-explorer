@@ -4,10 +4,8 @@
    Not intended for imported outside MasterExplorer.Server.Db. -}
 module MasterExplorer.Server.Db.Models
   ( Area
-  , CourseCode
   , Course (..)
   , CourseContent
-  , CourseName
   , CoursePart
   , Credits
   , Examination
@@ -30,9 +28,7 @@ module MasterExplorer.Server.Db.Models
 
 import           MasterExplorer.Common.Data.Area          (Area)
 import           MasterExplorer.Common.Data.Course        (Course (..))
-import           MasterExplorer.Common.Data.CourseCode    (CourseCode)
 import           MasterExplorer.Common.Data.CourseContent (CourseContent)
-import           MasterExplorer.Common.Data.CourseName    (CourseName)
 import           MasterExplorer.Common.Data.CoursePart    (CoursePart)
 import           MasterExplorer.Common.Data.Credits       (Credits)
 import           MasterExplorer.Common.Data.Examination   (Examination)
@@ -55,9 +51,7 @@ import           MasterExplorer.Common.Data.Url           (Url)
 import           Database.Persist.TH                      (derivePersistField)
 
 derivePersistField "Area"
-derivePersistField "CourseCode"
 derivePersistField "CourseContent"
-derivePersistField "CourseName"
 derivePersistField "CoursePart"
 derivePersistField "Credits"
 derivePersistField "Examination"

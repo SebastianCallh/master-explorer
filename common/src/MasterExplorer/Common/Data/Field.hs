@@ -1,11 +1,10 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.Field
-  ( Field (..)
-  ) where
+module MasterExplorer.Common.Data.Field where
 
-
+import           Control.Lens
 import           Data.Aeson                         (FromJSON, ToJSON)
 import           GHC.Generics                       (Generic)
 
@@ -27,3 +26,5 @@ instance Pretty Field where
   pretty Science    = "Naturvetenskapliga"
   pretty Society    = "Samhällsvetenskapliga"
   pretty Technical  = "Juridiska"
+
+makePrisms ''Field

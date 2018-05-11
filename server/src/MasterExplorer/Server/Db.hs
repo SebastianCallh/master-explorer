@@ -26,6 +26,7 @@ module MasterExplorer.Server.Db
   , toDbProgram
   ) where
 
+import           Data.Text                       (Text)
 import           Data.Traversable                (for)
 import           Control.Applicative             (liftA2)
 import           Control.Monad.IO.Class          (liftIO)           
@@ -40,12 +41,12 @@ import           Safe                            (headMay)
 import           MasterExplorer.Server.Config    (Config (..), App)
 import           MasterExplorer.Server.Db.Models 
 
--- The field for unique code should be the only unique field
+--  | The field for unique code should be the only unique field
 -- on Course or the upsert will fail :(
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 DbCourse
-  code          CourseCode
-  name          CourseName
+  code          Text
+  name          Text
   urls          [Url]
   credits       Credits
   level         Level
@@ -82,7 +83,7 @@ runDb query = do
 
 type SelectResult = (Entity DbCourse, Entity DbProgram)
 
-selectCourse :: CourseCode -> App (Maybe SelectResult)
+selectCourse :: Text -> App (Maybe SelectResult)
 selectCourse courseCode = do
   res <- runDb $
     select $ from $ \(c `InnerJoin` cp `InnerJoin` p) -> do
@@ -98,7 +99,7 @@ selectCourses program = do
     select $ from $ \(c `InnerJoin` cp `InnerJoin` p) -> do
     on     $ p ?. DbProgramId   ==. cp ?. CourseProgramProgramId
     on     $ c ?. DbCourseId    ==. cp ?. CourseProgramCourseId
-    where_ $ p ?. DbProgramCode ==. just (val (programCode program))
+    where_ $ p ?. DbProgramCode ==. just (val (_programCode program))
     return (c, p)
   return $ mapMaybe unwrap res
 
@@ -125,7 +126,7 @@ updateCourses courses = do
         dbCourse   <- runDb $ insert course
         dbPrograms <- for programs $ \program -> 
           runDb $ select $ from $ \p -> do
-            where_ (p ^. DbProgramCode ==. val (programCode program))
+            where_ (p ^. DbProgramCode ==. val (_programCode program))
             return p
         return (dbCourse, concat dbPrograms)
 
@@ -151,14 +152,14 @@ insertCoursePrograms = runDb . insertMany
 
 toDbProgram :: Program -> DbProgram
 toDbProgram Program{..} = DbProgram
-  { dbProgramCode = programCode
-  , dbProgramSlug = programSlug
+  { dbProgramCode = _programCode
+  , dbProgramSlug = _programSlug
   }
 
 fromDbProgram :: DbProgram -> Program
 fromDbProgram DbProgram{..} = Program
-  { programCode = dbProgramCode
-  , programSlug = dbProgramSlug
+  { _programCode = dbProgramCode
+  , _programSlug = dbProgramSlug
   }
 
 -- Marshalling between db and otw course
@@ -166,45 +167,45 @@ fromDbProgram DbProgram{..} = Program
 toDbCourse :: Course -> (DbCourse, [Program])
 toDbCourse Course{..} =
   (DbCourse
-    { dbCourseCode          = courseCode
-    , dbCourseUrls          = courseUrls
-    , dbCourseName          = courseName
-    , dbCourseCredits       = courseCredits
-    , dbCourseLevel         = courseLevel        
-    , dbCourseOccasions     = courseOccasions
-    , dbCourseImportance    = courseImportance
-    , dbCourseAreas         = courseAreas        
-    , dbCourseInstitution   = courseInstitution
-    , dbCourseFields        = courseFields
-    , dbCoursePrerequisites = coursePrerequisites
-    , dbCourseGrades        = courseGrades       
-    , dbCourseExaminator    = courseExaminator   
-    , dbCourseExaminations  = courseExaminations
-    , dbCourseContent       = courseContent      
-    , dbCourseSubjects      = courseSubjects
-    , dbCourseSelfStudyTime = courseSelfStudyTime
-    , dbCourseScheduledTime = courseScheduledTime
-    }, coursePrograms)
+    { dbCourseCode          = _courseCode
+    , dbCourseUrls          = _courseUrls
+    , dbCourseName          = _courseName
+    , dbCourseCredits       = _courseCredits
+    , dbCourseLevel         = _courseLevel        
+    , dbCourseOccasions     = _courseOccasions
+    , dbCourseImportance    = _courseImportance
+    , dbCourseAreas         = _courseAreas        
+    , dbCourseInstitution   = _courseInstitution
+    , dbCourseFields        = _courseFields
+    , dbCoursePrerequisites = _coursePrerequisites
+    , dbCourseGrades        = _courseGrades       
+    , dbCourseExaminator    = _courseExaminator   
+    , dbCourseExaminations  = _courseExaminations
+    , dbCourseContent       = _courseContent      
+    , dbCourseSubjects      = _courseSubjects
+    , dbCourseSelfStudyTime = _courseSelfStudyTime
+    , dbCourseScheduledTime = _courseScheduledTime
+    }, _coursePrograms)
 
 fromDbCourse :: DbCourse -> [Program] -> Course
 fromDbCourse DbCourse{..} programs = Course
-  { courseCode          = dbCourseCode
-  , courseName          = dbCourseName
-  , courseUrls          = dbCourseUrls
-  , courseCredits       = dbCourseCredits
-  , courseLevel         = dbCourseLevel
-  , courseOccasions     = dbCourseOccasions
-  , courseImportance    = dbCourseImportance
-  , courseAreas         = dbCourseAreas 
-  , courseInstitution   = dbCourseInstitution
-  , coursePrograms      = programs
-  , courseFields        = dbCourseFields
-  , coursePrerequisites = dbCoursePrerequisites
-  , courseGrades        = dbCourseGrades
-  , courseExaminator    = dbCourseExaminator
-  , courseExaminations  = dbCourseExaminations
-  , courseContent       = dbCourseContent
-  , courseSubjects       = dbCourseSubjects
-  , courseSelfStudyTime = dbCourseSelfStudyTime
-  , courseScheduledTime = dbCourseScheduledTime
+  { _courseCode          = dbCourseCode
+  , _courseName          = dbCourseName
+  , _courseUrls          = dbCourseUrls
+  , _courseCredits       = dbCourseCredits
+  , _courseLevel         = dbCourseLevel
+  , _courseOccasions     = dbCourseOccasions
+  , _courseImportance    = dbCourseImportance
+  , _courseAreas         = dbCourseAreas 
+  , _courseInstitution   = dbCourseInstitution
+  , _coursePrograms      = programs
+  , _courseFields        = dbCourseFields
+  , _coursePrerequisites = dbCoursePrerequisites
+  , _courseGrades        = dbCourseGrades
+  , _courseExaminator    = dbCourseExaminator
+  , _courseExaminations  = dbCourseExaminations
+  , _courseContent       = dbCourseContent
+  , _courseSubjects       = dbCourseSubjects
+  , _courseSelfStudyTime = dbCourseSelfStudyTime
+  , _courseScheduledTime = dbCourseScheduledTime
   } 

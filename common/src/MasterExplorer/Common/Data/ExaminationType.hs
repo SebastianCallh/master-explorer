@@ -1,10 +1,10 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.ExaminationType
-  ( ExaminationType (..)
-  ) where
+module MasterExplorer.Common.Data.ExaminationType where
 
+import           Control.Lens
 import           Data.Aeson                         (FromJSON, ToJSON)
 import           GHC.Generics                       (Generic)
 
@@ -41,3 +41,4 @@ instance Pretty ExaminationType where
   pretty DAT  = "Datortentamen"
   pretty HEM  = "Hemtentamen"
 
+makePrisms ''ExaminationType

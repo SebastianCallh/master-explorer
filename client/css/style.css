@@ -148,7 +148,6 @@ body {
     color: #f4f4f4;
 }
 
-
 .course-list {
     display: flex;
     flex-direction: column;
@@ -311,6 +310,10 @@ body {
 
 .course-grid .focused {
     outline : solid 2px #57622a;
+}
+
+.course-grid .stats-column {
+    background: #dcd0c0;
 }
 
 .course-info {

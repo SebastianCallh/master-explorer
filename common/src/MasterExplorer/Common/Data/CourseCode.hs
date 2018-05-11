@@ -1,11 +1,12 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module MasterExplorer.Common.Data.CourseCode
-  ( CourseCode (..)
-  ) where
 
-
+ where
+{-
+import           Control.Lens
 import           Data.Aeson                         (FromJSON, ToJSON)
 import           GHC.Generics                       (Generic)
 
@@ -17,3 +18,4 @@ newtype CourseCode = CourseCode { getCode :: Text }
 
 instance Pretty CourseCode where
   pretty = getCode
+-}

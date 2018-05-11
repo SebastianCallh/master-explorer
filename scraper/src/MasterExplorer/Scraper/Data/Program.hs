@@ -110,4 +110,4 @@ parseProgram x = parseError x "Program"
 
 programUrl :: Program -> Url
 programUrl =
-  Url . mappend "https://liu.se/studieinfo/program/" . toText . programSlug
+  Url . mappend "https://liu.se/studieinfo/program/" . _programSlug

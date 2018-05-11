@@ -1,11 +1,10 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.ExaminationPart
-  ( ExaminationPart (..)
-  ) where
+module MasterExplorer.Common.Data.ExaminationPart  where
 
-
+import           Control.Lens
 import           Data.Aeson                                 (FromJSON, ToJSON)
 import           Data.Text                                  (Text)
 import           GHC.Generics                               (Generic)
@@ -21,3 +20,5 @@ data ExaminationPart = ExaminationPart
   , partGrading     :: !Grading
   , partCredits     :: !Credits
   } deriving (Show, Read, Generic, ToJSON, FromJSON)
+
+makePrisms ''ExaminationPart

@@ -5,9 +5,8 @@ module MasterExplorer.Scraper.Data.ListCourse
 -- Course info that was parsed from a program page
 
 import           Data.Semigroup                             (Semigroup, (<>))
+import           Data.Text                                  (Text)
 
-import           MasterExplorer.Scraper.Data.CourseCode     (CourseCode)
-import           MasterExplorer.Scraper.Data.CourseName     (CourseName)
 import           MasterExplorer.Scraper.Data.Credits        (Credits)
 import           MasterExplorer.Scraper.Data.Importance     (Importance)
 import           MasterExplorer.Scraper.Data.Level          (Level)
@@ -23,8 +22,8 @@ import           MasterExplorer.Scraper.Data.Url            (Url)
 data ListCourse = ListCourse
   { lCourseProgram    :: !Program
   , lCourseSpecs      :: ![Specialization]
-  , lCourseCode       :: !CourseCode
-  , lCourseName       :: !CourseName
+  , lCourseCode       :: !Text
+  , lCourseName       :: !Text
   , lCourseUrl        :: !Url
   , lCourseCredits    :: !Credits
   , lCourseLevel      :: !Level

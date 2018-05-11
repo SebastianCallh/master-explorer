@@ -1,12 +1,12 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.ProgramCode
-  ( ProgramCode (..)
-  ) where
+module MasterExplorer.Common.Data.ProgramCode where
 
 import qualified Data.Text                           as T
 
+import           Control.Lens
 import           Data.Aeson                          (FromJSON, ToJSON)
 import           Data.Maybe                          (maybe)
 import           GHC.Generics                        (Generic)
@@ -124,3 +124,5 @@ instance Pretty ProgramCode where
   pretty EngTB   = "TB"
   pretty EngKB   = "KB"
   pretty _       = "Not implemented pretty for other programs than TekFak!"
+
+makePrisms ''ProgramCode

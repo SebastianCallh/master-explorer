@@ -1,11 +1,11 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.Grading
-  ( Grading (..)
-  ) where
+module MasterExplorer.Common.Data.Grading  where
 
 
+import           Control.Lens
 import           Data.Aeson                         (FromJSON, ToJSON)
 import           GHC.Generics                       (Generic)
 
@@ -23,3 +23,5 @@ instance Pretty Grading where
    pretty Scale       = "U/3/4/5"
    pretty Presence    = "Närvaro"
    pretty Unspecified = "Övrig betygsättning"
+
+makePrisms ''Grading

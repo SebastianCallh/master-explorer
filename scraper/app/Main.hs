@@ -51,7 +51,6 @@ main = do
   response <- postCourses client courses
   putStrLn $ "Response: " <> show response
 
-
 app :: App [Course]
 app = do
   startTime <- liftIO getCurrentTime
@@ -92,10 +91,11 @@ scrapeProgramCourses programs =
                 Right pCourse -> pure $ fromPartials lCourse pCourse
                 Left e -> Left . valErr $ mconcat
                           [ "Error scraping "
-                          , pretty (lCourseCode lCourse)
+                          , lCourseCode lCourse
                           , " "
                           , getError e
                           ]
+
 
         let (errors, courses) = partitionEithers eCourses
         forM_ errors $ logWithoutLoc "Main" LevelError . getError

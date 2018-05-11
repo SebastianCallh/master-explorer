@@ -30,15 +30,16 @@ library
   default-extensions:  RecordWildCards
                      , OverloadedStrings
   build-depends:       base >=4.9 && <4.11
-                     , common
                      , aeson
                      , async
                      , bytestring
+                     , common
                      , containers
                      , deepseq
                      , either
                      , esqueleto
                      , http-types
+                     , lens
                      , monad-logger
                      , mtl
                      , persistent

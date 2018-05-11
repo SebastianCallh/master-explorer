@@ -1,10 +1,10 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.Level
-  ( Level (..)
-  ) where
+module MasterExplorer.Common.Data.Level where
 
+import           Control.Lens                       hiding (Level)
 import           Data.Aeson                         (FromJSON, ToJSON)
 import           GHC.Generics                       (Generic)
 
@@ -24,3 +24,6 @@ instance Pretty Level where
   pretty A  = "Avancerad nivå"
   pretty A1 = "Avancerad nivå 1"
   pretty A2 = "Avancerad nivå 2"
+
+
+makePrisms ''Level

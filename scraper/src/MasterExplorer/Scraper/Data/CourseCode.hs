@@ -1,5 +1,3 @@
-module MasterExplorer.Scraper.Data.CourseCode
-  ( CourseCode (..)
-  ) where
+module MasterExplorer.Scraper.Data.CourseCode where
 
-import           MasterExplorer.Common.Data.CourseCode (CourseCode (..))
+--import           MasterExplorer.Common.Data.CourseCode (CourseCode (..))

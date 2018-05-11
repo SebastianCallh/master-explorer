@@ -1,10 +1,10 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.Examination
-  ( Examination (..)
-  ) where
+module MasterExplorer.Common.Data.Examination where
 
+import           Control.Lens
 import           Data.Aeson                                 (FromJSON, ToJSON)
 import           Data.Text                                  (Text)
 import           GHC.Generics                               (Generic)
@@ -14,10 +14,11 @@ import           MasterExplorer.Common.Data.ExaminationType (ExaminationType)
 import           MasterExplorer.Common.Data.Grading         (Grading)
 
 data Examination = Examination
-  { examCode        :: !Text
-  , examType        :: !ExaminationType
-  , examDescription :: !Text
-  , examGrading     :: !Grading
-  , examCredits     :: !Credits
+  { _examinationCode        :: !Text
+  , _examinationType        :: !ExaminationType
+  , _examinationDescription :: !Text
+  , _examinationGrading     :: !Grading
+  , _examinationCredits     :: !Credits
   } deriving (Show, Read, Eq, Generic, ToJSON, FromJSON)
 
+makeLenses ''Examination

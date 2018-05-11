@@ -8,22 +8,22 @@ module MasterExplorer.Server.App
     , updateCourses
     ) where
 
-import qualified Data.Map.Strict                       as M
-import qualified MasterExplorer.Server.Db              as Db
+import qualified Data.Map.Strict                    as M
+import qualified MasterExplorer.Server.Db           as Db
 
-import           Control.Monad.IO.Class                (liftIO)
-import           Control.Monad.Reader                  (runReaderT)
-import           Data.Maybe                            (fromJust)
-import           Database.Persist                      (Entity (..))
-import           Database.Persist.Postgresql           (entityVal, runMigration,
-                                                        runSqlPersistMPool)
-import           MasterExplorer.Common.Api             (CourseAPI, courseApi)
-import           MasterExplorer.Common.Data.Course     (Course (..))
-import           MasterExplorer.Common.Data.CourseCode (CourseCode)
-import           MasterExplorer.Common.Data.Program    (Program)
-import           MasterExplorer.Server.Config          (App (..), Config (..))
-import           Network.Wai                           (Application)
-import           Network.Wai.Middleware.Cors           (simpleCors)
+import           Control.Monad.IO.Class             (liftIO)
+import           Control.Monad.Reader               (runReaderT)
+import           Data.Maybe                         (fromJust)
+import           Data.Text                          (Text)
+import           Database.Persist                   (Entity (..))
+import           Database.Persist.Postgresql        (entityVal, runMigration,
+                                                     runSqlPersistMPool)
+import           MasterExplorer.Common.Api          (CourseAPI, courseApi)
+import           MasterExplorer.Common.Data.Course
+import           MasterExplorer.Common.Data.Program (Program)
+import           MasterExplorer.Server.Config       (App (..), Config (..))
+import           Network.Wai                        (Application)
+import           Network.Wai.Middleware.Cors        (simpleCors)
 import           Servant
 
 app :: Config -> Application
@@ -59,7 +59,7 @@ updateCourses courses = do
 
   -- fromjust because updateCourses assures the courses exist
   _ <- Db.updateCourses courses
-  courses'   <- traverse (fmap fromJust . Db.selectCourse . courseCode) courses
+  courses'   <- traverse (fmap fromJust . Db.selectCourse . _courseCode) courses
   _programs' <- traverse (Db.updateProgram . entityVal) $ snd <$> courses'
   return True
 
@@ -71,7 +71,7 @@ instance Eq OrderedDbCourse where
 instance Ord OrderedDbCourse where
   (<=) a b = code a <= code b
 
-code :: OrderedDbCourse -> CourseCode
+code :: OrderedDbCourse -> Text
 code = Db.dbCourseCode . getDbCourse
 
 toCourses :: [(Entity Db.DbCourse, Entity Db.DbProgram)] -> [Course]

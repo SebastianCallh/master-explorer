@@ -21,8 +21,6 @@ import           Text.HTML.Scalpel                          (Scraper, attr,
                                                              text, (@:))
 
 import           MasterExplorer.Scraper.Data.Block          (parseBlocks)
-import           MasterExplorer.Scraper.Data.CourseCode     (CourseCode (..))
-import           MasterExplorer.Scraper.Data.CourseName     (CourseName (..))
 import           MasterExplorer.Scraper.Data.Credits        (parseCredits)
 import           MasterExplorer.Scraper.Data.Importance     (parseImportance)
 import           MasterExplorer.Scraper.Data.Level          (parseLevel)
@@ -124,8 +122,8 @@ coursesScraper prog sem spec per = chroots ("tr" @: [hasClass "main-row"]) $ do
       return ListCourse
         { lCourseProgram    = prog
         , lCourseSpecs      = [spec]
-        , lCourseCode       = CourseCode code
-        , lCourseName       = CourseName name
+        , lCourseCode       = code
+        , lCourseName       = name
         , lCourseUrl        = Url url
         , lCourseCredits    = credits
         , lCourseLevel      = level

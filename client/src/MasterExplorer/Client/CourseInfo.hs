@@ -4,13 +4,13 @@ module MasterExplorer.Client.CourseInfo
   , courseInfo
   ) where
 
+import           Control.Lens
 import           Data.Text                              (Text, pack)
 import           Data.Semigroup                         ((<>))
 import           Reflex.Dom.Extended 
 
-import           MasterExplorer.Common.Data.Examination (Examination (..))
-import           MasterExplorer.Common.Data.Course      (Course (..), getCourseCode,
-                                                         getCourseName, getCourseContent)
+import           MasterExplorer.Common.Data.Examination
+import           MasterExplorer.Common.Data.Course      
 import           MasterExplorer.Common.Class.Pretty     (pretty)
 
 data CourseInfo = CourseInfo
@@ -26,15 +26,15 @@ courseInfo courseDyn =
 
     divClass "course-header" $ do
       el "h1" $ dynText $
-        mconcat [ getCourseCode <$> courseDyn
+        mconcat [ view courseCode <$> courseDyn
                 , pure " - "
-                , getCourseName <$> courseDyn
+                , view courseName <$> courseDyn
                 ]
       
       el "p" $ dynText $
-        mconcat [ pretty . courseCredits <$> courseDyn
+        mconcat [ pretty . view courseCredits <$> courseDyn
                 , pure " - "
-                , pretty . courseLevel <$> courseDyn
+                , pretty . view courseLevel <$> courseDyn
                 ]
         
     el "h2" $ text "Kursinnehåll"
@@ -51,38 +51,38 @@ courseInfo courseDyn =
             el "th" $ text "Betygsättning"
             el "th" $ text "Hp"
         el "tbody" $     
-          simpleList (courseExaminations <$> courseDyn) $ \examinationDyn -> do
+          simpleList (view courseExaminations <$> courseDyn) $ \examinationDyn -> do
             let examTd f = el "td" $ dynText (f <$> examinationDyn)    
             el "tr" $ do
-              examTd examCode 
-              examTd examDescription
-              examTd (pretty . examGrading)
-              examTd (pretty . examCredits)
+              examTd (view examinationCode)
+              examTd (view examinationDescription)
+              examTd (pretty . view examinationGrading)
+              examTd (pretty . view examinationCredits)
 
     el "h2" $ text "Huvudområde" 
     _ <-divClass "course-section field" $
         el "ul" $
-          simpleList (courseFields <$> courseDyn) $ \fieldDyn ->
+          simpleList (view courseFields <$> courseDyn) $ \fieldDyn ->
             el "li" $
               dynText $ pretty <$> fieldDyn
 
     el "h2" $ text "Examinator" 
     _ <-divClass "course-section examinator" $
-        dyn $ ffor (courseExaminator <$> courseDyn) $ \case
+        dyn $ ffor (view courseExaminator <$> courseDyn) $ \case
           Nothing         -> text "-"
           Just examinator -> text $ pretty examinator            
 
     el "h2" $ text "Ämnesområde" 
     _ <- divClass "course-section subject" $
       el "ul" $
-        simpleList (courseSubjects <$> courseDyn) $ \subjectDyn ->
+        simpleList (view courseSubjects <$> courseDyn) $ \subjectDyn ->
           el "li" $
             dynText $ pretty <$> subjectDyn            
       
     el "h2" $ text "Länkar" 
     _ <- divClass "course-section links" $
       el "ul" $
-        simpleList (courseUrls <$> courseDyn) $ \dynUrl -> do
+        simpleList (view courseUrls <$> courseDyn) $ \dynUrl -> do
           let pUrl = pretty <$> dynUrl
           let attrs = ffor pUrl $ \url ->
                 ("target" =: "_blank") <>

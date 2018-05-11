@@ -4,6 +4,7 @@
 module MasterExplorer.Common.Data.Slot
   ( Slot (..)
   , masterSlots
+  , slotsInPeriod
   ) where
 
 import           Data.Semigroup                      ((<>))
@@ -42,3 +43,8 @@ masterSlots = Slot <$>
   masterSemesters  <*>
   allPeriods       <*>
   allBlocks
+
+slotsInPeriod :: Semester -> Period -> [Slot]
+slotsInPeriod semester period =
+  Slot semester period <$> allBlocks
+  

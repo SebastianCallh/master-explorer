@@ -1,10 +1,10 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.Subject
-  ( Subject (..)
-  ) where
+module MasterExplorer.Common.Data.Subject  where
 
+import           Control.Lens
 import           Data.Aeson                         (FromJSON, ToJSON)
 import           GHC.Generics                       (Generic)
 
@@ -58,3 +58,5 @@ instance Pretty Subject where
   pretty Philosophy             = "Filosofi"
   pretty Physics                = "Fysik"
   pretty Spanish                = "Spanska"
+
+makePrisms ''Subject

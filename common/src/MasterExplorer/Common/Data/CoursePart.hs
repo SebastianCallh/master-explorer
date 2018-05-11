@@ -1,10 +1,10 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.CoursePart
-  ( CoursePart (..)
-  ) where
+module MasterExplorer.Common.Data.CoursePart where
 
+import           Control.Lens
 import           Data.Aeson                                (FromJSON, ToJSON)
 import           GHC.Generics                              (Generic)
 
@@ -15,3 +15,5 @@ data CoursePart = CoursePart
   { partType :: !CoursePartType
   , partTime :: !Hours
   } deriving (Show, Read, Generic, ToJSON, FromJSON)
+
+makeLenses ''CoursePart

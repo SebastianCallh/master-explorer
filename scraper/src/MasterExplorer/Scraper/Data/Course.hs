@@ -1,32 +1,31 @@
 module MasterExplorer.Scraper.Data.Course
   ( Course (..)
   , fromPartials
-  , getCourseCode
   ) where
 
-import           MasterExplorer.Common.Data.Course           (Course (..), getCourseCode)
+import           MasterExplorer.Common.Data.Course           (Course (..))
 import           MasterExplorer.Scraper.Data.PageCourse      (PageCourse (..))
 import           MasterExplorer.Scraper.Data.ListCourse      (ListCourse (..))
 
 fromPartials :: ListCourse -> PageCourse -> Course
 fromPartials ListCourse{..} PageCourse{..} = Course
-  { courseCode          = lCourseCode
-  , courseName          = lCourseName
-  , courseCredits       = lCourseCredits
-  , courseLevel         = lCourseLevel
-  , courseImportance    = lCourseImportance
-  , courseOccasions     = lCourseOccasions
-  , courseUrls          = pCourseUrls
-  , courseInstitution   = pCourseInstitution
-  , coursePrograms      = pCoursePrograms
-  , courseFields        = pCourseFields
-  , coursePrerequisites = pCoursePrerequisites
-  , courseGrades        = pCourseGrading
-  , courseExaminator    = pCourseExaminator
-  , courseExaminations  = pCourseExaminations
-  , courseContent       = pCourseContent
-  , courseSubjects      = pCourseSubject
-  , courseScheduledTime = pCourseScheduledTime
-  , courseSelfStudyTime = pCourseSelfStudyTime
-  , courseAreas         = pCourseAreas
+  { _courseCode          = lCourseCode
+  , _courseName          = lCourseName
+  , _courseCredits       = lCourseCredits
+  , _courseLevel         = lCourseLevel
+  , _courseImportance    = lCourseImportance
+  , _courseOccasions     = lCourseOccasions
+  , _courseUrls          = pCourseUrls
+  , _courseInstitution   = pCourseInstitution
+  , _coursePrograms      = pCoursePrograms
+  , _courseFields        = pCourseFields
+  , _coursePrerequisites = pCoursePrerequisites
+  , _courseGrades        = pCourseGrading
+  , _courseExaminator    = pCourseExaminator
+  , _courseExaminations  = pCourseExaminations
+  , _courseContent       = pCourseContent
+  , _courseSubjects      = pCourseSubject
+  , _courseScheduledTime = pCourseScheduledTime
+  , _courseSelfStudyTime = pCourseSelfStudyTime
+  , _courseAreas         = pCourseAreas
   }

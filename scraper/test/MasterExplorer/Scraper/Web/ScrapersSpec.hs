@@ -11,9 +11,7 @@ import           Test.QuickCheck                            (arbitrary,
 import           Text.HTML.Scalpel
 
 import qualified MasterExplorer.Scraper.Data.Block          as Block
-import           MasterExplorer.Scraper.Data.CourseCode     (CourseCode (..),
-                                                             getCode)
-import           MasterExplorer.Scraper.Data.CourseName     (CourseName (..))
+
 import           MasterExplorer.Scraper.Data.Credits        (Credits (..))
 import           MasterExplorer.Scraper.Data.Importance     (Importance (V))
 import           MasterExplorer.Scraper.Data.Level          (Level (G1))
@@ -50,7 +48,7 @@ spec = describe "Scrapers" $ do
 
     let fails = do
           courses   <- rights <$> meCourses
-          let codes = getCode . lCourseCode <$> courses
+          let codes = lCourseCode <$> courses
           (codes \\) <$> mUniqueCodes
 
     filter (not . isKnownError) . lefts  <$> meCourses `shouldBe` pure []
@@ -79,7 +77,7 @@ spec = describe "Scrapers" $ do
 
     let fails = do
           courses   <- rights <$> meCourses
-          let codes = getCode . lCourseCode <$> courses
+          let codes = lCourseCode <$> courses
           (codes \\) <$> mUniqueCodes
 
     filter (not . isKnownError) . lefts  <$> meCourses `shouldBe` pure []
@@ -106,8 +104,8 @@ spec = describe "Scrapers" $ do
       ListCourse
       { lCourseProgram   = engD
       , lCourseSpecs     = [None]
-      , lCourseCode      = CourseCode "TFMT13"
-      , lCourseName      = CourseName "Mätteknik"
+      , lCourseCode      = "TFMT13"
+      , lCourseName      = "Mätteknik"
       , lCourseCredits   = Credits 4
       , lCourseLevel     = G1
       , lCourseOccasions = [ Occasion [Slot Five  One Block.Two]

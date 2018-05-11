@@ -1,11 +1,10 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.Block
-  ( Block (..)
-  , allBlocks
-  ) where
+module MasterExplorer.Common.Data.Block  where
 
+import           Control.Lens
 import           Data.Aeson                         (FromJSON, ToJSON)
 import           GHC.Generics                       (Generic)
 
@@ -53,5 +52,8 @@ instance Pretty Block where
   pretty Four  = "4"
   pretty None  = "-"
 
+makePrisms ''Block
+
 allBlocks :: [Block]
 allBlocks = [One, Two, Three, Four, None]
+

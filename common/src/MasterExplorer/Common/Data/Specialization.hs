@@ -1,10 +1,10 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.Specialization
-  ( Specialization (..)
-  ) where
+module MasterExplorer.Common.Data.Specialization  where
 
+import           Control.Lens
 import           GHC.Generics                  (Generic)
 import           Test.QuickCheck               (Arbitrary, arbitrary)
 import           Test.QuickCheck.Arbitrary.ADT (ToADTArbitrary,
@@ -30,3 +30,5 @@ data Specialization
 
 instance Arbitrary Specialization where
   arbitrary = genericArbitrary
+
+makePrisms ''Specialization

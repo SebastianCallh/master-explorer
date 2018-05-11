@@ -1,5 +1,6 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module MasterExplorer.Common.Data.ProgramSlug
   ( ProgramSlug (..)
@@ -7,6 +8,7 @@ module MasterExplorer.Common.Data.ProgramSlug
 
 import qualified Data.Text                           as T
 
+import           Control.Lens
 import           Data.Aeson                          (FromJSON, ToJSON)
 import           GHC.Generics                        (Generic)
 import           Servant.API                         (FromHttpApiData,
@@ -106,3 +108,5 @@ instance FromHttpApiData ProgramSlug where
 
 instance ToHttpApiData ProgramSlug where
   toUrlPiece = toText
+
+makePrisms ''ProgramSlug

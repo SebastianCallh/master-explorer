@@ -1,12 +1,13 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module MasterExplorer.Common.Data.Program where
 -- Just export everything because it is so terribly much
 
 import qualified Data.Text                              as T
 
-
+import           Control.Lens
 import           Data.Aeson                             (FromJSON, ToJSON)
 import           Data.Semigroup                         ((<>))
 import           GHC.Generics                           (Generic)
@@ -24,8 +25,8 @@ import           MasterExplorer.Common.Data.ProgramCode (ProgramCode (..))
 import           MasterExplorer.Common.Data.ProgramSlug (ProgramSlug (..))
 
 data Program = Program
-  { programCode :: !ProgramCode
-  , programSlug :: !ProgramSlug
+  { _programCode :: !ProgramCode
+  , _programSlug :: !ProgramSlug
   } deriving (Show, Read, Eq, Generic, FromJSON, ToJSON)
 
 instance Arbitrary Program where
@@ -42,28 +43,28 @@ instance FromHttpApiData Program where
 
 instance ToHttpApiData Program where
   toUrlPiece p = mconcat [code, sep, slug]
-    where code = toUrlPiece $ programCode p
-          slug = toUrlPiece $ programSlug p
+    where code = toUrlPiece $ _programCode p
+          slug = toUrlPiece $ _programSlug p
 
 instance ListItem Program where
-  listItemText = toText . programCode
+  listItemText = toText . _programCode
 
 instance HasText Program where
-  toText p = toText (programCode p)
+  toText p = toText (_programCode p)
              <> sep
-             <> toText (programSlug p)
+             <> toText (_programSlug p)
 
   fromText t = do
     let [ecode, eslug] = T.splitOn sep t
     Program <$> fromText ecode <*> fromText eslug
-    where
-      sep = ":"
 
 instance Pretty Program where
-  pretty = pretty . programCode
+  pretty = pretty . _programCode
 
 sep :: T.Text
 sep = ":"
+
+makeLenses ''Program
 
 bachD = Program BachD       P6IDAT
 bachElec =  Program BachElec    P6IELK

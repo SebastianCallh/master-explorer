@@ -1,27 +1,21 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.Course
-  ( Course (..)
-  , getCourseCode
-  , getCourseName
-  , getCourseSlots
-  , getCourseContent
-  , masterOccasions
-  ) where
+module MasterExplorer.Common.Data.Course  where
 
 import qualified Data.Set                                 as S
 
+import           Control.Lens                             hiding (Level)
 import           Data.Aeson                               (FromJSON, ToJSON)
+import           Data.Ord                                 (comparing)
 import           Data.Text                                (Text)
 import           GHC.Generics                             (Generic)
 
 import           MasterExplorer.Common.Class.FilterItem   (FilterItem (..))
 import           MasterExplorer.Common.Class.ListItem     (ListItem (..))
 import           MasterExplorer.Common.Data.Area          (Area)
-import           MasterExplorer.Common.Data.CourseCode    (CourseCode (..))
 import           MasterExplorer.Common.Data.CourseContent (CourseContent (..))
-import           MasterExplorer.Common.Data.CourseName    (CourseName (..))
 import           MasterExplorer.Common.Data.Credits       (Credits)
 import           MasterExplorer.Common.Data.Examination   (Examination)
 import           MasterExplorer.Common.Data.Examinator    (Examinator)
@@ -40,53 +34,49 @@ import           MasterExplorer.Common.Data.Subject       (Subject)
 import           MasterExplorer.Common.Data.Url           (Url)
 
 data Course = Course
-  { courseCode          :: !CourseCode
-  , courseName          :: !CourseName
-  , courseCredits       :: !Credits
-  , courseLevel         :: !Level
-  , courseOccasions     :: ![Occasion]
-  , courseImportance    :: !Importance
-  , courseAreas         :: ![Area]
-  , courseInstitution   :: !Institution
-  , coursePrograms      :: ![Program]
-  , courseFields        :: ![Field]
-  , coursePrerequisites :: !(Maybe Prerequisites)
-  , courseGrades        :: !Grading
-  , courseExaminator    :: !(Maybe Examinator)
-  , courseExaminations  :: ![Examination]
-  , courseContent       :: !CourseContent
-  , courseSubjects      :: ![Subject]
-  , courseUrls          :: ![Url]
-  , courseScheduledTime :: !Hours
-  , courseSelfStudyTime :: !Hours
+  { _courseCode          :: !Text
+  , _courseName          :: !Text
+  , _courseCredits       :: !Credits
+  , _courseLevel         :: !Level
+  , _courseOccasions     :: ![Occasion]
+  , _courseImportance    :: !Importance
+  , _courseAreas         :: ![Area]
+  , _courseInstitution   :: !Institution
+  , _coursePrograms      :: ![Program]
+  , _courseFields        :: ![Field]
+  , _coursePrerequisites :: !(Maybe Prerequisites)
+  , _courseGrades        :: !Grading
+  , _courseExaminator    :: !(Maybe Examinator)
+  , _courseExaminations  :: ![Examination]
+  , _courseContent       :: !CourseContent
+  , _courseSubjects      :: ![Subject]
+  , _courseUrls          :: ![Url]
+  , _courseScheduledTime :: !Hours
+  , _courseSelfStudyTime :: !Hours
   } deriving (Show, Read, Generic, ToJSON, FromJSON)
 
+makeLenses ''Course
+
 instance ListItem Course where
-  listItemText =  getCourseCode
+  listItemText =  _courseCode
 
 instance FilterItem Course where
   filterFields course =
-    [ getCourseCode
-    , getCourseName
+    [ _courseCode
+    , _courseName
     ] <*> pure course
 
 instance Eq Course where
-  (==) a b = courseCode a == courseCode b
+  (==) a b = EQ == comparing _courseCode a b
 
 instance Ord Course where
-  (<=) a b = courseCode a <= courseCode b
-
-getCourseCode :: Course -> Text
-getCourseCode = getCode . courseCode
-
-getCourseName :: Course -> Text
-getCourseName = getName . courseName
+  (<=) a b = LT == comparing _courseCode a b
 
 getCourseSlots :: Course -> [Slot]
-getCourseSlots = concatMap getOccasion . courseOccasions
+getCourseSlots = concatMap getOccasion . _courseOccasions
 
 getCourseContent :: Course -> Text
-getCourseContent = getContent . courseContent
+getCourseContent = getContent . _courseContent
 
 -- | Since courses can be choosen every autumn/spring and not
 --   just semester 5 or 6 or whatever the studieinfo says, all
@@ -94,7 +84,7 @@ getCourseContent = getContent . courseContent
 --   A set is used to avoid duplicates (courses can be both in semester
 --   5 and 9 for instance).
 masterOccasions :: Course -> [Occasion]
-masterOccasions = S.toList . foldr insertMasterOccasions S.empty . courseOccasions
+masterOccasions = S.toList . foldr insertMasterOccasions S.empty . _courseOccasions
   where
     insertMasterOccasions o s = foldr S.insert s $ toMasterOccasions o
 

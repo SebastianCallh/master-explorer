@@ -1,12 +1,10 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.Semester
-  ( Semester (..)
-  , allSemesters
-  , masterSemesters
-  ) where
+module MasterExplorer.Common.Data.Semester where
 
+import           Control.Lens
 import           Data.Aeson                         (FromJSON, ToJSON)
 import           GHC.Generics                       (Generic)
 import           Test.QuickCheck                    (Arbitrary, arbitrary)
@@ -42,6 +40,8 @@ instance Pretty Semester where
   pretty Eight = "8Vt"
   pretty Nine  = "9Ht"
   pretty Ten   = "10Vt"
+
+makePrisms ''Semester
 
 masterSemesters :: [Semester]
 masterSemesters = [Seven, Eight, Nine]

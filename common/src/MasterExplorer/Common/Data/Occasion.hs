@@ -1,12 +1,10 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric  #-}
+{-# LANGUAGE DeriveAnyClass  #-}
+{-# LANGUAGE DeriveGeneric   #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Common.Data.Occasion
-  ( Occasion (..)
-  , toMasterOccasions
-  , occasionSemester
-  ) where
+module MasterExplorer.Common.Data.Occasion where
 
+import           Control.Lens
 import           Data.Aeson                          (FromJSON, ToJSON)
 import           Data.Text                           (intercalate)
 import           GHC.Generics                        (Generic)
@@ -27,6 +25,8 @@ instance Semigroup Occasion where
 
 instance Pretty Occasion where
   pretty = intercalate "-" . fmap pretty .  getOccasion
+
+makeLenses ''Occasion
 
 toMasterOccasions :: Occasion -> [Occasion]
 toMasterOccasions occasion
