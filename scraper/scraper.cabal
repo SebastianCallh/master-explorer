@@ -41,7 +41,7 @@ library
                      , either
                      , hlint
                      , hspec
-                     , megaparsec == 6.3.0
+                     , megaparsec == 6.5.0
                      , monad-logger 
                      , mtl
                      , parser-combinators

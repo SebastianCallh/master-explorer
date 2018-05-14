@@ -21,12 +21,20 @@ module MasterExplorer.Server.Db
   , updateCourses
   , updateProgram
   , insertCoursePrograms
+  , selectSchedule
+  , insertSchedule
+  , fromDbSchedule
   , fromDbCourse
   , fromDbProgram
   , toDbProgram
   ) where
 
-import           Data.Text                       (Text)
+import qualified Data.Map                           as M
+
+
+import           Data.Maybe                      (listToMaybe, mapMaybe)
+import           Data.Map                           (Map)
+import           Data.Text                       (Text, pack)
 import           Data.Traversable                (for)
 import           Control.Applicative             (liftA2)
 import           Control.Monad.IO.Class          (liftIO)           
@@ -35,7 +43,6 @@ import           Database.Persist.TH             (mkMigrate, mkPersist,
                                                   persistLowerCase, share,
                                                   sqlSettings)
 import           Database.Esqueleto
-import           Data.Maybe                      (mapMaybe)
 import           Safe                            (headMay)
 
 import           MasterExplorer.Server.Config    (Config (..), App)
@@ -72,9 +79,10 @@ DbProgram
 CourseProgram
   courseId  DbCourseId
   programId DbProgramId
-|]
 
-  --  UniqueCourseProgram courseId programId
+DbSchedule
+  courseSelections [CourseSelection]
+|]
 
 runDb :: ReaderT SqlBackend IO a -> App a
 runDb query = do
@@ -111,14 +119,10 @@ removeCourses = do
   runDb $ delete $
     from $ \(_c  :: SqlExpr (Entity DbCourse)) -> return ()
 
-insertCourses :: [DbCourse] -> App ()
-insertCourses courses =
-  runDb $ insertMany_ courses
-
 unwrap :: (Maybe a, Maybe b) -> Maybe (a, b)
 unwrap = uncurry (liftA2 (,))
 
-updateCourses :: [Course] -> App () --[Entity DbCourse]
+updateCourses :: [Course] -> App ()
 updateCourses courses = do
   _ <- removeCourses
   let dbCourses = toDbCourse <$> courses
@@ -209,3 +213,44 @@ fromDbCourse DbCourse{..} programs = Course
   , _courseSelfStudyTime = dbCourseSelfStudyTime
   , _courseScheduledTime = dbCourseScheduledTime
   } 
+
+insertSchedule :: Schedule -> App Int
+insertSchedule schedule = do
+{-  mdbProgram <- fmap listToMaybe $ runDb $
+    select $ from $ \p -> do
+    where_ $ p ^. DbProgramCode ==. val (_programCode . _scheduleProgram $ schedule)
+    return p
+
+  case mdbProgram of
+    Nothing -> error $
+      mconcat [ "A program that really should exist "
+              , "was not found in database when saving schedule "
+              , show schedule
+              ]
+-}      
+  --  Just dbProgram -> do
+  let dbSchedule = DbSchedule $ slotMapToCourseSelections $ getSchedule schedule
+  fromIntegral . fromSqlKey <$> runDb (insert dbSchedule)
+
+selectSchedule :: Int -> App (Maybe (Entity DbSchedule))
+selectSchedule scheduleId =
+  fmap listToMaybe $ runDb $
+    select $ from $ \s -> do
+      where_ $ s ^. DbScheduleId ==. val (toSqlKey $ fromIntegral scheduleId)
+      return s
+
+-- Marshallig to and from db representation of Schedule
+
+fromDbSchedule :: DbSchedule -> Schedule
+fromDbSchedule DbSchedule{..} = Schedule $
+  slotMapFromCourseSelections dbScheduleCourseSelections
+
+slotMapToCourseSelections :: Map Slot [Course] -> [CourseSelection]
+slotMapToCourseSelections = M.foldMapWithKey insertCourseSlots
+  where insertCourseSlots s cs = [CourseSelection s c | c <- cs]
+
+slotMapFromCourseSelections :: [CourseSelection] -> Map Slot [Course]
+slotMapFromCourseSelections = foldr insertSelection M.empty 
+  where insertSelection cSel = M.insertWith (++)
+                               (_courseSelectionSlot cSel)
+                               [_courseSelectionCourse cSel]

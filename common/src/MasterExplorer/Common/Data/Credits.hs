@@ -19,7 +19,7 @@ newtype Credits = Credits { getCredits :: Float }
 -- |
 instance Pretty Credits where
   pretty c =
-    let roundedCredits = (fromIntegral . round $ getCredits c :: Integer) in
+    let roundedCredits = fromIntegral . round $ getCredits c in
       if fromInteger roundedCredits == getCredits c
       then pack (show roundedCredits) <> " hp"
       else pack (show $ getCredits c) <> " hp"

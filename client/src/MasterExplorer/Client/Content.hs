@@ -16,9 +16,11 @@ import qualified MasterExplorer.Client.CourseGrid       as Grid
 import qualified MasterExplorer.Client.CourseInfo       as Info 
 import qualified MasterExplorer.Client.PlanStats        as Stats
 
-import           MasterExplorer.Common.Data.Slot        (Slot (..))
-import           MasterExplorer.Common.Data.Course      
-import           MasterExplorer.Common.Data.Occasion    (getOccasion)
+import           MasterExplorer.Common.Data.Schedule   
+import           MasterExplorer.Common.Data.Slot
+import           MasterExplorer.Common.Data.Course
+import           MasterExplorer.Common.Data.CourseSelection
+import           MasterExplorer.Common.Data.Occasion
 
 {- The content view is either a schedule or a statistics view. Since the BlockView
    can be either the block schedule or a selected course and it also branches out. 
@@ -50,6 +52,7 @@ data Content t = Content
   { _content_activeContentView :: !(Dynamic t ContentViewWidget)
   , _content_activeBlockView   :: !(Dynamic t BlockViewWidget)
   , _content_selectedCourse    :: !(Dynamic t (Maybe Course))
+--  , _content_schedule          :: !(Dynamic t Schedule)
   }
 
 makeLenses ''Content
@@ -64,25 +67,27 @@ data ContentEvent
 --   and to the left of the course list. 
 content :: forall t m.
   MonadWidget t m
-  => Dynamic t (Map Slot [Course])
-  -> Event t Course
-  -> Event t Course
+  => Dynamic t Schedule
+  {-(Event t Schedule -> m (Event t Int)) -- ^ Function to save schedule to server.
+  -> Dynamic t Program                     -- ^ Current program selected.
+  -> Dynamic t (Map Slot [Course])         -- ^ Current course selections.
+  -> Event t Course                        -- ^ MouseEnter event for courses in course list.
+  -> Event t Course                        -- ^ MouseLeave event for courses in course list.-}
   -> m ()
-content selectionsDyn mouseEnterCourseEv mouseLeaveCourseEv = do
+content scheduleDyn = do--saveSchedule selectionsDyn mouseEnterCourseEv mouseLeaveCourseEv = do
   rec contentViewDyn     <- foldDyn updateContentView BlockView event
       blockViewDyn       <- foldDyn updateBlockView GridView event
       selectedmCourseDyn <- foldDyn updateSelectedCourse Nothing event
+--      let scheduleDyn = Schedule <$>  foldDyn updateSchedule (newSchedule event
       let content = Content contentViewDyn blockViewDyn selectedmCourseDyn
 
       event <- eventTabDisplay "content-menu" "active-content" $ do
-        let bv = blockView selectionsDyn
-              selectedmCourseDyn mouseEnterCourseEv
-              mouseLeaveCourseEv blockViewDyn            
-        let sv = statsView selectionsDyn
+        let bv = blockView scheduleDyn selectedmCourseDyn blockViewDyn
+        let sv = statsView scheduleDyn
         M.fromList [ (BlockView, ("Blockschema", bv))
                    , (StatsView, ("Statistik",   sv))
                    ]
-
+      
   return ()
  
   where
@@ -99,29 +104,32 @@ content selectionsDyn mouseEnterCourseEv mouseLeaveCourseEv = do
     updateBlockView (BlockViewSelected v) = const v
     updateBlockView (CourseSelected _)    = const CourseView
     updateBlockView _                     = id
-    
+
+    updateSchedule _ = id
+      
 statsView :: forall t m.
   MonadWidget t m
-  => Dynamic t (Map Slot [Course])
+  => Dynamic t Schedule 
   -> m (Event t ContentEvent)
-statsView selectionsDyn =
+statsView scheduleDyn =
   divClass "content-wrap" $ do
-    ev <- Stats.planStats selectionsDyn
+    ev <- Stats.planStats scheduleDyn
     return $ ffor ev $ \case
       Stats.Ev -> ContentViewSelected BlockView
 
 blockView :: forall t m.
   MonadWidget t m
-  => Dynamic t (Map Slot [Course])  -- ^ Selected courses.
-  -> Dynamic t (Maybe Course)       -- ^ Maybe a course is selected.
-  -> Event t Course                 -- ^ Event for mouse entering a course in course list.
-  -> Event t Course                 -- ^ Event for mouse leaving a course in course list.
+  => Dynamic t Schedule             -- ^ Selected courses.
+  -> Dynamic t (Maybe Course)       -- ^ Maybe a course is selected for the info view.
+--  -> Event t Course                 -- ^ Event for mouse entering a course in course list.
+--  -> Event t Course                 -- ^ Event for mouse leaving a course in course list.
   -> Dynamic t BlockViewWidget      -- ^ The sub widget that is currently selected.
   -> m (Event t ContentEvent)
 blockView selectionsDyn mSelCourseDyn
-  mouseEnterCourseEv mouseLeaveCourseEv activeWidget =
+--  mouseEnterCourseEv mouseLeaveCourseEv
+  activeWidget =
   divClass "content-wrap" $ do
-    let gv = gridView selectionsDyn mouseEnterCourseEv mouseLeaveCourseEv
+    let gv = gridView selectionsDyn -- mouseEnterCourseEv mouseLeaveCourseEv
     let cv = courseView mSelCourseDyn
     let widgetMap = constDyn $ M.fromList
           [ (GridView,   gv)
@@ -141,12 +149,12 @@ blockView selectionsDyn mSelCourseDyn
   
 gridView :: forall t m.
   MonadWidget t m
-  => Dynamic t (Map Slot [Course])
-  -> Event t Course
-  -> Event t Course
+  => Dynamic t Schedule
+--  -> Event t Course
+--  -> Event t Course
   -> m (Event t ContentEvent)
-gridView selectionsDyn mouseEnterCourseEv mouseLeaveCourseEv = do
-  courseGrid <- Grid.courseGrid selectionsDyn mouseEnterCourseEv mouseLeaveCourseEv
+gridView scheduleDyn = do -- mouseEnterCourseEv mouseLeaveCourseEv = do
+  courseGrid <- Grid.courseGrid scheduleDyn -- mouseEnterCourseEv mouseLeaveCourseEv
   return $ leftmost [ CourseSelected . pure <$> courseGrid ^. Grid.courseGrid_onCourseSelected
                     , CourseRemoved         <$> courseGrid ^. Grid.courseGrid_onCourseRemoved
                     ]

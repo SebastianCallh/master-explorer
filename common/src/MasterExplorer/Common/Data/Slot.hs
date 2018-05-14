@@ -8,7 +8,7 @@ module MasterExplorer.Common.Data.Slot
   ) where
 
 import           Data.Semigroup                      ((<>))
-import           Data.Aeson                          (FromJSON, ToJSON)
+import           Data.Aeson                          (FromJSON, ToJSON, FromJSONKey, ToJSONKey)
 import           Data.Ord                            (comparing)
 import           GHC.Generics                        (Generic)
 
@@ -21,7 +21,7 @@ data Slot = Slot
   { slotSemester :: !Semester
   , slotPeriod   :: !Period
   , slotBlocks   :: !Block
-  } deriving (Show, Read, Eq, Generic, ToJSON, FromJSON)
+  } deriving (Show, Read, Eq, Generic, ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 
 instance Ord Slot where
   compare a b =

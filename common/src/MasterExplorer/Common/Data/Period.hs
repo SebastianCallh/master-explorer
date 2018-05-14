@@ -5,7 +5,8 @@
 module MasterExplorer.Common.Data.Period where
 
 import           Control.Lens
-import           Data.Aeson                         (FromJSON, ToJSON)
+import           Data.Aeson                         (FromJSON, FromJSONKey,
+                                                     ToJSON, ToJSONKey)
 import           GHC.Generics                       (Generic)
 import           Test.QuickCheck                    (Arbitrary, arbitrary)
 import           Test.QuickCheck.Arbitrary.ADT      (ToADTArbitrary,
@@ -14,7 +15,8 @@ import           Test.QuickCheck.Arbitrary.ADT      (ToADTArbitrary,
 import           MasterExplorer.Common.Class.Pretty (Pretty, pretty)
 
 data Period = One | Two
-  deriving (Show, Read, Eq, Generic, ToJSON, FromJSON, ToADTArbitrary)
+  deriving (Show, Read, Eq, Generic,
+            ToJSON, FromJSON, ToJSONKey, FromJSONKey, ToADTArbitrary)
 
 instance Ord Period where
   compare One Two = LT

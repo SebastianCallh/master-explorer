@@ -52,4 +52,15 @@ The examinations was parsed by scraping a "tbody" element while they appeared in
 ### It seems like TATA42 is not being selected when clicked. Other courses with the same amount of slots seem to work though.
 
 ### CourseFields
-Courses can in theory (and a few actually does) belong to more than one field and should be parsed accordingly.
+Courses can in theory (and a few actually does) belong to more than one field and should be parsed accordingly. This has been done, which resulted in a new bug where course names with ',' in them get broken.
+
+### FromHttpApiData and toHttpApiData
+Apparently it is not possible to generate generic instances for FromHttpApiData and toHttpApiData, which is needed when saving a schedule. This has to be written by hand, and could very well be made efficiently using megaparsec, but for now a easy but excruciatingly slow implemnetation will have to do.
+
+
+### Api route inference
+The type hackery `client courseApi (Proxy :: Proxy m) (Proxy :: Proxy ()) url` being done to infer the api routes while parameterising on the url has lead to a lot of code duplication in `MasterExplorer.Client.Api`. There's got to be a better way of infering the types _once_ and reusing them.
+
+
+### Saving and loading schedule
+Currently the schedule is snapshotted upon save, so if a course in the schedule should be updated it will not be reflected if the user loads an old schedule.

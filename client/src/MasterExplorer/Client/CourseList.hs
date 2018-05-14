@@ -4,10 +4,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE LambdaCase      #-}
 
-module MasterExplorer.Client.CourseList
-  ( CourseList (..)
-  , courseList  
-  ) where
+module MasterExplorer.Client.CourseList where
 
 import qualified Data.Text                as T
 import qualified Data.Map                 as M

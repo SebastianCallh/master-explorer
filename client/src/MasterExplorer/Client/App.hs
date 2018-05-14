@@ -1,18 +1,24 @@
+{-# LANGUAGE RecursiveDo #-}
+
 module MasterExplorer.Client.App
   ( app
   ) where
 
 
-import           Reflex.Dom.Extended
-import           Servant.Reflex                         (BaseUrl)
-import           Data.Text                              (Text)
+import qualified Data.Text  as T
+import qualified Data.Map   as M
 
+import           Control.Lens
+import           Servant.Reflex                         (BaseUrl)
+import           Reflex.Dom.Extended
 import           MasterExplorer.Common.Data.Program     (engPrograms)
---import           MasterExplorer.Client.Data.AppState    (AppState) --FocusStatus (FocusStauts)
-import           MasterExplorer.Client.ProgramList      (programList)
+import           MasterExplorer.Common.Data.Schedule   
+import           MasterExplorer.Client.ProgramList
 import           MasterExplorer.Client.Content          (content)
-import           MasterExplorer.Client.Api              (programCourses)
-import           MasterExplorer.Client.CourseList       (CourseList (..), courseList)
+import           MasterExplorer.Client.Api              (programCourses, saveSchedule, loadSchedule)
+import           MasterExplorer.Client.CourseList
+import           MasterExplorer.Client.EmptyContent     (emptyContent)
+import           MasterExplorer.Client.ScheduleApiMenu
 
 app :: forall t m.
   MonadWidget t m
@@ -20,22 +26,30 @@ app :: forall t m.
   -> m ()
 app apiUrlDyn =
   divClass "container" $ do
-    programSelectEv <- divClass "header" $ do
-      divClass "logo" $ text "Master Explorer"        
-      programList engPrograms
+    pl <- divClass "header" $ do
+      divClass "logo" $ text "Master Explorer"
+      let programEndpoint = programCourses apiUrlDyn
+      let programsDyn     = constDyn engPrograms
+      programList programEndpoint programsDyn
 
-    coursesEv  <- programCourses apiUrlDyn programSelectEv
-    coursesDyn <- holdDyn [] coursesEv
-    
-    cl <- divClass "sidebar" $
+    cl <- divClass "sidebar" $ do
+      let coursesDyn = pl ^. programList_selectedCourses
       courseList coursesDyn
-      
-    _ <- divClass "content" $
-      content
-        (_courseList_slots cl)
-        (_courseList_onMouseEnter cl)
-        (_courseList_onMouseLeave cl)
 
+    _ <- divClass "content" $ do
+      rec 
+        c <- dyn $ ffor (pl ^. programList_selectedProgram) $ \case
+          Nothing -> emptyContent
+          Just _  -> content scheduleDyn      
+          
+        sam <- scheduleApiMenu apiUrlDyn scheduleDyn
+        scheduleDyn <- foldDynMaybe const (Schedule M.empty) $ leftmost
+          [ Just . Schedule <$> updated (cl ^. courseList_slots)
+          , sam ^. scheduleApiMenu_onLoad
+          ]
+          
+      return c
+          
     divClass "footer" $ pure ()
   
     pure ()

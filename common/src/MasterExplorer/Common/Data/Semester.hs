@@ -5,7 +5,8 @@
 module MasterExplorer.Common.Data.Semester where
 
 import           Control.Lens
-import           Data.Aeson                         (FromJSON, ToJSON)
+import           Data.Aeson                         (FromJSON, FromJSONKey,
+                                                     ToJSON, ToJSONKey)
 import           GHC.Generics                       (Generic)
 import           Test.QuickCheck                    (Arbitrary, arbitrary)
 import           Test.QuickCheck.Arbitrary.ADT      (ToADTArbitrary,
@@ -24,7 +25,8 @@ data Semester
   | Eight
   | Nine
   | Ten
-  deriving (Show, Read, Ord, Eq, Generic, ToJSON, FromJSON, ToADTArbitrary)
+  deriving (Show, Read, Ord, Eq, Generic,
+            ToJSON, FromJSON, ToJSONKey, FromJSONKey, ToADTArbitrary)
 
 instance Arbitrary Semester where
   arbitrary = genericArbitrary

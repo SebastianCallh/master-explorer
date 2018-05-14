@@ -6,15 +6,17 @@ module MasterExplorer.Common.Api
     , courseApi
     ) where
 
-import           MasterExplorer.Common.Data.Course  (Course)
-import           MasterExplorer.Common.Data.Program (Program)
-import           Servant                            ((:<|>), (:>), Capture, Get,
-                                                     JSON, Post, Proxy (..),
-                                                     ReqBody)
+import           MasterExplorer.Common.Data.Course   (Course)
+import           MasterExplorer.Common.Data.Program  (Program)
+import           MasterExplorer.Common.Data.Schedule (Schedule)
+import           Servant                             ((:<|>), (:>), Capture,
+                                                      Get, JSON, Post,
+                                                      Proxy (..), ReqBody)
 
-type CourseAPI = "number"                                     :> Get  '[JSON] Int
-            :<|> "getCourses"    :> Capture "program" Program :> Get  '[JSON] [Course]
-            :<|> "updateCourses" :> ReqBody '[JSON] [Course]  :> Post '[JSON] Bool
+type CourseAPI = "getCourses"    :> Capture "program" Program   :> Get  '[JSON] [Course]
+            :<|> "updateCourses" :> ReqBody '[JSON] [Course]    :> Post '[JSON] Bool
+            :<|> "saveSchedule"  :> Capture "schedule" Schedule :> Post '[JSON] Int
+            :<|> "loadSchedule"  :> Capture "scheduleId" Int    :> Post '[JSON] (Maybe Schedule)
 
 courseApi :: Proxy CourseAPI
 courseApi = Proxy

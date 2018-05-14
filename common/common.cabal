@@ -28,9 +28,8 @@ library
                      , MasterExplorer.Common.Data.Slot
                      , MasterExplorer.Common.Data.Subject
                      , MasterExplorer.Common.Data.Block
-                     , MasterExplorer.Common.Data.CourseCode
+                     , MasterExplorer.Common.Data.CourseSelection
                      , MasterExplorer.Common.Data.CourseContent
-                     , MasterExplorer.Common.Data.CourseName
                      , MasterExplorer.Common.Data.CoursePart
                      , MasterExplorer.Common.Data.CoursePartType
                      , MasterExplorer.Common.Data.Examination
@@ -48,6 +47,7 @@ library
                      , MasterExplorer.Common.Data.ProgramCode
                      , MasterExplorer.Common.Data.ProgramSlug
                      , MasterExplorer.Common.Data.Prerequisites
+                     , MasterExplorer.Common.Data.Schedule
                      , MasterExplorer.Common.Data.Semester
                      , MasterExplorer.Common.Data.Specialization
                      , MasterExplorer.Common.Data.Url

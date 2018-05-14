@@ -5,7 +5,8 @@
 module MasterExplorer.Common.Data.Block  where
 
 import           Control.Lens
-import           Data.Aeson                         (FromJSON, ToJSON)
+import           Data.Aeson                         (FromJSON, FromJSONKey,
+                                                     ToJSON, ToJSONKey)
 import           GHC.Generics                       (Generic)
 
 import           MasterExplorer.Common.Class.Pretty (Pretty, pretty)
@@ -16,7 +17,8 @@ data Block
   | Three
   | Four
   | None
-  deriving (Show, Read, Eq, Generic, ToJSON, FromJSON)
+  deriving (Show, Read, Eq, Generic,
+            ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 
 instance Ord Block where
   compare One None    = GT
