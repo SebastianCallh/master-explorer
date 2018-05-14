@@ -2,15 +2,7 @@
 {-# LANGUAGE LambdaCase      #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module MasterExplorer.Client.CourseGrid
-  ( CourseGrid
-  , courseGrid_selections
-  , courseGrid_slotsInFocus
-  , courseGrid_onCourseSelected
-  , courseGrid_onCourseRemoved
-  , CourseGridEvent (..)
-  , courseGrid
-  ) where
+module MasterExplorer.Client.CourseGrid  where
 
 import qualified Data.Map                   as M
 
@@ -32,48 +24,48 @@ data CourseGridEvent
   | CourseRemoved Course
 
 data CourseGrid t = CourseGrid
-  { _courseGrid_selections       :: !(Dynamic t (Map Slot [Course]))
-  , _courseGrid_slotsInFocus     :: !(Dynamic t [Slot])
-  , _courseGrid_onCourseSelected :: !(Event t Course)
-  , _courseGrid_onCourseRemoved  :: !(Event t Course)
+  { _selections       :: !(Dynamic t (Map Slot [Course]))
+  , _slotsInFocus     :: !(Dynamic t [Slot])
+  , _onCourseSelected :: !(Event t Course)
+  , _onCourseRemoved  :: !(Event t Course)
   }
   
 makeLenses ''CourseGrid
 
 -- | Grid view of all master semesters and
 --   currently selected courses.
-courseGrid :: forall t m.
+widget :: forall t m.
   MonadWidget t m
   => Dynamic t Schedule
 --  -> Event t Course
 --  -> Event t Course
   -> m (CourseGrid t)
-courseGrid scheduleDyn = do -- mouseEnterCourseEv mouseLeaveCourseEv = do
+widget scheduleDyn = do -- mouseEnterCourseEv mouseLeaveCourseEv = do
   let f c = const $ c ^. courseOccasions >>= getOccasion        
   let slotsInFocus = constDyn [] -- foldDyn f [] $ leftmost [mouseLeaveCourseEv, mouseEnterCourseEv]
-  event        <- gridWidget scheduleDyn
+  event <- markup scheduleDyn
 
-  let onCourseSelected = fforMaybe event $ \case
+  let courseSelectedEv = fforMaybe event $ \case
         (CourseSelected c) -> Just c
         _                  -> Nothing
 
-  let onCourseRemoved = fforMaybe event $ \case
+  let courseRemovedEv = fforMaybe event $ \case
         (CourseRemoved c) -> Just c
         _                    -> Nothing
      
   return CourseGrid
-    { _courseGrid_selections       = getSchedule <$> scheduleDyn
-    , _courseGrid_slotsInFocus     = slotsInFocus
-    , _courseGrid_onCourseSelected = onCourseSelected
-    , _courseGrid_onCourseRemoved  = onCourseRemoved
+    { _selections       = getSchedule <$> scheduleDyn
+    , _slotsInFocus     = slotsInFocus
+    , _onCourseSelected = courseSelectedEv
+    , _onCourseRemoved  = courseRemovedEv
     }
 
-gridWidget :: forall t m.
+markup :: forall t m.
   MonadWidget t m
   => Dynamic t Schedule
 --  -> Dynamic t [Slot]
   -> m (Event t CourseGridEvent)
-gridWidget scheduleDyn =
+markup scheduleDyn =
   colGrid "block-grid" $ gridCol <$> scheduleDyn
 
 -- | Column of all blocks in a period in a semester.

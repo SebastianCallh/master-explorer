@@ -15,42 +15,32 @@ data ProgramListEvent
   | ProgramDeselected Program
 
 data ProgramList t = ProgramList
-  { _programList_programs   :: !(Dynamic t [Program])
-  , _programList_selectedProgram  :: !(Dynamic t (Maybe Program))
-  , _programList_selectedCourses :: !(Dynamic t [Course])
+  { _programs        :: !(Dynamic t [Program])
+  , _selectedProgram :: !(Dynamic t (Maybe Program))
+  , _selectedCourses :: !(Dynamic t [Course])
   }
 
 makeLenses ''ProgramList
-{-
-mkProgramList :: [Program] -> Dynamic t [Course] -> ProgramList t
-mkProgramList ps selectedCourses = ProgramList
-  { _programs   = ps
-  , _selection = Nothing 
-  , _programList_selectedCourses = selectedCourses
-  }
--}
 
-programList :: forall t m.
+widget :: forall t m.
   (MonadWidget t m,
    DomBuilder t m)
   => (Event t Program -> m (Event t [Course]))
   -> Dynamic t [Program]
   -> m (ProgramList t)
-programList fetchProgramCourses programsDyn = do
-  rec --list    <- foldDyn updateSelection (mkProgramList ps courses) events
-      selectedProg <- foldDyn updateSelection Nothing events
-      progCourses <- holdDyn [] =<< fetchProgramCourses (fmapMaybe id $ updated selectedProg)
-      events  <- programListWidget programsDyn selectedProg
+widget getCourses programsDyn = do
+  rec
+    selectedProg <- foldDyn updateSelection Nothing events
+    progCourses <- holdDyn [] =<< getCourses (fmapMaybe id $ updated selectedProg)
+    events  <- programListWidget programsDyn selectedProg
 
   return ProgramList
-    { _programList_programs        = programsDyn
-    , _programList_selectedProgram = selectedProg
-    , _programList_selectedCourses = progCourses
+    { _programs        = programsDyn
+    , _selectedProgram = selectedProg
+    , _selectedCourses = progCourses
     }
 
   where
---    updateSelection (ProgramSelected   p) pl = pl & selection .~ pure p
---    updateSelection (ProgramDeselected _) pl = pl & selection .~ Nothing      
     updateSelection (ProgramSelected   p) = const $ pure p
     updateSelection (ProgramDeselected _) = const Nothing      
   
@@ -75,8 +65,8 @@ programListItem :: forall t m.
 programListItem mSelectedProgramDyn programDyn = do
   event <- el "li" $ 
     dyn $ ffor programDyn $ \program -> do
-      let tupleDyn = ffor mSelectedProgramDyn $ \selectedProgram ->
-            if pure program == selectedProgram
+      let tupleDyn = ffor mSelectedProgramDyn $ \selectedProg ->
+            if pure program == selectedProg
             then (ProgramDeselected, "class" =: "selected")
             else (ProgramSelected, "class" =: "not-selected")
 

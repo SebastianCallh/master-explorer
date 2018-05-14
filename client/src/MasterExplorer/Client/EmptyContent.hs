@@ -2,10 +2,11 @@ module MasterExplorer.Client.EmptyContent where
 
 import           Reflex.Dom.Extended
 
-emptyContent :: forall t m.
+-- | Content showed when no program is selected.
+widget :: forall t m.
   MonadWidget t m
   => m ()
-emptyContent =
+widget =
   divClass "content-empty" $
     el "h1" $
       text "Välj ett program för att börja!"

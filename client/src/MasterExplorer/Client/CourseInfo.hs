@@ -1,11 +1,8 @@
-module MasterExplorer.Client.CourseInfo
-  ( CourseInfo
-  , CourseInfoEvent (..)
-  , courseInfo
-  ) where
+{-# LANGUAGE TemplateHaskell #-}
+
+module MasterExplorer.Client.CourseInfo where
 
 import           Control.Lens
-import           Data.Text                              (Text, pack)
 import           Data.Semigroup                         ((<>))
 import           Reflex.Dom.Extended 
 
@@ -13,17 +10,31 @@ import           MasterExplorer.Common.Data.Examination
 import           MasterExplorer.Common.Data.Course      
 import           MasterExplorer.Common.Class.Pretty     (pretty)
 
-data CourseInfo = CourseInfo
+data CourseInfo t = CourseInfo
+  { _onClose :: Event t ()
+  }
+
+makeLenses ''CourseInfo
 
 data CourseInfoEvent = CourseInfoEvent
 
-courseInfo :: forall t m.
+widget :: forall t m.
   MonadWidget t m
   => Dynamic t Course
-  -> m (Event t CourseInfoEvent)
-courseInfo courseDyn =
-  divClass "course-info" $ do
+  -> m (CourseInfo t)
+widget courseDyn = do
+  closeEv <- markup courseDyn
+  return CourseInfo
+    { _onClose = closeEv
+    }
 
+
+markup :: forall t m.
+  MonadWidget t m
+  => Dynamic t Course
+  -> m (Event t ())
+markup courseDyn = 
+  divClass "course-info" $ do
     divClass "course-header" $ do
       el "h1" $ dynText $
         mconcat [ view courseCode <$> courseDyn
@@ -94,4 +105,4 @@ courseInfo courseDyn =
     divClass "button-menu" $ do
       (e,_) <- elClass' "a" "button" $
         text "Tillbaka"
-      return $ CourseInfoEvent <$ domEvent Click e
+      return $ domEvent Click e

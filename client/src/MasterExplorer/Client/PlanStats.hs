@@ -1,7 +1,6 @@
-module MasterExplorer.Client.PlanStats
-  ( PlanStatsEvent (..)
-  , planStats
-  ) where
+{-# LANGUAGE TemplateHaskell #-}
+
+module MasterExplorer.Client.PlanStats where
 
 import qualified Data.Map                   as M
 import qualified Data.Text as T
@@ -18,21 +17,27 @@ import           MasterExplorer.Common.Data.Period          (Period)
 import           MasterExplorer.Common.Data.Semester        (Semester)
 import           MasterExplorer.Common.Data.Slot            (slotsInPeriod)
 
-data PlanStatsEvent
-  = Ev
+data PlanStats t = PlanStats
+  { _onClose :: Event t ()
+  }
 
-planStats  :: forall t m.
+makeLenses ''PlanStats
+
+widget :: forall t m.
   MonadWidget t m
   => Dynamic t Schedule
-  -> m (Event t PlanStatsEvent)
-planStats scheduleDyn = 
-  colGrid "stats-column" $ gridCol <$> scheduleDyn
-
+  -> m (PlanStats t)
+widget scheduleDyn = do
+  closeEv <- colGrid "stats-column" $ gridCol <$> scheduleDyn
+  return PlanStats
+    { _onClose = closeEv
+    }
+    
 gridCol :: forall m t.
   MonadWidget t m
   => Schedule            -- ^ Current course selections. 
   -> (Semester, Period)  -- ^ The current column.
-  -> m (Event t PlanStatsEvent)
+  -> m (Event t ())
 gridCol schedule column = do
   let slots   = uncurry slotsInPeriod column
   let courses = slots   >>= flip (M.findWithDefault []) (getSchedule schedule)

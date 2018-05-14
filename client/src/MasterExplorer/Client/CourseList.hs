@@ -17,7 +17,6 @@ import           Data.Semigroup           ((<>))
 import           Reflex.Dom.Extended
 
 import           MasterExplorer.Common.Class.Pretty     (pretty)
-import           MasterExplorer.Client.Data.HoverStatus (HoverStatus (..))
 import           MasterExplorer.Common.Data.Slot        (Slot)
 import           MasterExplorer.Common.Data.Occasion    (Occasion, occasionSemester, getOccasion)
 import           MasterExplorer.Common.Data.Course
@@ -28,14 +27,14 @@ data CourseStatus
   | Selected Occasion
 
 data CourseList t = CourseList
-  { _courseList_courses          :: !(Dynamic t [Course])
-  , _courseList_statuses         :: !(Dynamic t (Map Course CourseStatus))
---  , _courseList_hover            :: !(Dynamic t (Maybe Course))
-  , _courseList_slots            :: !(Dynamic t (Map Slot [Course]))
-  , _courseList_onCourseSelect   :: !(Event t (Course, Occasion))
-  , _courseList_onCourseDeselect :: !(Event t Course)
-  , _courseList_onMouseEnter     :: !(Event t Course)
-  , _courseList_onMouseLeave     :: !(Event t Course)
+  { _courses          :: !(Dynamic t [Course])
+  , _statuses         :: !(Dynamic t (Map Course CourseStatus))
+--  , _hover            :: !(Dynamic t (Maybe Course))
+  , _slots            :: !(Dynamic t (Map Slot [Course]))
+  , _onCourseSelect   :: !(Event t (Course, Occasion))
+  , _onCourseDeselect :: !(Event t Course)
+--  , _onMouseEnter     :: !(Event t Course)
+--  , _onMouseLeave     :: !(Event t Course)
   }
 
 makeLenses ''CourseList
@@ -51,42 +50,43 @@ data CourseListEvent
 -- | The list to the left in the app for selecting courses
 --   Internal events are bubbled up to this function which
 --   then updates internal state. 
-courseList :: forall t m.
+widget :: forall t m.
   MonadWidget t m
   => Dynamic t [Course]
   -> m (CourseList t)
-courseList coursesDyn = do
+widget coursesDyn = do
   rec statusesDyn <- foldDyn updateStatuses      M.empty event
       slotsDyn    <- foldDyn updateSlots         M.empty event
-      let onCourseSelect = fforMaybe event $ \case
+      let courseSelectedEv = fforMaybe event $ \case
             (CourseSelected c o) -> Just (c, o)
             _                    -> Nothing
 
-      let onCourseDeselect = fforMaybe event $ \case
+      let courseDeselectedEv = fforMaybe event $ \case
             (CourseDeselected c _) -> Just c
             _                    -> Nothing
-            
+{-            
       let onMouseEnter = fforMaybe event $ \case
             (CourseMouseEnter c) -> Just c
             _                    -> Nothing
-
+-}
+{-
       let onMouseLeave = fforMaybe event $ \case
             (CourseMouseLeave c) -> Just c
             _                    -> Nothing
-
+-}
       event <- courseListWidget statusesDyn coursesDyn
         
 --      hover <- foldDynMaybe updateHover Nothing event
       
   return CourseList
-    { _courseList_courses          = coursesDyn
-    , _courseList_statuses         = statusesDyn
---    , _courseList_hover            = hover
-    , _courseList_slots            = slotsDyn
-    , _courseList_onCourseSelect   = onCourseSelect
-    , _courseList_onCourseDeselect = onCourseDeselect
-    , _courseList_onMouseEnter     = onMouseEnter
-    , _courseList_onMouseLeave     = onMouseLeave
+    { _courses          = coursesDyn
+    , _statuses         = statusesDyn
+--    , _hover            = hover
+    , _slots            = slotsDyn
+    , _onCourseSelect   = courseSelectedEv
+    , _onCourseDeselect = courseDeselectedEv
+--    , _onMouseEnter     = onMouseEnter
+--    , _onMouseLeave     = onMouseLeave
     }
 
   where
@@ -140,8 +140,8 @@ courseListItem statusesDyn courseDyn = do
     switchPromptly never event
 
   let tagCourse = tag (current courseDyn)
-  let mouseEnterEv = CourseMouseEnter <$> tagCourse (domEvent Mouseenter e)
-  let mouseLeaveEv = CourseMouseLeave <$> tagCourse (domEvent Mouseleave e)
+--  let mouseEnterEv = CourseMouseEnter <$> tagCourse (domEvent Mouseenter e)
+--  let mouseLeaveEv = CourseMouseLeave <$> tagCourse (domEvent Mouseleave e)
   return $ leftmost [event] --mouseLeaveEv, mouseEnterEv, event]
 
   where

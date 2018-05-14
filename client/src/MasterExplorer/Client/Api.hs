@@ -1,13 +1,11 @@
 {-# LANGUAGE RecursiveDo         #-}
 {-# LANGUAGE GADTs               #-}
 {-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE TemplateHaskell     #-}
 
-module MasterExplorer.Client.Api
-  ( programCourses
-  , saveSchedule
-  , loadSchedule
-  ) where
+module MasterExplorer.Client.Api  where
 
+import           Control.Lens
 import           Data.Proxy        (Proxy (..))
 import           Reflex.Dom
 import           Servant.Reflex    
@@ -18,53 +16,39 @@ import           MasterExplorer.Common.Data.Program  (Program)
 import           MasterExplorer.Common.Data.Schedule (Schedule)
 import           MasterExplorer.Common.Api           (courseApi)
 
-programCourses :: forall t m.
-  (SupportsServantReflex t m,
-   MonadHold t m)
+data Api t m = Api
+  { _getProgramCourses :: Event t Program  -> m (Event t [Course])
+  , _saveSchedule      :: Event t Schedule -> m (Event t Int)
+  , _loadSchedule      :: Event t Int      -> m (Event t (Maybe Schedule))
+  }
+
+makeLenses ''Api
+
+widget :: forall t m.
+  MonadWidget t m
   => Dynamic t BaseUrl
-  -> Event t Program
-  -> m (Event t [Course])
-programCourses url programEv = mdo
-  let api = client courseApi (Proxy :: Proxy m) (Proxy :: Proxy ()) url
-  let (getCourses
-       :<|> _updateCourses
-       :<|> _saveSchedule
-       :<|> _loadSchedule) = api
-        
-  eprogram <- holdDyn (Left "-") (pure <$> programEv)
-  let trigger = () <$ updated eprogram
-  fmapMaybe reqSuccess <$> getCourses eprogram trigger
+  -> m (Api t m)
+widget apiUrlDyn = do
+  let api = client courseApi (Proxy :: Proxy m) (Proxy :: Proxy ()) apiUrlDyn
+      (getCourses :<|> _ :<|> callSaveSchedule :<|> callLoadSchedule) = api
+  
+      getProgramCourses' programEv = do
+        eprogram <- holdDyn (Left "-") (pure <$> programEv)
+        let trigger = () <$ updated eprogram
+        fmapMaybe reqSuccess <$> getCourses eprogram trigger
 
-saveSchedule :: forall t m.
-  (SupportsServantReflex t m,
-   MonadHold t m)
-  => Dynamic t BaseUrl
-  -> Event t Schedule
-  -> m (Event t Int)
-saveSchedule url scheduleEv = do
-  let api = client courseApi (Proxy :: Proxy m) (Proxy :: Proxy ()) url
-  let (_getCourses
-       :<|> _updateCourses
-       :<|> saveSchedule'
-       :<|> _loadSchedule) = api
+      saveSchedule' scheduleEv = do
+        scheduleDyn <- holdDyn  (Left "-") (pure <$> scheduleEv)
+        let trigger = () <$ scheduleEv
+        fmapMaybe reqSuccess <$> callSaveSchedule scheduleDyn trigger
 
-  scheduleDyn <- holdDyn  (Left "-") (pure <$> scheduleEv)
-  let trigger = () <$ scheduleEv
-  fmapMaybe reqSuccess <$> saveSchedule' scheduleDyn trigger
+      loadSchedule' scheduleIdEv = do
+        scheduleIdDyn <- holdDyn  (Left "-") (pure <$> scheduleIdEv)
+        let trigger = () <$ scheduleIdEv
+        fmapMaybe reqSuccess <$> callLoadSchedule scheduleIdDyn trigger
 
-loadSchedule :: forall t m.
-  (SupportsServantReflex t m,
-   MonadHold t m)
-  => Dynamic t BaseUrl
-  -> Event t Int
-  -> m (Event t (Maybe Schedule))
-loadSchedule url scheduleIdEv = do
-  let api = client courseApi (Proxy :: Proxy m) (Proxy :: Proxy ()) url
-  let (_getCourses
-       :<|> _updateCourses
-       :<|> _saveSchedule
-       :<|> loadSchedule') = api
-
-  scheduleIdDyn <- holdDyn  (Left "-") (pure <$> scheduleIdEv)
-  let trigger = () <$ scheduleIdEv
-  fmapMaybe reqSuccess <$> loadSchedule' scheduleIdDyn trigger
+  return Api
+    { _getProgramCourses = getProgramCourses'
+    , _saveSchedule      = saveSchedule'
+    , _loadSchedule      = loadSchedule'
+    }

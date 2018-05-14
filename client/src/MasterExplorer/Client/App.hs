@@ -5,7 +5,6 @@ module MasterExplorer.Client.App
   ) where
 
 
-import qualified Data.Text  as T
 import qualified Data.Map   as M
 
 import           Control.Lens
@@ -13,42 +12,48 @@ import           Servant.Reflex                         (BaseUrl)
 import           Reflex.Dom.Extended
 import           MasterExplorer.Common.Data.Program     (engPrograms)
 import           MasterExplorer.Common.Data.Schedule   
-import           MasterExplorer.Client.ProgramList
-import           MasterExplorer.Client.Content          (content)
-import           MasterExplorer.Client.Api              (programCourses, saveSchedule, loadSchedule)
-import           MasterExplorer.Client.CourseList
-import           MasterExplorer.Client.EmptyContent     (emptyContent)
-import           MasterExplorer.Client.ScheduleApiMenu
+
+import qualified MasterExplorer.Client.Api               as API
+import qualified MasterExplorer.Client.EmptyContent      as EC
+import qualified MasterExplorer.Client.Content           as C
+import qualified MasterExplorer.Client.CourseList        as CL
+import qualified MasterExplorer.Client.ProgramList       as PL
+import qualified MasterExplorer.Client.ScheduleApiMenu   as SAM
 
 app :: forall t m.
   MonadWidget t m
   => Dynamic t BaseUrl 
   -> m ()
-app apiUrlDyn =
+app apiUrlDyn = do
+  api <- API.widget apiUrlDyn
   divClass "container" $ do
-    pl <- divClass "header" $ do
+    programList <- divClass "header" $ do
       divClass "logo" $ text "Master Explorer"
-      let programEndpoint = programCourses apiUrlDyn
-      let programsDyn     = constDyn engPrograms
-      programList programEndpoint programsDyn
+      let getCourses  = api ^. API.getProgramCourses
+      let programsDyn = constDyn engPrograms
+      PL.widget getCourses programsDyn
 
-    cl <- divClass "sidebar" $ do
-      let coursesDyn = pl ^. programList_selectedCourses
-      courseList coursesDyn
+    courseList <- divClass "sidebar" $ do
+      let coursesDyn = programList ^. PL.selectedCourses
+      CL.widget coursesDyn
 
     _ <- divClass "content" $ do
       rec 
-        c <- dyn $ ffor (pl ^. programList_selectedProgram) $ \case
-          Nothing -> emptyContent
-          Just _  -> content scheduleDyn      
+        content <- dyn $ ffor (programList ^. PL.selectedProgram) $ \case
+          Nothing -> EC.widget
+          Just _  -> C.widget scheduleDyn      
           
-        sam <- scheduleApiMenu apiUrlDyn scheduleDyn
+        scheduleApiMenu <- SAM.widget
+          (api ^. API.saveSchedule)
+          (api ^. API.loadSchedule)
+          scheduleDyn
+        
         scheduleDyn <- foldDynMaybe const (Schedule M.empty) $ leftmost
-          [ Just . Schedule <$> updated (cl ^. courseList_slots)
-          , sam ^. scheduleApiMenu_onLoad
+          [ Just . Schedule <$> updated (courseList ^. CL.slots)
+          , scheduleApiMenu ^. SAM.onLoad
           ]
           
-      return c
+      return content
           
     divClass "footer" $ pure ()
   
