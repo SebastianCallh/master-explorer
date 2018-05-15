@@ -10,12 +10,13 @@ import           Reflex.Dom.Extended
 
 import           MasterExplorer.Common.Data.Schedule
 import           MasterExplorer.Common.Data.Course          
-import           MasterExplorer.Client.ColGrid              (colGrid)
 import           MasterExplorer.Common.Data.Examination     
 import           MasterExplorer.Common.Data.ExaminationType (ExaminationType(..))
 import           MasterExplorer.Common.Data.Period          (Period)
 import           MasterExplorer.Common.Data.Semester        (Semester)
 import           MasterExplorer.Common.Data.Slot            (slotsInPeriod)
+
+import qualified MasterExplorer.Client.ColGrid              as ColGrid
 
 data PlanStats t = PlanStats
   { _onClose :: Event t ()
@@ -28,7 +29,7 @@ widget :: forall t m.
   => Dynamic t Schedule
   -> m (PlanStats t)
 widget scheduleDyn = do
-  closeEv <- colGrid "stats-column" $ gridCol <$> scheduleDyn
+  closeEv <- ColGrid.widget "stats-column" $ gridCol <$> scheduleDyn
   return PlanStats
     { _onClose = closeEv
     }

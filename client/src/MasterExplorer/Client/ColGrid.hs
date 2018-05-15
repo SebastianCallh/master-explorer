@@ -1,6 +1,4 @@
-module MasterExplorer.Client.ColGrid
-  ( colGrid
-  ) where
+module MasterExplorer.Client.ColGrid where
 
 import           Data.Bifunctor                        (bimap)
 import           Data.Text                             (Text)
@@ -19,13 +17,13 @@ instance Pretty Column where
   
 -- | A grid of all slots in the master semesters.
 --   Returns events that fire in grid slots.
-colGrid :: forall t m a.
+widget :: forall t m a.
   MonadWidget t m  
   => Dynamic t Text -- ^ Extra text to be added to wrapping divs class.
   -> Dynamic t ((Semester, Period) -> m (Event t a)) -- ^ Function that generates a column.
 --  -> Dynamic t (Slot -> m (Event t a)) 
   -> m (Event t a)
-colGrid dynStyle colGenDyn = do
+widget dynStyle colGenDyn = do
   eventsDyn <- divClass "course-grid" $ do
     _ <- divClass "grid-col" $ do
       let blocksDyn = constDyn allBlocks      

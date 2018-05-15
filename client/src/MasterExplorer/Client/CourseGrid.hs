@@ -5,19 +5,22 @@
 module MasterExplorer.Client.CourseGrid  where
 
 import qualified Data.Map                   as M
+import qualified Data.Set                   as S
 
 import           Control.Lens
 import           Data.Semigroup             ((<>))
 import           Data.Map                   (Map)
+import           Data.Set                   (Set)
+import           Data.Text                  (Text)
 import           Reflex.Dom.Extended
 
 import           MasterExplorer.Common.Data.Schedule   
-import           MasterExplorer.Client.ColGrid         (colGrid)
 import           MasterExplorer.Common.Data.Period     (Period)
 import           MasterExplorer.Common.Data.Semester   (Semester)
 import           MasterExplorer.Common.Data.Course     
 import           MasterExplorer.Common.Data.Slot       (Slot (..), slotsInPeriod)
-import           MasterExplorer.Common.Data.Occasion   (getOccasion)
+
+import qualified MasterExplorer.Client.ColGrid         as ColGrid
 
 data CourseGridEvent
   = CourseSelected Course
@@ -25,7 +28,6 @@ data CourseGridEvent
 
 data CourseGrid t = CourseGrid
   { _selections       :: !(Dynamic t (Map Slot [Course]))
-  , _slotsInFocus     :: !(Dynamic t [Slot])
   , _onCourseSelected :: !(Event t Course)
   , _onCourseRemoved  :: !(Event t Course)
   }
@@ -36,14 +38,15 @@ makeLenses ''CourseGrid
 --   currently selected courses.
 widget :: forall t m.
   MonadWidget t m
-  => Dynamic t Schedule
---  -> Event t Course
---  -> Event t Course
+  => Dynamic t Schedule        -- ^ Current course selections.
+  -> Dynamic t (Maybe Course)  -- ^ Maybe a course slots should be in focus.
   -> m (CourseGrid t)
-widget scheduleDyn = do -- mouseEnterCourseEv mouseLeaveCourseEv = do
-  let f c = const $ c ^. courseOccasions >>= getOccasion        
-  let slotsInFocus = constDyn [] -- foldDyn f [] $ leftmost [mouseLeaveCourseEv, mouseEnterCourseEv]
-  event <- markup scheduleDyn
+widget scheduleDyn mFocusedCourse = do
+  let slotsInFocus = ffor mFocusedCourse $ \case
+        Just course -> foldr S.insert S.empty $ courseSlots course
+        Nothing     -> S.empty
+        
+  event <- markup scheduleDyn slotsInFocus
 
   let courseSelectedEv = fforMaybe event $ \case
         (CourseSelected c) -> Just c
@@ -55,7 +58,6 @@ widget scheduleDyn = do -- mouseEnterCourseEv mouseLeaveCourseEv = do
      
   return CourseGrid
     { _selections       = getSchedule <$> scheduleDyn
-    , _slotsInFocus     = slotsInFocus
     , _onCourseSelected = courseSelectedEv
     , _onCourseRemoved  = courseRemovedEv
     }
@@ -63,40 +65,45 @@ widget scheduleDyn = do -- mouseEnterCourseEv mouseLeaveCourseEv = do
 markup :: forall t m.
   MonadWidget t m
   => Dynamic t Schedule
---  -> Dynamic t [Slot]
+  -> Dynamic t (Set Slot)
   -> m (Event t CourseGridEvent)
-markup scheduleDyn =
-  colGrid "block-grid" $ gridCol <$> scheduleDyn
+markup scheduleDyn slotsInFocus =
+  ColGrid.widget "block-grid" $
+    gridCol <$> scheduleDyn <*> slotsInFocus
 
 -- | Column of all blocks in a period in a semester.
 gridCol :: forall m t.
   MonadWidget t m
-  => Schedule -- ^ Current course selections. 
+  => Schedule            -- ^ Current course selections. 
+  -> Set Slot            -- ^ Slots in focus.
   -> (Semester, Period)  -- ^ The current column.
-  -- Dynamic t [Slot]              -- ^ Slots in this column in ascending order.
   -> m (Event t CourseGridEvent)
-gridCol schedule column = do
+gridCol schedule slotsInFocus column = do
   let slotsDyn = constDyn $ uncurry slotsInPeriod column
   eventsDyn <- simpleList slotsDyn $ \slotDyn -> do
-    ev <- dyn $ gridItem schedule <$> slotDyn
+    let styleDyn = ffor slotDyn $ \slot ->
+          if slot `S.member` slotsInFocus
+            then "class" =: "focused"
+            else "class" =: ""
+            
+    ev <- dyn $ gridItem schedule <$> slotDyn <*> styleDyn
     switchPromptly never ev
+        
   return . switch . current $ leftmost <$> eventsDyn
 
 gridItem :: forall m t.
   MonadWidget t m
   => Schedule
---  -> [Slot]
   -> Slot
+  -> Map Text Text
   -> m (Event t CourseGridEvent)
-gridItem schedule slot = do
+gridItem schedule slot style = do
   let courses  = M.findWithDefault [] slot (getSchedule schedule)
   let adjustStyle = case courses of
         [] -> M.adjust ("grid-slot empty "     <>) "class"
         _  -> M.adjust ("grid-slot non-empty " <>) "class"
 
-  let emptyStyle =  ("class" =: "")
-
-  elAttr "div" (adjustStyle emptyStyle)  $ do
+  elAttr "div" (adjustStyle style) $ do
     let widgetMap = foldr makeWidgetMap M.empty courses 
     courseEv <- eventTabDisplay "course-list" "active-course" widgetMap
     return $ CourseSelected <$> courseEv

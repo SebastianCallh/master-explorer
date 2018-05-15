@@ -33,15 +33,17 @@ app apiUrlDyn = do
       let programsDyn = constDyn engPrograms
       PL.widget getCourses programsDyn
 
-    courseList <- divClass "sidebar" $ do
-      let coursesDyn = programList ^. PL.selectedCourses
-      CL.widget coursesDyn
-
+    courseList <- divClass "sidebar" $
+      CL.widget (programList ^. PL.selectedCourses)
+        
     _ <- divClass "content" $ do
       rec 
         content <- dyn $ ffor (programList ^. PL.selectedProgram) $ \case
           Nothing -> EC.widget
-          Just _  -> C.widget scheduleDyn      
+          Just _  -> C.widget
+                     scheduleDyn
+                     (courseList ^. CL.focusedCourse)
+                     
           
         scheduleApiMenu <- SAM.widget
           (api ^. API.saveSchedule)

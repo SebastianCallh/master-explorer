@@ -29,12 +29,10 @@ data CourseStatus
 data CourseList t = CourseList
   { _courses          :: !(Dynamic t [Course])
   , _statuses         :: !(Dynamic t (Map Course CourseStatus))
---  , _hover            :: !(Dynamic t (Maybe Course))
+  , _focusedCourse    :: !(Dynamic t (Maybe Course))
   , _slots            :: !(Dynamic t (Map Slot [Course]))
   , _onCourseSelect   :: !(Event t (Course, Occasion))
   , _onCourseDeselect :: !(Event t Course)
---  , _onMouseEnter     :: !(Event t Course)
---  , _onMouseLeave     :: !(Event t Course)
   }
 
 makeLenses ''CourseList
@@ -55,8 +53,11 @@ widget :: forall t m.
   => Dynamic t [Course]
   -> m (CourseList t)
 widget coursesDyn = do
-  rec statusesDyn <- foldDyn updateStatuses      M.empty event
-      slotsDyn    <- foldDyn updateSlots         M.empty event
+  rec statusesDyn   <- foldDynMaybe updateStatuses M.empty event
+      slotsDyn      <- foldDynMaybe updateSlots    M.empty event
+      courseInFocus <- foldDynMaybe updateHover    Nothing event
+      event         <- markup statusesDyn coursesDyn
+
       let courseSelectedEv = fforMaybe event $ \case
             (CourseSelected c o) -> Just (c, o)
             _                    -> Nothing
@@ -64,47 +65,34 @@ widget coursesDyn = do
       let courseDeselectedEv = fforMaybe event $ \case
             (CourseDeselected c _) -> Just c
             _                    -> Nothing
-{-            
-      let onMouseEnter = fforMaybe event $ \case
-            (CourseMouseEnter c) -> Just c
-            _                    -> Nothing
--}
-{-
-      let onMouseLeave = fforMaybe event $ \case
-            (CourseMouseLeave c) -> Just c
-            _                    -> Nothing
--}
-      event <- courseListWidget statusesDyn coursesDyn
-        
---      hover <- foldDynMaybe updateHover Nothing event
       
   return CourseList
     { _courses          = coursesDyn
     , _statuses         = statusesDyn
---    , _hover            = hover
+    , _focusedCourse    = courseInFocus
     , _slots            = slotsDyn
     , _onCourseSelect   = courseSelectedEv
     , _onCourseDeselect = courseDeselectedEv
---    , _onMouseEnter     = onMouseEnter
---    , _onMouseLeave     = onMouseLeave
     }
 
   where
-    -- | Map into Maybe to supress events firing on mouse events
-    updateStatuses (CourseSelected      c o) = M.insert c (Selected o)
-    updateStatuses (CoursePreSelected   c  ) = M.insert c InSelection
-    updateStatuses (CourseDeselected    c _) = M.insert c Available
-    updateStatuses _                         = id
+    -- Events are mapped into Maybe to supress re-render firing on mouse events
+    -- which causes infinite loops of MouseEnter.
 
---    updateHover (CourseMouseEnter c) _ = pure $ Just c -- Nothing -- pure . c --M.insert c Hovering
---    updateHover (CourseMouseLeave c) = Nothing
---    updateHover  _                   _ = pure Nothing
+    updateStatuses (CourseSelected      c o) = pure . M.insert c (Selected o)
+    updateStatuses (CoursePreSelected   c  ) = pure . M.insert c InSelection
+    updateStatuses (CourseDeselected    c _) = pure . M.insert c Available
+    updateStatuses _                         = const Nothing
+
+    updateHover (CourseMouseEnter c) _ = pure $ Just c 
+    updateHover (CourseMouseLeave _) _ = pure   Nothing
+    updateHover  _                   _ = Nothing
 
     updateSlots (CourseSelected c o) = \selections ->
-      foldr (addToSlots c) selections (getOccasion o)
+      pure $ foldr (addToSlots c) selections (getOccasion o)
     updateSlots (CourseDeselected c o) = \selections ->
-      foldr (removeFromSlots c) selections (getOccasion o)
-    updateSlots  _                   = id
+      pure $ foldr (removeFromSlots c) selections (getOccasion o)
+    updateSlots  _                   = const Nothing
 
     addToSlots :: Course -> Slot -> Map Slot [Course] -> Map Slot [Course]
     addToSlots c s = M.insertWith (++) s [c]
@@ -112,12 +100,12 @@ widget coursesDyn = do
     removeFromSlots :: Course -> Slot -> Map Slot [Course] -> Map Slot [Course]
     removeFromSlots c = M.adjust (L.delete c)
 
-courseListWidget :: forall t m.
+markup :: forall t m.
   MonadWidget t m
   => Dynamic t (Map Course CourseStatus)
   -> Dynamic t [Course]
   -> m (Event t CourseListEvent)
-courseListWidget statusesDyn coursesDyn =
+markup statusesDyn coursesDyn =
   divClass "course-list" $
     filterList (courseListItem statusesDyn) coursesDyn
 
@@ -140,9 +128,9 @@ courseListItem statusesDyn courseDyn = do
     switchPromptly never event
 
   let tagCourse = tag (current courseDyn)
---  let mouseEnterEv = CourseMouseEnter <$> tagCourse (domEvent Mouseenter e)
---  let mouseLeaveEv = CourseMouseLeave <$> tagCourse (domEvent Mouseleave e)
-  return $ leftmost [event] --mouseLeaveEv, mouseEnterEv, event]
+  let mouseEnterEv = CourseMouseEnter <$> tagCourse (domEvent Mouseenter e)
+  let mouseLeaveEv = CourseMouseLeave <$> tagCourse (domEvent Mouseleave e)
+  return $ leftmost [mouseLeaveEv, mouseEnterEv, event]
 
   where
     available :: m (Event t CourseListEvent)

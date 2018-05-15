@@ -72,11 +72,14 @@ instance Eq Course where
 instance Ord Course where
   (<=) a b = LT == comparing _courseCode a b
 
-getCourseSlots :: Course -> [Slot]
-getCourseSlots = concatMap getOccasion . _courseOccasions
+courseSlots :: Course -> [Slot]
+courseSlots course =
+  concat $ course ^. courseOccasions &
+  traversed (concatMap getOccasion . toMasterOccasions)
 
 getCourseContent :: Course -> Text
-getCourseContent = getContent . _courseContent
+getCourseContent course =
+  course ^. courseContent & getContent
 
 -- | Since courses can be choosen every autumn/spring and not
 --   just semester 5 or 6 or whatever the studieinfo says, all
