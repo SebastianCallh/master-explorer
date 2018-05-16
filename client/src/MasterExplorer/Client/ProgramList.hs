@@ -31,8 +31,8 @@ widget :: forall t m.
 widget getCourses programsDyn = do
   rec
     selectedProg <- foldDyn updateSelection Nothing events
-    progCourses <- holdDyn [] =<< getCourses (fmapMaybe id $ updated selectedProg)
-    events  <- programListWidget programsDyn selectedProg
+    progCourses  <- holdDyn [] =<< getCourses (fmapMaybe id $ updated selectedProg)
+    events       <- programListWidget programsDyn selectedProg
 
   return ProgramList
     { _programs        = programsDyn

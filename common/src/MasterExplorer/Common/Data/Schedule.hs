@@ -16,7 +16,7 @@ import           Servant.API                         (FromHttpApiData,
                                                       parseUrlPiece, toUrlPiece)
 import           Text.Read                           (readEither)
 
-import           MasterExplorer.Common.Data.Course   (Course)
+import           MasterExplorer.Common.Data.Course   (Course, courseSlots)
 import           MasterExplorer.Common.Data.Occasion (Occasion (..))
 import           MasterExplorer.Common.Data.Slot     (Slot)
 
@@ -31,14 +31,29 @@ instance FromHttpApiData Schedule where
 instance ToHttpApiData Schedule where
   toUrlPiece = T.pack . show
 
-addSelection :: Course -> Occasion -> Schedule -> Schedule
-addSelection course occasion schedule =
+empty :: Schedule
+empty = Schedule M.empty
+
+fromList :: [(Slot, [Course])] -> Schedule
+fromList = Schedule . foldr (uncurry M.insert) M.empty
+
+toList :: Schedule ->  [(Slot, [Course])]
+toList = M.toList . getSchedule
+
+getSlotCourses :: Slot -> Schedule -> [Course]
+getSlotCourses slot = M.findWithDefault [] slot . getSchedule
+
+addSelection :: Occasion -> Course -> Schedule -> Schedule
+addSelection occasion course schedule =
   Schedule $ foldr (addToSlots course) (getSchedule schedule) (getOccasion occasion)
   where
     addToSlots c s = M.insertWith (++) s [c]
 
-removeSelection :: Course -> Occasion -> Schedule -> Schedule
-removeSelection course occasion schedule =
-  Schedule $ foldr (removeFromSlots course) (getSchedule schedule) (getOccasion occasion)
+removeSelection :: Course -> Schedule -> Schedule
+removeSelection course schedule =
+  Schedule $ foldr (removeFromSlots course) (getSchedule schedule) $ courseSlots course
   where
     removeFromSlots c = M.adjust (L.delete c)
+
+courses :: Schedule -> [Course]
+courses = concatMap snd . M.toList . getSchedule

@@ -14,11 +14,12 @@ import           Data.Set                   (Set)
 import           Data.Text                  (Text)
 import           Reflex.Dom.Extended
 
-import           MasterExplorer.Common.Data.Schedule   
+import           MasterExplorer.Common.Data.Schedule   (Schedule)
 import           MasterExplorer.Common.Data.Period     (Period)
 import           MasterExplorer.Common.Data.Semester   (Semester)
 import           MasterExplorer.Common.Data.Course     
 import           MasterExplorer.Common.Data.Slot       (Slot (..), slotsInPeriod)
+import qualified MasterExplorer.Common.Data.Schedule   as Schedule
 
 import qualified MasterExplorer.Client.ColGrid         as ColGrid
 
@@ -27,8 +28,7 @@ data CourseGridEvent
   | CourseRemoved Course
 
 data CourseGrid t = CourseGrid
-  { _selections       :: !(Dynamic t (Map Slot [Course]))
-  , _onCourseSelected :: !(Event t Course)
+  { _onCourseSelected :: !(Event t Course)
   , _onCourseRemoved  :: !(Event t Course)
   }
   
@@ -57,8 +57,7 @@ widget scheduleDyn mFocusedCourse = do
         _                    -> Nothing
      
   return CourseGrid
-    { _selections       = getSchedule <$> scheduleDyn
-    , _onCourseSelected = courseSelectedEv
+    { _onCourseSelected = courseSelectedEv
     , _onCourseRemoved  = courseRemovedEv
     }
 
@@ -98,19 +97,24 @@ gridItem :: forall m t.
   -> Map Text Text
   -> m (Event t CourseGridEvent)
 gridItem schedule slot style = do
-  let courses  = M.findWithDefault [] slot (getSchedule schedule)
+  let courses = Schedule.getSlotCourses slot schedule
   let adjustStyle = case courses of
         [] -> M.adjust ("grid-slot empty "     <>) "class"
         _  -> M.adjust ("grid-slot non-empty " <>) "class"
 
   elAttr "div" (adjustStyle style) $ do
     let widgetMap = foldr makeWidgetMap M.empty courses 
-    courseEv <- eventTabDisplay "course-list" "active-course" widgetMap
-    return $ CourseSelected <$> courseEv
+    eventTabDisplay "course-list" "active-course" widgetMap    
     
   where    
     makeWidgetMap c = M.insert (c ^. courseCode)
       (c ^. courseCode,
         divClass "visible-course" $ do
-          l <- button $ c ^. courseName 
-          return $ c <$ l)
+          selectEv <- button $ c ^. courseName 
+          removeEv <- button   "Ta bort"
+          return $ leftmost
+            [ CourseSelected c <$ selectEv
+            , CourseRemoved  c <$ removeEv
+            ]
+      )
+                      

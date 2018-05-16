@@ -43,9 +43,10 @@ data BlockViewWidget
   deriving (Show, Eq, Ord)
 
 data Content t = Content
-  { _activeContentView :: !(Dynamic t ContentViewWidget)
-  , _activeBlockView   :: !(Dynamic t BlockViewWidget)
-  , _selectedCourse    :: !(Dynamic t (Maybe Course))
+  { --_activeContentView :: !(Dynamic t ContentViewWidget)
+--  , _activeBlockView   :: !(Dynamic t BlockViewWidget)
+--  , _selectedCourse    :: !(Dynamic t (Maybe Course))
+    _onCourseRemoved :: !(Event t Course)
   }
 
 makeLenses ''Content
@@ -62,7 +63,7 @@ widget :: forall t m.
   MonadWidget t m
   => Dynamic t Schedule       -- ^ Current course selections.
   -> Dynamic t (Maybe Course) -- ^ Course which slots to highlight.
-  -> m ()
+  -> m (Content t)
 widget scheduleDyn mFocusCourse = do
   rec blockViewDyn       <- foldDyn updateBlockView GridView event
       selectedmCourseDyn <- foldDyn updateSelectedCourse Nothing event
@@ -73,8 +74,14 @@ widget scheduleDyn mFocusCourse = do
         M.fromList [ (BlockView, ("Blockschema", bv))
                    , (StatsView, ("Statistik",   sv))
                    ]
+
+      let courseRemovedEv = fforMaybe event $ \case
+            CourseRemoved c -> Just c
+            _               -> Nothing
       
-  return ()
+  return Content
+    { _onCourseRemoved = courseRemovedEv
+    }
  
   where
     updateSelectedCourse (CourseSelected mc) = const mc
@@ -142,3 +149,15 @@ courseView mSelCourseDyn  = do
       ev <- Info.widget (constDyn course)
       return $ BlockViewSelected GridView <$ (ev  ^. Info.onClose)
   switchPromptly never events
+
+-- | Content showed when no program is selected.
+empty :: forall t m.
+  MonadWidget t m
+  => m (Content t)
+empty = do
+  divClass "content-empty" $
+    el "h1" $
+      text "Välj ett program för att börja!"
+  return Content
+    { _onCourseRemoved = never
+    }

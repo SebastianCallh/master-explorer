@@ -57,10 +57,8 @@ Courses can in theory (and a few actually does) belong to more than one field an
 ### FromHttpApiData and toHttpApiData
 Apparently it is not possible to generate generic instances for FromHttpApiData and toHttpApiData, which is needed when saving a schedule. This has to be written by hand, and could very well be made efficiently using megaparsec, but for now a easy but excruciatingly slow implemnetation will have to do.
 
-
 ### Api route inference
-The type hackery `client courseApi (Proxy :: Proxy m) (Proxy :: Proxy ()) url` being done to infer the api routes while parameterising on the url has lead to a lot of code duplication in `MasterExplorer.Client.Api`. There's got to be a better way of infering the types _once_ and reusing them.
-
+The type hackery `client courseApi (Proxy :: Proxy m) (Proxy :: Proxy ()) url` being done to infer the api routes while parameterising on the url has lead to a lot of code duplication in `MasterExplorer.Client.Api`. There's got to be a better way of infering the types _once_ and reusing them. This was solved by putting the Api into a widget.
 
 ### Saving and loading schedule
-Currently the schedule is snapshotted upon save, so if a course in the schedule should be updated it will not be reflected if the user loads an old schedule.
+Currently the schedule is snapshotted upon save, so if a course in the schedule should be updated it will not be reflected if the user loads an old schedule. Additionally, loading a schedule does not select a program (so nothing will be visible), and it does not seem to be possible to remove courses that are loaded from server. Could be because the CoruseList does not take a Schedule as parameter?
