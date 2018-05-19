@@ -18,6 +18,7 @@ data ProgramList t = ProgramList
   { _programs        :: !(Dynamic t [Program])
   , _selectedProgram :: !(Dynamic t (Maybe Program))
   , _selectedCourses :: !(Dynamic t [Course])
+  , _onProgramSelect :: !(Event t Program)
   }
 
 makeLenses ''ProgramList
@@ -29,15 +30,21 @@ widget :: forall t m.
   -> Dynamic t [Program]
   -> m (ProgramList t)
 widget getCourses programsDyn = do
+
   rec
     selectedProg <- foldDyn updateSelection Nothing events
     progCourses  <- holdDyn [] =<< getCourses (fmapMaybe id $ updated selectedProg)
     events       <- programListWidget programsDyn selectedProg
 
+    let programSelectEv = fforMaybe events $ \case
+          ProgramSelected p -> pure p
+          _                 -> Nothing
+                                         
   return ProgramList
     { _programs        = programsDyn
     , _selectedProgram = selectedProg
     , _selectedCourses = progCourses
+    , _onProgramSelect = programSelectEv
     }
 
   where
@@ -68,7 +75,7 @@ programListItem mSelectedProgramDyn programDyn = do
       let tupleDyn = ffor mSelectedProgramDyn $ \selectedProg ->
             if pure program == selectedProg
             then (ProgramDeselected, "class" =: "selected")
-            else (ProgramSelected, "class" =: "not-selected")
+            else (ProgramSelected,   "class" =: "not-selected")
 
       let eventDyn = fst <$> tupleDyn <*> pure program
       let styleDyn = snd <$> tupleDyn

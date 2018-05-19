@@ -11,15 +11,15 @@ import           Reflex.Dom
 import           Servant.Reflex    
 import           Servant.API       
 
-import           MasterExplorer.Common.Data.Course   (Course)
-import           MasterExplorer.Common.Data.Program  (Program)
-import           MasterExplorer.Common.Data.Schedule (Schedule)
-import           MasterExplorer.Common.Api           (courseApi)
+import           MasterExplorer.Common.Data.Course     (Course)
+import           MasterExplorer.Common.Data.Program    (Program)
+import           MasterExplorer.Common.Data.CoursePlan (CoursePlan)
+import           MasterExplorer.Common.Api             (courseApi)
 
 data Api t m = Api
-  { _getProgramCourses :: Event t Program  -> m (Event t [Course])
-  , _saveSchedule      :: Event t Schedule -> m (Event t Int)
-  , _loadSchedule      :: Event t Int      -> m (Event t (Maybe Schedule))
+  { _getProgramCourses :: Event t Program    -> m (Event t [Course])
+  , _saveCoursePlan    :: Event t CoursePlan -> m (Event t Int)
+  , _loadCoursePlan    :: Event t Int        -> m (Event t (Maybe CoursePlan))
   }
 
 makeLenses ''Api
@@ -30,25 +30,26 @@ widget :: forall t m.
   -> m (Api t m)
 widget apiUrlDyn = do
   let api = client courseApi (Proxy :: Proxy m) (Proxy :: Proxy ()) apiUrlDyn
-      (getCourses :<|> _ :<|> callSaveSchedule :<|> callLoadSchedule) = api
+      (getCourses :<|> _ :<|> callSaveCoursePlan :<|> callLoadCoursePlan) = api
   
       getProgramCourses' programEv = do
         eprogram <- holdDyn (Left "-") (pure <$> programEv)
-        let trigger = () <$ updated eprogram
+        let trigger = () <$ programEv
         fmapMaybe reqSuccess <$> getCourses eprogram trigger
 
-      saveSchedule' scheduleEv = do
+      saveCoursePlan' scheduleEv = do
         scheduleDyn <- holdDyn  (Left "-") (pure <$> scheduleEv)
         let trigger = () <$ scheduleEv
-        fmapMaybe reqSuccess <$> callSaveSchedule scheduleDyn trigger
+        fmapMaybe reqSuccess <$> callSaveCoursePlan scheduleDyn trigger
 
-      loadSchedule' scheduleIdEv = do
+      loadCoursePlan' scheduleIdEv = do
         scheduleIdDyn <- holdDyn  (Left "-") (pure <$> scheduleIdEv)
         let trigger = () <$ scheduleIdEv
-        fmapMaybe reqSuccess <$> callLoadSchedule scheduleIdDyn trigger
+        fmapMaybe reqSuccess <$> callLoadCoursePlan scheduleIdDyn trigger
+
 
   return Api
     { _getProgramCourses = getProgramCourses'
-    , _saveSchedule      = saveSchedule'
-    , _loadSchedule      = loadSchedule'
+    , _saveCoursePlan    = saveCoursePlan'
+    , _loadCoursePlan    = loadCoursePlan'
     }

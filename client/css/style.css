@@ -37,6 +37,12 @@ body {
     display: flex;
 }
 
+.header .courseplan-id-input {
+    font-size: 1.6em;
+    width: 100px;
+    text-align: center;
+}
+
 .logo {
     display: inline-block;
     line-height: 67px;

@@ -22,7 +22,7 @@ module MasterExplorer.Server.Db.Models
   , Program (..)
   , ProgramCode
   , ProgramSlug
-  , Schedule(..)
+  , CoursePlan (..)
   , Slot
   , Subject
   , Url
@@ -32,6 +32,7 @@ import           MasterExplorer.Common.Data.Area            (Area)
 import           MasterExplorer.Common.Data.Course          (Course (..))
 import           MasterExplorer.Common.Data.CourseContent   (CourseContent)
 import           MasterExplorer.Common.Data.CoursePart      (CoursePart)
+import           MasterExplorer.Common.Data.CoursePlan      (CoursePlan (..))
 import           MasterExplorer.Common.Data.CourseSelection (CourseSelection (..))
 import           MasterExplorer.Common.Data.Credits         (Credits)
 import           MasterExplorer.Common.Data.Examination     (Examination)
@@ -47,7 +48,6 @@ import           MasterExplorer.Common.Data.Prerequisites   (Prerequisites)
 import           MasterExplorer.Common.Data.Program         (Program (..))
 import           MasterExplorer.Common.Data.ProgramCode     (ProgramCode)
 import           MasterExplorer.Common.Data.ProgramSlug     (ProgramSlug)
-import           MasterExplorer.Common.Data.Schedule        (Schedule (..))
 import           MasterExplorer.Common.Data.Slot            (Slot)
 import           MasterExplorer.Common.Data.Subject         (Subject)
 import           MasterExplorer.Common.Data.Url             (Url)

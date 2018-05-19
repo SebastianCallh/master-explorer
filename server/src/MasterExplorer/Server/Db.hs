@@ -21,9 +21,9 @@ module MasterExplorer.Server.Db
   , updateCourses
   , updateProgram
   , insertCoursePrograms
-  , selectSchedule
-  , insertSchedule
-  , fromDbSchedule
+  , selectCoursePlan
+  , insertCoursePlan
+  , fromDbCoursePlan
   , fromDbCourse
   , fromDbProgram
   , toDbProgram
@@ -34,7 +34,7 @@ import qualified Data.Map                           as M
 
 import           Data.Maybe                      (listToMaybe, mapMaybe)
 import           Data.Map                           (Map)
-import           Data.Text                       (Text, pack)
+import           Data.Text                       (Text)
 import           Data.Traversable                (for)
 import           Control.Applicative             (liftA2)
 import           Control.Monad.IO.Class          (liftIO)           
@@ -80,8 +80,9 @@ CourseProgram
   courseId  DbCourseId
   programId DbProgramId
 
-DbSchedule
+DbCoursePlan
   courseSelections [CourseSelection]
+  program          Program
 |]
 
 runDb :: ReaderT SqlBackend IO a -> App a
@@ -214,36 +215,29 @@ fromDbCourse DbCourse{..} programs = Course
   , _courseScheduledTime = dbCourseScheduledTime
   } 
 
-insertSchedule :: Schedule -> App Int
-insertSchedule schedule = do
-{-  mdbProgram <- fmap listToMaybe $ runDb $
-    select $ from $ \p -> do
-    where_ $ p ^. DbProgramCode ==. val (_programCode . _scheduleProgram $ schedule)
-    return p
+insertCoursePlan :: CoursePlan -> App Int
+insertCoursePlan coursePlan = do
+  let dbCoursePlan = toDbCoursePlan coursePlan --  slotMapToCourseSelections $ getSchedule schedule
+  fromIntegral . fromSqlKey <$> runDb (insert dbCoursePlan)
 
-  case mdbProgram of
-    Nothing -> error $
-      mconcat [ "A program that really should exist "
-              , "was not found in database when saving schedule "
-              , show schedule
-              ]
--}      
-  --  Just dbProgram -> do
-  let dbSchedule = DbSchedule $ slotMapToCourseSelections $ getSchedule schedule
-  fromIntegral . fromSqlKey <$> runDb (insert dbSchedule)
-
-selectSchedule :: Int -> App (Maybe (Entity DbSchedule))
-selectSchedule scheduleId =
+selectCoursePlan :: Int -> App (Maybe (Entity DbCoursePlan))
+selectCoursePlan coursePlanId =
   fmap listToMaybe $ runDb $
     select $ from $ \s -> do
-      where_ $ s ^. DbScheduleId ==. val (toSqlKey $ fromIntegral scheduleId)
+      where_ $ s ^. DbCoursePlanId ==. val (toSqlKey $ fromIntegral coursePlanId)
       return s
 
--- Marshallig to and from db representation of Schedule
+-- Marshallig to and from db representation of CoursePlan
 
-fromDbSchedule :: DbSchedule -> Schedule
-fromDbSchedule DbSchedule{..} = Schedule $
-  slotMapFromCourseSelections dbScheduleCourseSelections
+toDbCoursePlan :: CoursePlan -> DbCoursePlan
+toDbCoursePlan CoursePlan{..} = DbCoursePlan
+  { dbCoursePlanCourseSelections = slotMapToCourseSelections _coursePlanSchedule
+  , dbCoursePlanProgram          = _coursePlanProgram
+  }
+
+fromDbCoursePlan :: DbCoursePlan -> CoursePlan
+fromDbCoursePlan DbCoursePlan{..} =
+  CoursePlan (slotMapFromCourseSelections dbCoursePlanCourseSelections) dbCoursePlanProgram
 
 slotMapToCourseSelections :: Map Slot [Course] -> [CourseSelection]
 slotMapToCourseSelections = M.foldMapWithKey insertCourseSlots

@@ -4,12 +4,13 @@
 
 module MasterExplorer.Client.Content where
 
+import qualified Data.Text                              as T
 import qualified Data.Map                               as M
 
 import           Control.Lens
 import           Reflex.Dom.Extended
 
-import           MasterExplorer.Common.Data.Schedule   
+import           MasterExplorer.Common.Data.CoursePlan  
 import           MasterExplorer.Common.Data.Course
 
 import qualified MasterExplorer.Client.CourseGrid       as Grid
@@ -43,10 +44,7 @@ data BlockViewWidget
   deriving (Show, Eq, Ord)
 
 data Content t = Content
-  { --_activeContentView :: !(Dynamic t ContentViewWidget)
---  , _activeBlockView   :: !(Dynamic t BlockViewWidget)
---  , _selectedCourse    :: !(Dynamic t (Maybe Course))
-    _onCourseRemoved :: !(Event t Course)
+  { _onCourseRemoved :: !(Event t Course)
   }
 
 makeLenses ''Content
@@ -61,26 +59,33 @@ data ContentEvent
 --   and to the left of the course list. 
 widget :: forall t m.
   MonadWidget t m
-  => Dynamic t Schedule       -- ^ Current course selections.
-  -> Dynamic t (Maybe Course) -- ^ Course which slots to highlight.
+  => Dynamic t (Maybe Course)                -- ^ Course which slots to highlight.
+  -> Dynamic t CoursePlan                    -- ^ Current course selections.
+  -> (Event t CoursePlan -> m (Event t Int)) -- ^ Function for saving course plan.
   -> m (Content t)
-widget scheduleDyn mFocusCourse = do
-  rec blockViewDyn       <- foldDyn updateBlockView GridView event
-      selectedmCourseDyn <- foldDyn updateSelectedCourse Nothing event
+widget mFocusCourse coursePlanDyn saveCoursePlan = 
+  divClass "content" $ do
+  rec
+    blockViewDyn       <- foldDyn updateBlockView GridView event
+    selectedmCourseDyn <- foldDyn updateSelectedCourse Nothing event
+    event <- eventTabDisplay "content-menu" "active-content" $ do
+      let bv = blockView coursePlanDyn selectedmCourseDyn mFocusCourse blockViewDyn
+      let sv = statsView coursePlanDyn
+      M.fromList [ (BlockView, ("Blockschema", bv))
+                 , (StatsView, ("Statistik",   sv))
+                 ]
 
-      event <- eventTabDisplay "content-menu" "active-content" $ do
-        let bv = blockView scheduleDyn selectedmCourseDyn mFocusCourse blockViewDyn
-        let sv = statsView scheduleDyn
-        M.fromList [ (BlockView, ("Blockschema", bv))
-                   , (StatsView, ("Statistik",   sv))
-                   ]
+    let courseRemovedEv = fforMaybe event $ \case
+          CourseRemoved c -> Just c
+          _               -> Nothing
 
-      let courseRemovedEv = fforMaybe event $ \case
-            CourseRemoved c -> Just c
-            _               -> Nothing
-      
+    saveEv  <- button "spara"
+    coursePlanIdEv <- saveCoursePlan $ tag (current coursePlanDyn) saveEv
+    coursePlanIdDyn <- holdDyn "" $ T.pack . show <$> coursePlanIdEv
+    dynText coursePlanIdDyn
+    
   return Content
-    { _onCourseRemoved = courseRemovedEv
+    { _onCourseRemoved   = courseRemovedEv
     }
  
   where
@@ -93,16 +98,16 @@ widget scheduleDyn mFocusCourse = do
     
 statsView :: forall t m.
   MonadWidget t m
-  => Dynamic t Schedule        -- ^ Current course selections.
+  => Dynamic t CoursePlan        -- ^ Current course selections.
   -> m (Event t ContentEvent)
-statsView scheduleDyn =
+statsView coursePlanDyn =
   divClass "content-wrap" $ do
-    planStats <- Stats.widget scheduleDyn
+    planStats <- Stats.widget coursePlanDyn
     return $ ContentViewSelected BlockView <$ (planStats ^. Stats.onClose)
 
 blockView :: forall t m.
   MonadWidget t m
-  => Dynamic t Schedule        -- ^ Current course selections.
+  => Dynamic t CoursePlan      -- ^ Current course selections.
   -> Dynamic t (Maybe Course)  -- ^ Maybe a course is selected for the info view.
   -> Dynamic t (Maybe Course)  -- ^ Maybe a course slots should be in focus.
   -> Dynamic t BlockViewWidget -- ^ The sub widget that is currently selected.
@@ -129,25 +134,25 @@ blockView selectionsDyn mSelCourseDyn mFocusCourse activeWidget =
   
 gridView :: forall t m.
   MonadWidget t m
-  => Dynamic t Schedule        -- ^ Current course selections.
+  => Dynamic t CoursePlan      -- ^ Current course selections.
   -> Dynamic t (Maybe Course)  -- ^ Maybe a course slots should be in focus.
   -> m (Event t ContentEvent)
-gridView scheduleDyn mFocusCourse = do
-  courseGrid <- Grid.widget scheduleDyn mFocusCourse
+gridView coursePlanDyn mFocusCourse = do
+  courseGrid <- Grid.widget coursePlanDyn  mFocusCourse
   return $ leftmost [ CourseSelected . pure <$> courseGrid ^. Grid.onCourseSelected
                     , CourseRemoved         <$> courseGrid ^. Grid.onCourseRemoved
                     ]
 
 courseView :: forall t m.
   MonadWidget t m
-  => Dynamic t (Maybe Course)
+  => Dynamic t (Maybe Course)  -- ^ Maybe a course slots should be in focus.
   -> m (Event t ContentEvent)
 courseView mSelCourseDyn  = do
   events <- dyn $ ffor mSelCourseDyn $ \case
     Nothing     -> pure never
     Just course -> do
-      ev <- Info.widget (constDyn course)
-      return $ BlockViewSelected GridView <$ (ev  ^. Info.onClose)
+      info <- Info.widget (constDyn course)
+      return $ BlockViewSelected GridView <$ (info  ^. Info.onClose)
   switchPromptly never events
 
 -- | Content showed when no program is selected.
@@ -155,9 +160,14 @@ empty :: forall t m.
   MonadWidget t m
   => m (Content t)
 empty = do
-  divClass "content-empty" $
-    el "h1" $
-      text "Välj ett program för att börja!"
+  divClass "content" $
+    divClass "content-wrap" $ 
+      el "h1" $ text $ mconcat
+        [ "Välj ett program i menyn ovan för att börja, "
+        , "eller ladda en sparad kursplan genom att ange "
+        , " ett id. "
+        ]
+
   return Content
     { _onCourseRemoved = never
     }

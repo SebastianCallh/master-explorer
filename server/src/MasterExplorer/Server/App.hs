@@ -6,23 +6,23 @@ module MasterExplorer.Server.App
     , migrateDb
     ) where
 
-import qualified Data.Map.Strict                     as M
-import qualified MasterExplorer.Server.Db            as Db
+import qualified Data.Map.Strict                       as M
+import qualified MasterExplorer.Server.Db              as Db
 
-import           Control.Monad.IO.Class              (liftIO)
-import           Control.Monad.Reader                (runReaderT)
-import           Data.Maybe                          (fromJust)
-import           Data.Text                           (Text)
-import           Database.Persist                    (Entity (..))
-import           Database.Persist.Postgresql         (entityVal, runMigration,
-                                                      runSqlPersistMPool)
-import           MasterExplorer.Common.Api           (CourseAPI, courseApi)
+import           Control.Monad.IO.Class                (liftIO)
+import           Control.Monad.Reader                  (runReaderT)
+import           Data.Maybe                            (fromJust)
+import           Data.Text                             (Text)
+import           Database.Persist                      (Entity (..))
+import           Database.Persist.Postgresql           (entityVal, runMigration,
+                                                        runSqlPersistMPool)
+import           MasterExplorer.Common.Api             (CourseAPI, courseApi)
 import           MasterExplorer.Common.Data.Course
-import           MasterExplorer.Common.Data.Program  (Program)
-import           MasterExplorer.Common.Data.Schedule (Schedule)
-import           MasterExplorer.Server.Config        (App (..), Config (..))
-import           Network.Wai                         (Application)
-import           Network.Wai.Middleware.Cors         (simpleCors)
+import           MasterExplorer.Common.Data.CoursePlan (CoursePlan)
+import           MasterExplorer.Common.Data.Program    (Program)
+import           MasterExplorer.Server.Config          (App (..), Config (..))
+import           Network.Wai                           (Application)
+import           Network.Wai.Middleware.Cors           (simpleCors)
 import           Servant
 
 app :: Config -> Application
@@ -44,8 +44,8 @@ migrateDb config =
 appServerT :: ServerT CourseAPI App
 appServerT = getCourses
   :<|> updateCourses
-  :<|> saveSchedule
-  :<|> loadSchedule
+  :<|> saveCoursePlan
+  :<|> loadCoursePlan
 
 getCourses :: Program -> App [Course]
 getCourses prog = do
@@ -62,16 +62,16 @@ updateCourses courses = do
   _programs' <- traverse (Db.updateProgram . entityVal) $ snd <$> courses'
   return True
 
-saveSchedule :: Schedule -> App Int
-saveSchedule schedule = do
-  key <- Db.insertSchedule schedule
-  liftIO $ print $ mconcat ["Recieved ", show schedule]
+saveCoursePlan :: CoursePlan -> App Int
+saveCoursePlan coursePlan = do
+  key <- Db.insertCoursePlan coursePlan
+  liftIO $ print $ mconcat ["Recieved ", show coursePlan]
   return key
 
-loadSchedule :: Int -> App (Maybe Schedule)
-loadSchedule scheduleId = do
-  mSchedule <- Db.selectSchedule scheduleId
-  return $ Db.fromDbSchedule . entityVal <$> mSchedule
+loadCoursePlan :: Int -> App (Maybe CoursePlan)
+loadCoursePlan scheduleId = do
+  mCoursePlan <- Db.selectCoursePlan scheduleId
+  return $ Db.fromDbCoursePlan . entityVal <$> mCoursePlan
 
 newtype OrderedDbCourse = ODBC { getDbCourse :: Db.DbCourse }
 

@@ -4,20 +4,22 @@ module MasterExplorer.Client.App
   ( app
   ) where
 
+import qualified Data.Text as T
+import qualified Data.Map  as M
 import           Control.Lens
-import           Servant.Reflex                         (BaseUrl)
 import           Reflex.Dom.Extended
-import           MasterExplorer.Common.Data.Course      (Course)
-import           MasterExplorer.Common.Data.Program     (Program, engPrograms)
-import           MasterExplorer.Common.Data.Schedule    (Schedule (..))
-import qualified MasterExplorer.Common.Data.Schedule       as Schedule
+import           Servant.Reflex                             (BaseUrl)
+import           Text.Read                                  (readMaybe)
 
-import           MasterExplorer.Client.Data.CourseStatuses (CourseStatuses)
+import           MasterExplorer.Common.Data.Course          (Course)
+import           MasterExplorer.Common.Data.Program         (engPrograms)
+import           MasterExplorer.Common.Data.CoursePlan      (CoursePlan (..))
+import qualified MasterExplorer.Common.Data.CoursePlan      as CoursePlan
+
 import qualified MasterExplorer.Client.Api                  as API
 import qualified MasterExplorer.Client.Content              as C
 import qualified MasterExplorer.Client.CourseList           as CL
 import qualified MasterExplorer.Client.ProgramList          as PL
-import qualified MasterExplorer.Client.ScheduleApiMenu      as SAM
 import qualified MasterExplorer.Client.Data.CourseStatuses  as CourseStatuses
 
 app :: forall t m.
@@ -28,75 +30,78 @@ app apiUrlDyn = do
   api <- API.widget apiUrlDyn
   divClass "container" $ do
     rec
-      programList <- header api
-      courseList  <- sidebar availableCoursesDyn courseStatusesDyn
-      (contentDyn, scheduleApiMenu) <- content
-        scheduleDyn
-        api
-        (courseList ^. CL.focusedCourse)
-        (updated $ programList ^. PL.selectedProgram)
-      
-      let availableCoursesDyn = programList ^. PL.selectedCourses
-      let contentRemovedCourseEv = (switch . current $ view C.onCourseRemoved <$> contentDyn)
-      
+      (mCoursePlanHeaderDyn, mCourses) <-
+        header api coursePlanListUpdateEv
+
+      courseList <- divClass "sidebar" $ 
+        CL.widget  mCourses courseStatusesDyn
+
+      let coursePlanUpdatedSuccEv = fmapMaybe id $ updated mCoursePlanHeaderDyn
       courseStatusesDyn <- foldDyn ($) CourseStatuses.empty $ leftmost
         [ CourseStatuses.set CourseStatuses.Selected . snd <$> courseList ^. CL.onCourseSelect
         , CourseStatuses.set CourseStatuses.Available      <$> courseList ^. CL.onCourseDeselect
         , CourseStatuses.set CourseStatuses.InSelection    <$> courseList ^. CL.onCoursePreselect
-        , CourseStatuses.set CourseStatuses.Available      <$> contentRemovedCourseEv
-        , const . CourseStatuses.fromSchedule <$> scheduleSuccesfullyLoadedEv
+        , CourseStatuses.set CourseStatuses.Available      <$> courseContentRemovedEv
+        , const . CourseStatuses.fromCoursePlan            <$> coursePlanUpdatedSuccEv
         ]
 
-      let scheduleSuccesfullyLoadedEv = fmapMaybe id $ scheduleApiMenu ^. SAM.onLoad
-      
-      scheduleDyn <- foldDyn ($) Schedule.empty $ leftmost
-        [ uncurry Schedule.addSelection <$> courseList ^. CL.onCourseSelect
-        , Schedule.removeSelection <$> courseList ^. CL.onCourseDeselect
-        , const <$> scheduleSuccesfullyLoadedEv
-        , Schedule.removeSelection <$> contentRemovedCourseEv
-        ]
-    
-    divClass "footer" $ pure ()
-    
+      let coursePlanListUpdateEv = leftmost
+            [ uncurry CoursePlan.addSelection <$> courseList ^. CL.onCourseSelect
+            , CoursePlan.removeSelection      <$> courseList ^. CL.onCourseDeselect
+            , CoursePlan.removeSelection      <$> courseContentRemovedEv
+            ]
+            
+      let courseContentRemovedEv = switch . current $ view C.onCourseRemoved <$> content
+      content <- widgetHold C.empty . ffor (updated mCoursePlanHeaderDyn) $ \case
+        Nothing         -> C.empty
+        Just coursePlan -> C.widget
+          (courseList ^. CL.focusedCourse)
+          (constDyn coursePlan)
+          (api ^. API.saveCoursePlan)
+
+    pure ()
+  
 header :: forall t m.
   MonadWidget t m
-  => API.Api t m  
-  -> m (PL.ProgramList t)
-header api =
+  => API.Api t m
+  -> Event t (CoursePlan -> CoursePlan)
+  -> m (Dynamic t (Maybe CoursePlan), Dynamic t [Course])
+header api coursePlanListUpdateEv =
   divClass "header" $ do
     divClass "logo" $ text "Master Explorer"
     let getCourses  = api ^. API.getProgramCourses
     let programsDyn = constDyn engPrograms
-    PL.widget getCourses programsDyn
+    programList <- PL.widget getCourses programsDyn
 
-sidebar :: forall t m.
-  MonadWidget t m
-  => Dynamic t [Course]
+    input <- textInput $ def &
+             textInputConfig_attributes .~ constDyn (M.fromList
+                                                     [ ("class", "courseplan-id-input")
+                                                     , ("placeholder", "id")
+                                                     ])
+             
+    let inputEv = input ^. textInput_input
+    let scheduleIdInputEv = fmapMaybe (readMaybe . T.unpack) inputEv          
+    scheduleIdDyn <- holdDyn 0 scheduleIdInputEv
 
-  -> Dynamic t CourseStatuses
-  -> m (CL.CourseList t)
-sidebar coursesDyn statusesDyn =
-  divClass "sidebar" $ 
-    CL.widget coursesDyn statusesDyn
+    triggerEv <- button "Ladda"
+    mCoursePlanLoadedEv <- api ^. API.loadCoursePlan $
+      tag (current scheduleIdDyn) triggerEv
+      
+    let mCoursePlanLoadedSuccEv = fmapMaybe id mCoursePlanLoadedEv
+    let mcoursePlanSelectedEv = CoursePlan.make <$> programList ^. PL.onProgramSelect
+    mCoursePlanDyn <- foldDyn ($) Nothing $ leftmost
+      [ const . pure  <$> mcoursePlanSelectedEv
+      , const         <$> mCoursePlanLoadedEv
+      , fmap          <$> coursePlanListUpdateEv
+      ]
 
-content :: forall t m.
-  MonadWidget t m
-  => Dynamic t Schedule
-  -> API.Api t m
-  -> Dynamic t (Maybe Course)
-  -> Event t (Maybe Program)
-  -> m (Dynamic t (C.Content t), SAM.ScheduleApiMenu t)
-content scheduleDyn api focusedCourseDyn programSelectedEv =
-  divClass "content" $ do
-    contentDyn <- widgetHold C.empty $ ffor programSelectedEv $ \case
-        Nothing -> C.empty
-        Just _  -> C.widget
-                   scheduleDyn
-                   focusedCourseDyn
-                   
-    scheduleApiMenu <- SAM.widget
-       (api ^. API.saveSchedule)
-       (api ^. API.loadSchedule)
-       scheduleDyn
-  
-    return (contentDyn, scheduleApiMenu)
+    let selectedProgramCoursesEv = updated $ programList ^. PL.selectedCourses
+    loadedProgramCoursesEv <- api ^. API.getProgramCourses $
+      view CoursePlan.coursePlanProgram <$> mCoursePlanLoadedSuccEv
+
+    programCoursesDyn <- holdDyn [] $ leftmost
+      [ selectedProgramCoursesEv
+      , loadedProgramCoursesEv
+      ]
+       
+    return (mCoursePlanDyn, programCoursesDyn) 

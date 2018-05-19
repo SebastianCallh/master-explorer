@@ -15,23 +15,22 @@ library
   ghc-options:         -Wall -O2
   default-extensions:  RecordWildCards
                      , OverloadedStrings
+                     
   exposed-modules:     MasterExplorer.Common.Api
-                     , MasterExplorer.Common.Client
                      , MasterExplorer.Common.Class.FilterItem
+                     , MasterExplorer.Common.Class.HasText
                      , MasterExplorer.Common.Class.ListItem
                      , MasterExplorer.Common.Class.Pretty
-                     , MasterExplorer.Common.Class.HasText
-                     , MasterExplorer.Common.Data.Course
+                     , MasterExplorer.Common.Client
                      , MasterExplorer.Common.Data.Area
-                     , MasterExplorer.Common.Data.Level
-                     , MasterExplorer.Common.Data.Importance
-                     , MasterExplorer.Common.Data.Slot
-                     , MasterExplorer.Common.Data.Subject
                      , MasterExplorer.Common.Data.Block
-                     , MasterExplorer.Common.Data.CourseSelection
+                     , MasterExplorer.Common.Data.Course
                      , MasterExplorer.Common.Data.CourseContent
                      , MasterExplorer.Common.Data.CoursePart
                      , MasterExplorer.Common.Data.CoursePartType
+                     , MasterExplorer.Common.Data.CoursePlan
+                     , MasterExplorer.Common.Data.CourseSelection
+                     , MasterExplorer.Common.Data.Credits
                      , MasterExplorer.Common.Data.Examination
                      , MasterExplorer.Common.Data.ExaminationPart
                      , MasterExplorer.Common.Data.ExaminationType
@@ -39,17 +38,19 @@ library
                      , MasterExplorer.Common.Data.Field
                      , MasterExplorer.Common.Data.Grading
                      , MasterExplorer.Common.Data.Hours
-                     , MasterExplorer.Common.Data.Credits
+                     , MasterExplorer.Common.Data.Importance
                      , MasterExplorer.Common.Data.Institution
+                     , MasterExplorer.Common.Data.Level
                      , MasterExplorer.Common.Data.Occasion
                      , MasterExplorer.Common.Data.Period
+                     , MasterExplorer.Common.Data.Prerequisites
                      , MasterExplorer.Common.Data.Program
                      , MasterExplorer.Common.Data.ProgramCode
                      , MasterExplorer.Common.Data.ProgramSlug
-                     , MasterExplorer.Common.Data.Prerequisites
-                     , MasterExplorer.Common.Data.Schedule
                      , MasterExplorer.Common.Data.Semester
+                     , MasterExplorer.Common.Data.Slot
                      , MasterExplorer.Common.Data.Specialization
+                     , MasterExplorer.Common.Data.Subject
                      , MasterExplorer.Common.Data.Url
   build-depends:       base >=4.9 && <4.11
                      , aeson

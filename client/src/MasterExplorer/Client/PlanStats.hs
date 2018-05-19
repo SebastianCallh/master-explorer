@@ -2,19 +2,19 @@
 
 module MasterExplorer.Client.PlanStats where
 
-import qualified Data.Map                   as M
 import qualified Data.Text as T
 
 import           Control.Lens
 import           Reflex.Dom.Extended
 
-import           MasterExplorer.Common.Data.Schedule
+import           MasterExplorer.Common.Data.CoursePlan      (CoursePlan)
 import           MasterExplorer.Common.Data.Course          
 import           MasterExplorer.Common.Data.Examination     
 import           MasterExplorer.Common.Data.ExaminationType (ExaminationType(..))
 import           MasterExplorer.Common.Data.Period          (Period)
 import           MasterExplorer.Common.Data.Semester        (Semester)
 import           MasterExplorer.Common.Data.Slot            (slotsInPeriod)
+import qualified MasterExplorer.Common.Data.CoursePlan      as CP
 
 import qualified MasterExplorer.Client.ColGrid              as ColGrid
 
@@ -26,22 +26,22 @@ makeLenses ''PlanStats
 
 widget :: forall t m.
   MonadWidget t m
-  => Dynamic t Schedule
+  => Dynamic t CoursePlan
   -> m (PlanStats t)
-widget scheduleDyn = do
-  closeEv <- ColGrid.widget "stats-column" $ gridCol <$> scheduleDyn
+widget coursePlanDyn = do
+  closeEv <- ColGrid.widget "stats-column" $ gridCol <$> coursePlanDyn
   return PlanStats
     { _onClose = closeEv
     }
     
 gridCol :: forall m t.
   MonadWidget t m
-  => Schedule            -- ^ Current course selections. 
+  => CoursePlan          -- ^ Current course selections. 
   -> (Semester, Period)  -- ^ The current column.
   -> m (Event t ())
-gridCol schedule column = do
+gridCol coursePlan column = do
   let slots   = uncurry slotsInPeriod column
-  let courses = slots   >>= flip (M.findWithDefault []) (getSchedule schedule)
+  let courses = foldMap (`CP.getSlotCourses` coursePlan) slots
   let exams   = courses >>= view courseExaminations
   let writtenExams = filter ((==TEN) . view examinationType) exams
   
